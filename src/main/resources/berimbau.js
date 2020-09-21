@@ -212,11 +212,11 @@ function clearAllNotes() {
 
 function changeType() {
     var typeValue = typeSelect.value;
-    document.getElementById("source0").src = "https://github.com/jaimecasero/berimbauJS/raw/master/src/main/resources/" + typeValue + "-chi.mp3";
+    document.getElementById("source0").src = "./" + typeValue + "-chi.mp3";
     audioElement[0].load;
-    document.getElementById("source1").src ="https://github.com/jaimecasero/berimbauJS/raw/master/src/main/resources/" + typeValue + "-don.mp3";
+    document.getElementById("source1").src ="./" + typeValue + "-don.mp3";
     audioElement[1].load();
-    document.getElementById("source2").src = "https://github.com/jaimecasero/berimbauJS/raw/master/src/main/resources/" + typeValue + "-din.mp3";
+    document.getElementById("source2").src = "./" + typeValue + "-din.mp3";
     audioElement[2].load();
     console.log("audio src changed");
 }
@@ -224,7 +224,7 @@ function changeType() {
 
 // create web audio api context
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
-const reverbImpulseURL = "https://cors-anywhere.herokuapp.com/https://github.com/jaimecasero/berimbauJS/raw/master/src/main/resources/factory.hall.wav";
+const reverbImpulseURL = "./factory.hall.wav";
 var convolver;
 var synthDelay;
 
