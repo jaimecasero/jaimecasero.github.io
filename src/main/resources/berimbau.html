@@ -58,22 +58,22 @@
 
 	  </select>
 	  <br>
-	  <input type="button" id="playButton" value="Play" onmousedown="playToque()" title="will play current Toque">
-	  <input type="button" id="stopButton"  value="Stop" onmousedown="stop()" title="Stop playing Toque">
+	  <input type="button" id="playButton" value="Play automatically" onmousedown="playToque()" title="will play current Toque">
+	  <input type="button" id="stopButton"  value="Stop automatic play" onmousedown="stop()" title="Stop playing Toque">
 	  <br>
-	  <input type="text" id="note00" class="noteInput" readonly>
-	  <input type="text" id="note01" class="noteInput" readonly>
-	  <input type="text" id="note02" class="noteInput" readonly>
-	  <input type="text" id="note03" class="noteInput" readonly>
-	  <input type="text" id="note04" class="noteInput" readonly>
-	  <input type="text" id="note05" class="noteInput" readonly>
+	  <input type="text" id="note00" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note01" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note02" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note03" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note04" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note05" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
 	  <br>
-	  <input type="text" id="note10" class="noteInput" readonly>
-	  <input type="text" id="note11" class="noteInput" readonly>
-	  <input type="text" id="note12" class="noteInput" readonly>
-	  <input type="text" id="note13" class="noteInput" readonly>
-	  <input type="text" id="note14" class="noteInput" readonly>
-	  <input type="text" id="note15" class="noteInput" readonly>
+	  <input type="text" id="note10" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note11" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note12" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note13" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note14" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
+	  <input type="text" id="note15" class="noteInput" readonly title="Shows the next note to play. Number means the rough relative duration">
 	  <br>
 	  <input type="text" id="note20" class="noteInput" readonly>
 	  <input type="text" id="note21" class="noteInput" readonly>
@@ -90,15 +90,15 @@
 	  <input type="text" id="note35" class="noteInput" readonly>
 	  <br>
 	  <br>
-	  <input class="noteButton" type="button" id="input0" value="Chi" onmousedown="play(0)">
-	  <input class="noteButton" type="button" id="input1"  value="Don" onmousedown="play(1)">
-	  <input class="noteButton" type="button" id="input2" value="Din" onmousedown="play(2)">
+	  <input class="noteButton" type="button" id="input0" title="Plays Chi" value="Chi" onmousedown="play(0)">
+	  <input class="noteButton" type="button" id="input1" title="Plays Don" value="Don" onmousedown="play(1)">
+	  <input class="noteButton" type="button" id="input2" title="Plays Din" value="Din" onmousedown="play(2)">
 	  <br>
-	  <input class="noteButton" type="button" id="input3" value="Doinch" onmousedown="play(3)">
-	  <input class="noteButton" type="button" id="input4" value="Caxixi" onmousedown="play(4)">
-	  <input class="noteButton" type="button" id="cabacaButton" value="Cabaça">
+	  <input class="noteButton" type="button" id="input3" title="Plays Doinch" value="Doinch" onmousedown="play(3)">
+	  <input class="noteButton" type="button" id="input4" title="Plays Caxixi" value="Caxixi" onmousedown="play(4)">
+	  <input class="noteButton" type="button" id="cabacaButton" title="When pressed echo is supressed" value="Cabaça">
 	  <br>
-	  <input type="text" id="logInput" readonly>
+	  <input type="text" id="logInput" title="shows app msgs" readonly>
   </form>
 
 </body>
