@@ -155,7 +155,7 @@ function initSensors() {
     accelerometer = new Accelerometer({frequency: ACCEL_FREQ});
 
     accelerometer.addEventListener('reading', () => {
-      if (accelerometer.x > lastAccelX && lastAccelX < ACCEL_CHI )
+      if (accelerometer.x > lastAccelX && lastAccelX < ACCEL_CHI && accelerometer.x < ACCEL_CHI )
       {
         logInput.value=accelerometer.x + "|" + lastAccelX
         if (lastAccelX < ACCEL_DON) {
