@@ -151,25 +151,30 @@ const ACCEL_DIN = -25;
 const ACCEL_FREQ = 300;
 var maxLight = 200;
 var lastAccelX = 0;
+var strikePlayed = false;
 function initSensors() {
 
 
     accelerometer = new Accelerometer({frequency: ACCEL_FREQ});
 
     accelerometer.addEventListener('reading', () => {
-      if (accelerometer.x > lastAccelX && lastAccelX < ACCEL_CHI && accelerometer.x < ACCEL_CHI )
+      if (accelerometer.x < ACCEL_X_THRESHOLD )
       {
-        logInput.value=accelerometer.x + "|" + lastAccelX
-        if (lightSensor.illuminance > (maxLight / 2)) {
-            play(DON_NOTE_INDEX);
-        }else if(lightSensor.illuminance > (maxLight / 4)) {
-            play(CHI_NOTE_INDEX);
-        } else {
-            play(DIN_NOTE_INDEX)
+        if (!strikePlayed) {
+            logInput.value=accelerometer.x + "|" + lightSensor.illuminance + "|" + maxLight;
+            if (lightSensor.illuminance > (maxLight / 2)) {
+                play(DON_NOTE_INDEX);
+            }else if(lightSensor.illuminance > (maxLight / 4)) {
+                play(CHI_NOTE_INDEX);
+            } else {
+                play(DIN_NOTE_INDEX)
+            }
+            //wait the strike to go to initial position
+            strikePlayed = true;
         }
-        lastAccelX = 0;
       } else {
-        lastAccelX = accelerometer.x;
+        //when strike comes back, allow a new one
+        strikePlayed = false;
       }
     });
     accelerometer.addEventListener('error', error => {
