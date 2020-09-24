@@ -149,8 +149,7 @@ const ACCEL_CHI = -5;
 const ACCEL_DON = -55;
 const ACCEL_DIN = -25;
 const ACCEL_FREQ = 60;
-const LIGHT_DON_THRESHOLD=100;
-const LIGHT_DIN_THRESHOLD = 50;
+var maxLight = 200;
 var lastAccelX = 0;
 function initSensors() {
 
@@ -161,9 +160,9 @@ function initSensors() {
       if (accelerometer.x > lastAccelX && lastAccelX < ACCEL_CHI && accelerometer.x < ACCEL_CHI )
       {
         logInput.value=accelerometer.x + "|" + lastAccelX
-        if (lightSensor.illuminance > LIGHT_DON_THRESHOLD) {
+        if (lightSensor.illuminance > (maxLight / 2)) {
             play(DON_NOTE_INDEX);
-        }else if(lightSensor.illuminance > LIGHT_DIN_THRESHOLD) {
+        }else if(lightSensor.illuminance > (maxLight / 4)) {
             play(CHI_NOTE_INDEX);
         } else {
             play(DIN_NOTE_INDEX)
@@ -181,9 +180,12 @@ function initSensors() {
 
     accelerometer.start();
 
-    lightSensor = new AmbientLightSensor({frequency: ACCEL_FREQ});
+    lightSensor = new AmbientLightSensor({frequency: 10});
     lightSensor.onreading = () => {
         logInput.value = ('Current light level:', lightSensor.illuminance);
+        if ( lightSensor.illuminance > maxLight) {
+            maxLight = lightSensor.illuminance;
+        }
     };
     lightSensor.onerror = (event) => {
         logInput.value = (event.error.name, event.error.message);
