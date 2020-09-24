@@ -148,6 +148,7 @@ const ACCEL_Z_THRESHOLD=-10;
 const ACCEL_CHI = -5;
 const ACCEL_DON = -55;
 const ACCEL_DIN = -25;
+const ACCEL_FREQ = 60;
 const LIGHT_DON_THRESHOLD=100;
 const LIGHT_DIN_THRESHOLD = 50;
 var lastAccelX = 0;
