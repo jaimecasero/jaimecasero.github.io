@@ -131,6 +131,7 @@ function keyUpHandler(event) {
 var lastXAccel = 0;
 var beatPlayed = false;
 var accelerometer = null;
+var lightSensor = null;
 var gyroscope=null;
 var orientationSensor = null;
 var lightSensor = null;
@@ -147,7 +148,8 @@ const ACCEL_Z_THRESHOLD=-10;
 const ACCEL_CHI = -5;
 const ACCEL_DON = -55;
 const ACCEL_DIN = -25;
-const ACCEL_FREQ = 60;
+const LIGHT_DON_THRESHOLD=100;
+const LIGHT_DIN_THRESHOLD = 50;
 var lastAccelX = 0;
 function initSensors() {
 
@@ -158,12 +160,12 @@ function initSensors() {
       if (accelerometer.x > lastAccelX && lastAccelX < ACCEL_CHI && accelerometer.x < ACCEL_CHI )
       {
         logInput.value=accelerometer.x + "|" + lastAccelX
-        if (lastAccelX < ACCEL_DON) {
+        if (lightSensor.illuminance > LIGHT_DON_THRESHOLD) {
             play(DON_NOTE_INDEX);
-        }else if(lastAccelX < ACCEL_DIN) {
-            play(DIN_NOTE_INDEX);
-        } else if (lastAccelX < ACCEL_CHI) {
-            play(CHI_NOTE_INDEX)
+        }else if(lightSensor.illuminance > LIGHT_DIN_THRESHOLD) {
+            play(CHI_NOTE_INDEX);
+        } else {
+            play(DIN_NOTE_INDEX)
         }
         lastAccelX = 0;
       } else {
@@ -178,14 +180,14 @@ function initSensors() {
 
     accelerometer.start();
 
-      const sensor = new AmbientLightSensor();
-      sensor.onreading = () => {
-        logInput.value = ('Current light level:', sensor.illuminance);
-      };
-      sensor.onerror = (event) => {
+    lightSensor = new AmbientLightSensor({frequency: ACCEL_FREQ});
+    lightSensor.onreading = () => {
+        logInput.value = ('Current light level:', lightSensor.illuminance);
+    };
+    lightSensor.onerror = (event) => {
         logInput.value = (event.error.name, event.error.message);
-      };
-      sensor.start();
+    };
+    lightSensor.start();
 }
 
 
