@@ -177,6 +177,15 @@ function initSensors() {
     });
 
     accelerometer.start();
+
+      const sensor = new AmbientLightSensor();
+      sensor.onreading = () => {
+        logInput.value = ('Current light level:', sensor.illuminance);
+      };
+      sensor.onerror = (event) => {
+        logInput.value = (event.error.name, event.error.message);
+      };
+      sensor.start();
 }
 
 
