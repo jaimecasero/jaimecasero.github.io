@@ -148,7 +148,7 @@ const ACCEL_Z_THRESHOLD=-10;
 const ACCEL_CHI = -5;
 const ACCEL_DON = -55;
 const ACCEL_DIN = -25;
-const ACCEL_FREQ = 60;
+const ACCEL_FREQ = 300;
 var maxLight = 200;
 var lastAccelX = 0;
 function initSensors() {
