@@ -1,0 +1,17 @@
+skinparam default {
+    FontName SansSerif
+    FontSize 17
+    FontColor #007aff
+    FontStyle bold
+}
+
+skinparam sequence {
+    ArrowColor #77D245
+    ActorBorderColor #194A7D
+    ActorBackgroundColor #194A7D
+}
+
+skinparam interface {
+    BorderColor #194A7D
+    BackgroundColor #194A7D
+}
