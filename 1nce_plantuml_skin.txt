@@ -1,3 +1,7 @@
+!define public_expose red
+!define encrypted red
+!define user_plane dashed
+
 skinparam default {
     FontName SansSerif
     FontSize 17
