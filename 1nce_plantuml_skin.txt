@@ -1,7 +1,3 @@
-!define public_expose red
-!define encrypted red
-!define user_plane dashed
-
 skinparam default {
     FontName SansSerif
     FontSize 17
@@ -19,3 +15,9 @@ skinparam interface {
     BorderColor #194A7D
     BackgroundColor #194A7D
 }
+
+!define public_expose red
+!define encrypted red
+!define user_plane bold
+!define control_plane dashed
+!define mng_plane dotted
