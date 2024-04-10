@@ -16,6 +16,8 @@ skinparam interface {
     BackgroundColor #194A7D
 }
 
+!$CONFLUENCE_URL="https://1ncegmbh.atlassian.net/wiki/display/1CP/"
+
 !define public_expose red
 !define encrypted red
 !define unencrypted #77D245
