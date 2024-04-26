@@ -70,17 +70,14 @@ function changeBpm() {
     console.log("delay" + sound_delay);
 }
 
-function changeNote(tdElement) {
-    console.log(tdElement.cellIndex);
-    console.log(tdElement.parentElement.rowIndex);
-    currentBeat[tdElement.parentElement.rowIndex][tdElement.cellIndex] = !currentBeat[tdElement.parentElement.rowIndex][tdElement.cellIndex];
+function changeNote(tdButton) {
+
+    currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex] = !currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex];
     renderBeatArray();
 }
 
-function muteNote(tdElement, instrumentIndex) {
-    console.log(tdElement.cellIndex);
-    console.log(tdElement.parentElement.rowIndex);
-    audioElement[tdElement.parentElement.rowIndex].muted = !audioElement[tdElement.parentElement.rowIndex].muted;
+function muteNote(tdButton, instrumentIndex) {
+    audioElement[tdButton.parentElement.parentElement.rowIndex].muted = !audioElement[tdButton.parentElement.parentElement.rowIndex].muted;
 }
 
 
