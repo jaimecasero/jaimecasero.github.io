@@ -1,40 +1,48 @@
 ////////////////////////MODEL //////////////////////////////////////
 const saoBentoGrandeAngola = [
-    [false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
-    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//gunga din
-    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false],//gunga don
-    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
-    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
-    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
-    [true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false] //clap
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//gunga chi
+    [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//gunga din
+    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0],//gunga don
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//viola chi
+    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//viola din
+    [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
+    [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0], //clap
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //atabaque dum
 ];
 const angola = [
-    [false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
-    [false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga din
-    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//gunga don
-    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
-    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
-    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
-    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false] //clap
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//gunga chi
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//gunga din
+    [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//gunga don
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//viola chi
+    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//viola din
+    [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], //clap
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //atabaque dum
 ];
 const saoBentoPequenoAngola = [
-    [false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
-    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//gunga din
-    [false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga don
-    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
-    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
-    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
-    [true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false] //clap
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//gunga chi
+    [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//gunga din
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//gunga don
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//viola chi
+    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//viola din
+    [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
+    [1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0], //clap
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //atabaque dum
 ];
 
 const saoBentoGrandeRegional = [
-    [false,false,false,false, true ,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
-    [false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false],//gunga din
-    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga don
-    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
-    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
-    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
-    [true ,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, true,false,false,false, false,false,false,false] //clap
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//gunga chi
+    [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],//gunga din
+    [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//gunga don
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],//viola chi
+    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//viola din
+    [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
+    [1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0], //clap
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //atabaque dum
 ];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
 
@@ -124,7 +132,7 @@ var convolver;
 var sound_delay = 80;
 var currentTime = 0;
 const audioElement = [];
-const MAX_NOTE = 7;
+const MAX_NOTE = 9;
 const MAX_BEATS=32;
 
 var playing = false;
@@ -192,7 +200,7 @@ function initAudio() {
 var loadImpulse = function ( url )
 {
     var request = new XMLHttpRequest();
-    request.open( "GET", url, true );
+    request.open( "GET", url, 1 );
     request.responseType = "arraybuffer";
     request.onload = function ()
     {
