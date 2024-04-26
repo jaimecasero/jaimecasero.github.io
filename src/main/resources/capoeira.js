@@ -54,6 +54,7 @@ const saoBentoGrandeRegional = [
     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //agogo din
 ];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
+const beatBPMArray = [150, 120, 140, 180];
 
 var currentBeat= beatArray[0];
 
@@ -92,6 +93,8 @@ function changeBeat() {
     var beatIndex = beatSelect.value;
     console.log("beat" + beatIndex);
     currentBeat = beatArray[beatIndex];
+    bpmInput.value = beatBPMArray[beatIndex];
+    changeBpm();
     renderBeatArray();
 }
 
