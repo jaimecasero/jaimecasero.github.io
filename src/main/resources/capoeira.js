@@ -78,6 +78,11 @@ function changeNote(tdButton) {
 
 function muteNote(tdButton, instrumentIndex) {
     audioElement[tdButton.parentElement.parentElement.rowIndex].muted = !audioElement[tdButton.parentElement.parentElement.rowIndex].muted;
+    if (audioElement[tdButton.parentElement.parentElement.rowIndex].muted) {
+        tdButton.parentElement.style.background ="red";
+    } else {
+        tdButton.parentElement.style.background ="green";
+    }
 }
 
 
