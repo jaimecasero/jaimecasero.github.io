@@ -54,9 +54,12 @@ function renderBeatArray() {
     for (var i =0; i < MAX_NOTE; i++) {
         var tr = instrumentTable.getElementsByTagName("tr")[i];
         for (var j =0; j < MAX_BEATS; j++) {
+            var td = tr.getElementsByTagName("td")[j];
             if (currentBeat[i][j]) {
-                var td = tr.getElementsByTagName("td")[j];
-                td.style.background = "orange";
+                td.style.background = "orangered";
+            } else {
+                td.style.background = "white";
+
             }
         }
     }
@@ -67,8 +70,17 @@ function changeBpm() {
     console.log("delay" + sound_delay);
 }
 
-function changeNote(tdElement, instrumentIndex) {
-    console.log(tdElement.rowIndex);
+function changeNote(tdElement) {
+    console.log(tdElement.cellIndex);
+    console.log(tdElement.parentElement.rowIndex);
+    currentBeat[tdElement.parentElement.rowIndex][tdElement.cellIndex] = !currentBeat[tdElement.parentElement.rowIndex][tdElement.cellIndex];
+    renderBeatArray();
+}
+
+function muteNote(tdElement, instrumentIndex) {
+    console.log(tdElement.cellIndex);
+    console.log(tdElement.parentElement.rowIndex);
+    audioElement[tdElement.parentElement.rowIndex].muted = !audioElement[tdElement.parentElement.rowIndex].muted;
 }
 
 
