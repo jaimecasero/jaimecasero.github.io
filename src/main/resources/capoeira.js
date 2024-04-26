@@ -8,7 +8,35 @@ const saoBentoGrandeAngola = [
     [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
     [true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false] //clap
 ];
-const beatArray = [saoBentoGrandeAngola];
+const angola = [
+    [false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
+    [false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga din
+    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//gunga don
+    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
+    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
+    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
+    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false] //clap
+];
+const saoBentoPequenoAngola = [
+    [false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
+    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//gunga din
+    [false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga don
+    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
+    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
+    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
+    [true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false] //clap
+];
+
+const saoBentoGrandeRegional = [
+    [false,false,false,false, true ,false,false,false, false,false,false,false, true ,false,true ,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//gunga chi
+    [false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, false,false,false,false],//gunga din
+    [true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//gunga don
+    [false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false, true ,false,true ,false],//viola chi
+    [false,false,false,false, true ,false,false,false, true ,false,false,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false],//viola din
+    [true ,false,false,false, false,false,true ,false, false,false,true ,false, false,false,false,false, true ,false,false,false, false,false,false,false, false,false,false,false, false,false,false,false],//viola don
+    [true ,false,false,false, true ,false,false,false, true ,false,false,false, false,false,false,false, true ,false,false,false, true ,false,false,false, true,false,false,false, false,false,false,false] //clap
+];
+const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
 
 var currentBeat= beatArray[0];
 
