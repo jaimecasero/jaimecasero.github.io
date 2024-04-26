@@ -1,0 +1,75 @@
+<html>
+<head>
+	<script src="capoeira.js"></script>
+	<link rel="stylesheet" href="capoeira.css">
+	<meta name="viewport" content="width=device-width,user-scalable=no">
+	<meta charset="UTF-8">
+</head>
+<body>
+	<audio id="audio0" >
+		<source id="source0" src="./audio/gunga-chi.wav"/>
+	</audio>
+	<audio id="audio1">
+		<source id="source1" src="./audio/gunga-don.wav"/>
+	</audio>
+	<audio id="audio2">
+		<source id="source2" src="./audio/gunga-din.wav"/>
+	</audio>
+	<audio id="audio3" >
+		<source src="./audio/viola-chi.mp3"/>
+	</audio>
+	<audio id="audio4">
+		<source  src="./audio/viola-don.mp3"/>
+	</audio>
+	<audio id="audio5">
+		<source  src="./audio/viola-din.mp3"/>
+	</audio>
+
+	<audio id="audio6">
+		<source src="./audio/palma.wav"/>
+	</audio>
+
+  <form id="settingsForm" class="berimbauForm">
+	  <label for="beatSelect" title="Changes Toque for playing">Toque:</label>
+	  <select id="beatSelect" onchange="changeBeat();">
+		  <option selected="selected" value="0">SBGrandeAngola</option>
+		  <option value="1">Angola</option>
+		  <option value="2">SBPeqAngola</option>
+		  <option value="3">SBGrandeReg</option>
+	  </select>
+	  <label for="bpmInput" title="Changes music speed">Bpm:</label>
+	  <input type="text" id="bpmInput" title="shows app msgs" oninput="changeBpm()" value="150">
+	  <input type="button" id="playButton" value="Play" onmousedown="play()" title="will play current Toque">
+	  <input type="button" id="stopButton"  value="Stop" onmousedown="stop()" title="Stop playing">
+
+	  <br>
+	  <table id="tempo_table" class="">
+		  <!--gunga chi -->
+		  <tr>
+			  <td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td>32</td>
+		  </tr>
+	  </table>
+	  <table id="instrument_table" class="instrument_table">
+		  <!--gunga chi -->
+		  <tr>
+			  <td onclick="changeNote(this, 0)"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+		  </tr>
+		  <!--gunga din -->
+		  <tr>
+			  <td onclick="changeNote(this, 1)"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+		  </tr>
+		  <!--gunga don -->
+		  <tr>
+			  <td onclick="changeNote(this, 2)"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+		  </tr>
+		  <!--palm -->
+		  <tr>
+			  <td onclick="changeNote(this, 3)"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+		  </tr>
+	  </table>
+	  <br>
+	  <input type="text" id="logInput" title="shows app msgs" readonly>
+  </form>
+
+</body>
+</html>
