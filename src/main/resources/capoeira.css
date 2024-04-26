@@ -5,12 +5,14 @@ html, body {
   background-color: black;
   color: yellow;
 }
-table.instrument_table  td:nth-child(even) {
+
+.current_tempo  {
     background-color: #D6EEEE;
 }
-table.instrument_table  td:nth-child(odd) {
-    background-color: #D9EE00;
+table.instrument_table  td {
+    background-color: white;
 }
+
 table.instrument_table tr {
     border-bottom: 1px solid #ddd;
 }

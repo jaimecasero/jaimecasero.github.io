@@ -15,7 +15,9 @@ var currentBeat= beatArray[0];
 ////////DOM CACHING//////////////////
 var beatSelect;
 var bpmInput;
-var logInput;
+var instrumentTable;
+var tempoTable;
+
 (function(window, document, undefined){
 window.onload = init;
 
@@ -27,7 +29,9 @@ window.onload = init;
 	//Cache DOMs
     beatSelect = document.getElementById('beatSelect');
     bpmInput = document.getElementById('bpmInput');
-    logInput = document.getElementById('logInput');
+    instrumentTable = document.getElementById('instrumentTable');
+    tempoTable = document.getElementById('tempoTable');
+
 
 	initAudio();
     changeBeat();
@@ -43,6 +47,19 @@ function changeBeat() {
     var beatIndex = beatSelect.value;
     console.log("beat" + beatIndex);
     currentBeat = beatArray[beatIndex];
+    renderBeatArray();
+}
+
+function renderBeatArray() {
+    for (var i =0; i < MAX_NOTE; i++) {
+        var tr = instrumentTable.getElementsByTagName("tr")[i];
+        for (var j =0; j < MAX_BEATS; j++) {
+            if (currentBeat[i][j]) {
+                var td = tr.getElementsByTagName("td")[j];
+                td.style.background = "orange";
+            }
+        }
+    }
 }
 
 function changeBpm() {
@@ -60,11 +77,13 @@ function changeNote(tdElement, instrumentIndex) {
 
 // create web audio api context
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
+const reverbImpulseURL = "./factory.hall.wav";
 var convolver;
 var sound_delay = 80;
 var currentTime = 0;
 const audioElement = [];
 const MAX_NOTE = 7;
+const MAX_BEATS=32;
 
 var playing = false;
 function play() {
@@ -82,6 +101,18 @@ function stop() {
 
 function playNextTime() {
     audioCtx.resume();
+    var row = tempoTable.getElementsByTagName("tr")[0];
+    var td = row.getElementsByTagName("td")[currentTime];
+    td.style.background = "#D6EEEE";
+    var prevTd;
+    if (currentTime === 0) {
+        prevTd = row.getElementsByTagName("td")[31];
+    } else {
+        prevTd = row.getElementsByTagName("td")[currentTime - 1];
+    }
+    prevTd.style.background = "black";
+
+
     for (var i = 0; i < MAX_NOTE; i++) {
         if (currentBeat[i][currentTime]) {
             audioElement[i].currentTime = 0;
@@ -111,7 +142,24 @@ function initAudio() {
 
     convolver = audioCtx.createConvolver();
     convolver.connect(audioCtx.destination);
-
+    loadImpulse(reverbImpulseURL);
 
     console.log("audio started")
 }
+
+var loadImpulse = function ( url )
+{
+    var request = new XMLHttpRequest();
+    request.open( "GET", url, true );
+    request.responseType = "arraybuffer";
+    request.onload = function ()
+    {
+        audioCtx.decodeAudioData( request.response, function ( buffer ) {
+            convolver.buffer = buffer;
+        }, function ( e ) { console.log( e ); } );
+    };request.onerror = function ( e )
+{
+    console.log( e );
+};
+    request.send();
+};
