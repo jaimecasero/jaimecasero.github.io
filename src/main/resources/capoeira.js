@@ -164,10 +164,12 @@ function changeBpm() {
 
 function changeViola() {
     if (violaSelect.value < 0) {
+        //set viola same as gunga
         currentBeat[3] = currentBeat[0];
         currentBeat[4] = currentBeat[1];
         currentBeat[5] = currentBeat[2];
     } else {
+        //set viol to corresponding viola array position
         currentBeat[3] = violaArray[violaSelect.value][0];
         currentBeat[4] = violaArray[violaSelect.value][1];
         currentBeat[5] = violaArray[violaSelect.value][2];
