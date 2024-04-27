@@ -105,7 +105,6 @@ var beatSelect;
 var violaSelect;
 var bpmInput;
 var instrumentTable;
-var tempoTable;
 
 (function(window, document, undefined){
 window.onload = init;
@@ -120,7 +119,6 @@ window.onload = init;
     violaSelect = document.getElementById('violaSelect');
     bpmInput = document.getElementById('bpmInput');
     instrumentTable = document.getElementById('instrumentTable');
-    tempoTable = document.getElementById('tempoTable');
 
 
 	initAudio();
@@ -144,7 +142,7 @@ function changeBeat() {
 
 function renderBeatArray() {
     for (var i =0; i < MAX_NOTE; i++) {
-        var tr = instrumentTable.getElementsByTagName("tr")[i];
+        var tr = instrumentTable.getElementsByTagName("tr")[i + 1];
         for (var j =0; j < MAX_BEATS; j++) {
             var td = tr.getElementsByTagName("input")[j + 1];
             if (currentBeat[i][j]) {
@@ -230,15 +228,15 @@ function stop() {
 
 function playNextTime() {
     audioCtx.resume();
-    var row = tempoTable.getElementsByTagName("tr")[0];
+    var row = instrumentTable.getElementsByTagName("tr")[0];
     var tempoTableCurrent = currentTime + 1;
-    var td = row.getElementsByTagName("td")[tempoTableCurrent];
+    var td = row.getElementsByTagName("th")[tempoTableCurrent];
     td.style.background = "#D6EEEE";
     var prevTd;
     if (tempoTableCurrent === 1) {
-        prevTd = row.getElementsByTagName("td")[32];
+        prevTd = row.getElementsByTagName("th")[32];
     } else {
-        prevTd = row.getElementsByTagName("td")[tempoTableCurrent - 1];
+        prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
     }
     prevTd.style.background = "black";
 
