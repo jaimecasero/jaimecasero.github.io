@@ -13,30 +13,30 @@ table.instrument_table  td {
     background-color: white;
 }
 
-table.instrument_table td:nth-child(1) {
+table.instrument_table td:nth-child(2) {
     background-color: orange;
 }
-table.instrument_table td:nth-child(5) {
+table.instrument_table td:nth-child(6) {
     background-color: orange;
 }
-table.instrument_table td:nth-child(9) {
+table.instrument_table td:nth-child(10) {
     background-color: orange;
 }
-table.instrument_table td:nth-child(13) {
+table.instrument_table td:nth-child(14) {
     background-color: orange;
 }
-table.instrument_table td:nth-child(17) {
-    background-color: orange;
-}
-
-table.instrument_table td:nth-child(21) {
+table.instrument_table td:nth-child(18) {
     background-color: orange;
 }
 
-table.instrument_table td:nth-child(25) {
+table.instrument_table td:nth-child(22) {
     background-color: orange;
 }
-table.instrument_table td:nth-child(29) {
+
+table.instrument_table td:nth-child(26) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(30) {
     background-color: orange;
 }
 

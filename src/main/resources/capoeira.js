@@ -146,7 +146,7 @@ function renderBeatArray() {
     for (var i =0; i < MAX_NOTE; i++) {
         var tr = instrumentTable.getElementsByTagName("tr")[i];
         for (var j =0; j < MAX_BEATS; j++) {
-            var td = tr.getElementsByTagName("input")[j];
+            var td = tr.getElementsByTagName("input")[j + 1];
             if (currentBeat[i][j]) {
                 td.style.background = "orangered";
             } else {
@@ -180,14 +180,14 @@ function changeViola() {
 
 function changeVolume(volumeLevel, intrumentArray) {
     var newVolume = volumeLevel  / 100;
-    for(var i = 0; i , intrumentArray.length; i++) {
+    for(var i = 0; i < intrumentArray.length; i++) {
         audioElement[intrumentArray[i]].volume = newVolume;
     }
 }
 
 function changeNote(tdButton) {
 
-    currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex] = !currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex];
+    currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex - 1] = !currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex - 1];
     renderBeatArray();
 }
 
@@ -231,13 +231,14 @@ function stop() {
 function playNextTime() {
     audioCtx.resume();
     var row = tempoTable.getElementsByTagName("tr")[0];
-    var td = row.getElementsByTagName("td")[currentTime];
+    var tempoTableCurrent = currentTime + 1;
+    var td = row.getElementsByTagName("td")[tempoTableCurrent];
     td.style.background = "#D6EEEE";
     var prevTd;
-    if (currentTime === 0) {
-        prevTd = row.getElementsByTagName("td")[31];
+    if (tempoTableCurrent === 1) {
+        prevTd = row.getElementsByTagName("td")[32];
     } else {
-        prevTd = row.getElementsByTagName("td")[currentTime - 1];
+        prevTd = row.getElementsByTagName("td")[tempoTableCurrent - 1];
     }
     prevTd.style.background = "black";
 
