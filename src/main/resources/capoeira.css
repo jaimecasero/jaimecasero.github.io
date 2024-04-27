@@ -13,6 +13,8 @@ table.instrument_table  td {
     background-color: white;
 }
 
+
+
 table.instrument_table td:nth-child(2) {
     background-color: orange;
 }
@@ -56,6 +58,10 @@ td {
     width: 20px;
     height: 20px;
     border: 1px solid white;
+}
+
+table.instrument_table td:nth-child(1) {
+    width: 70px;
 }
 
 
