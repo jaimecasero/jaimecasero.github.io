@@ -54,6 +54,16 @@
 		  <option value="2">SBPeqAngola</option>
 		  <option value="3">SBGrandeReg</option>
 	  </select>
+	  <label for="violaSelect" title="Changes viola variation">Viola:</label>
+	  <select id="violaSelect" onchange="changeViola();">
+		  <option selected="selected" value="-1">base</option>
+		  <option value="0">variation 1</option>
+		  <option value="1">variation 2</option>
+		  <option value="2">variation 3</option>
+		  <option value="3">variation 4</option>
+		  <option value="4">variation 5</option>
+		  <option value="5">variation 6</option>
+	  </select>
 	  <label for="bpmInput" title="Changes music speed">Bpm:</label>
 	  <input type="text" id="bpmInput" title="shows app msgs" oninput="changeBpm()" value="150">
 	  <input type="button" id="playButton" value="Play" onmousedown="play()" title="will play current Toque">
