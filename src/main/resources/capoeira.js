@@ -185,7 +185,7 @@ function changeVolume(volumeLevel, intrumentArray) {
 
 function changeNote(tdButton) {
 
-    currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex - 1] = !currentBeat[tdButton.parentElement.parentElement.rowIndex][tdButton.parentElement.cellIndex - 1];
+    currentBeat[tdButton.parentElement.parentElement.rowIndex - 1][tdButton.parentElement.cellIndex - 1] = !currentBeat[tdButton.parentElement.parentElement.rowIndex - 1][tdButton.parentElement.cellIndex - 1];
     renderBeatArray();
 }
 
