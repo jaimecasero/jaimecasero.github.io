@@ -13,6 +13,41 @@ table.instrument_table  td {
     background-color: white;
 }
 
+table.instrument_table td:nth-child(1) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(5) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(9) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(13) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(17) {
+    background-color: orange;
+}
+
+table.instrument_table td:nth-child(21) {
+    background-color: orange;
+}
+
+table.instrument_table td:nth-child(25) {
+    background-color: orange;
+}
+table.instrument_table td:nth-child(29) {
+    background-color: orange;
+}
+
+
+
+
+
+
+
+
+
 table.instrument_table tr {
     border-bottom: 1px solid #ddd;
 }
@@ -20,8 +55,8 @@ table.instrument_table tr {
 td {
     width: 20px;
     height: 20px;
+    border: 1px solid white;
 }
-
 
 
 

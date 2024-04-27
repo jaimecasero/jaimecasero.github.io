@@ -8,7 +8,7 @@ const saoBentoGrandeAngola = [
     [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
     [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0], //clap
     [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
-    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0], //atabaque dum
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0], //atabaque dum
     [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//agogo don
     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //agogo din
 ];
@@ -49,7 +49,7 @@ const saoBentoGrandeRegional = [
     [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],//viola don
     [1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0], //clap
     [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//atabaque dak
-    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0], //atabaque dum
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0], //atabaque dum
     [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,0,0],//agogo don
     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0] //agogo din
 ];
@@ -102,7 +102,7 @@ function renderBeatArray() {
     for (var i =0; i < MAX_NOTE; i++) {
         var tr = instrumentTable.getElementsByTagName("tr")[i];
         for (var j =0; j < MAX_BEATS; j++) {
-            var td = tr.getElementsByTagName("td")[j];
+            var td = tr.getElementsByTagName("input")[j];
             if (currentBeat[i][j]) {
                 td.style.background = "orangered";
             } else {
@@ -116,6 +116,13 @@ function renderBeatArray() {
 function changeBpm() {
     sound_delay = (60000 / bpmInput.value) / 4  ;
     console.log("delay" + sound_delay);
+}
+
+function changeVolume(volumeLevel, intrumentArray) {
+    var newVolume = volumeLevel  / 100;
+    for(var i = 0; i , intrumentArray.length; i++) {
+        audioElement[intrumentArray[i]].volume = newVolume;
+    }
 }
 
 function changeNote(tdButton) {
