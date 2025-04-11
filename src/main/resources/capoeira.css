@@ -70,3 +70,7 @@ table.instrument_table td:nth-child(1) {
     width: 300px;
     height: 40px;
 }
+
+#bpmInput {
+    width: 30px;
+}
