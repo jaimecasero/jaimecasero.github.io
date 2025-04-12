@@ -244,27 +244,70 @@ function muteNote(tdButton, instrumentIndex) {
 
 
 
+let scheduleAheadTime = 0.1; // seconds
+let lookahead = 25; // ms
+let nextNoteTime;
+
+function scheduler() {
+    while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+        scheduleNote(currentTime, nextNoteTime);
+        nextNote();
+    }
+    timerID = setTimeout(scheduler, lookahead);
+}
+
+function scheduleNote(index, when) {
+    for (let i = 0; i < MAX_NOTE; i++) {
+        if (currentBeat[i][index]) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffers[i];
+            source.connect(gainNodes[i]);
+            source.start(when);
+        }
+    }
+
+    // Delay UI update slightly to match audio
+    setTimeout(() => renderNextColumn(index), (when - audioCtx.currentTime) * 1000);
+}
+
+function nextNote() {
+    nextNoteTime += sound_delay / 1000;
+    currentTime++;
+    if (currentTime >= currentBeat[0].length) currentTime = 0;
+}
+
+function startPlayback() {
+    nextNoteTime = audioCtx.currentTime;
+    audioCtx.resume().then(() => {
+        loadSounds().then(() => {
+            setupGains();
+            currentTime = 0;
+            nextNoteTime = audioCtx.currentTime;
+            scheduler();
+        });
+    });
+}
+
+
 ////////////////////// audio ctrl //////////////////////
 
 // create web audio api context
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
-const reverbImpulseURL = "./factory.hall.wav";
-var convolver;
 var sound_delay = 80;
 var currentTime = 0;
 const MAX_NOTE = 16;
 const MAX_BEATS=32;
 
 var playing = false;
-function play() {
-    playing = true;
-    currentTime = 0;
-    setTimeout(playNextTime, sound_delay, 0);
-}
 
+let timerID; // global or scoped outside functions
 
 function stop() {
     playing = false;
+    if (timerID) {
+        clearTimeout(timerID);
+        timerID = null;
+    }
 }
 
 let audioBuffers = [];
@@ -305,9 +348,7 @@ function playSound(i) {
     source.start();
 }
 
-
-function playNextTime() {
-    audioCtx.resume();
+async function renderNextColumn(currentTime) {
     var row = instrumentTable.getElementsByTagName("tr")[0];
     var tempoTableCurrent = currentTime + 1;
     var td = row.getElementsByTagName("th")[tempoTableCurrent];
@@ -319,7 +360,13 @@ function playNextTime() {
         prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
     }
     prevTd.style.background = "black";
+}
 
+
+function playNextTime() {
+    audioCtx.resume();
+
+    renderNextColumn(currentTime);
 
     for (var i = 0; i < MAX_NOTE; i++) {
         if (currentBeat[i][currentTime]) {
@@ -339,29 +386,7 @@ function playNextTime() {
 
 async function initAudio() {
     console.log("init audio");
-
-    //convolver = audioCtx.createConvolver();
-    //convolver.connect(audioCtx.destination);
-    //loadImpulse(reverbImpulseURL);
-
     console.log("audio started")
     await loadSounds();
     setupGains();
 }
-
-var loadImpulse = function ( url )
-{
-    var request = new XMLHttpRequest();
-    request.open( "GET", url, 1 );
-    request.responseType = "arraybuffer";
-    request.onload = function ()
-    {
-        audioCtx.decodeAudioData( request.response, function ( buffer ) {
-            convolver.buffer = buffer;
-        }, function ( e ) { console.log( e ); } );
-    };request.onerror = function ( e )
-{
-    console.log( e );
-};
-    request.send();
-};
