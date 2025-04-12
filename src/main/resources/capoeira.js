@@ -127,7 +127,7 @@ const violaVariation6 = [
 const violaArray = [violaVariation1,violaVariation2, violaVariation3, violaVariation4, violaVariation5,violaVariation6];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
 const beatBPMArray = [150, 120, 140, 180];
-
+let timerID; // global or scoped outside functions
 var currentBeat= beatArray[0];
 
 ////////DOM CACHING//////////////////
@@ -207,6 +207,7 @@ function changeViola() {
 }
 
 function changeVolume(volumeLevel, instrumentArray) {
+    console.log("volume:" + volumeLevel + " instrumentArray:" + instrumentArray);
     const newVolume = volumeLevel / 100;
     for (let i = 0; i < instrumentArray.length; i++) {
         const index = instrumentArray[i];
@@ -216,16 +217,7 @@ function changeVolume(volumeLevel, instrumentArray) {
     }
 }
 
-const gainNodes = [];
 
-function setupGains() {
-    for (let i = 0; i < audioBuffers.length; i++) {
-        const gainNode = audioCtx.createGain();
-        gainNode.connect(audioCtx.destination);
-        gainNodes[i] = gainNode;
-    }
-    console.log("gain nodes set up");
-}
 
 function changeNote(tdButton) {
 
@@ -234,12 +226,17 @@ function changeNote(tdButton) {
 }
 
 function muteNote(tdButton, instrumentIndex) {
-    /**audioElement[tdButton.parentElement.parentElement.rowIndex].muted = !audioElement[tdButton.parentElement.parentElement.rowIndex].muted;
-    if (audioElement[tdButton.parentElement.parentElement.rowIndex].muted) {
+    console.log("instrumentIndex:" + instrumentIndex);
+
+    if (tdButton.parentElement.style.background === "green") {
         tdButton.parentElement.style.background ="red";
+        changeVolume(1 , [instrumentIndex]);
+
     } else {
         tdButton.parentElement.style.background ="green";
-    }**/
+        changeVolume(50 , [instrumentIndex]);
+
+    }
 }
 
 
@@ -288,6 +285,20 @@ function startPlayback() {
     });
 }
 
+async function renderNextColumn(currentTime) {
+    var row = instrumentTable.getElementsByTagName("tr")[0];
+    var tempoTableCurrent = currentTime + 1;
+    var td = row.getElementsByTagName("th")[tempoTableCurrent];
+    td.style.background = "#D6EEEE";
+    var prevTd;
+    if (tempoTableCurrent === 1) {
+        prevTd = row.getElementsByTagName("th")[32];
+    } else {
+        prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
+    }
+    prevTd.style.background = "black";
+}
+
 
 ////////////////////// audio ctrl //////////////////////
 
@@ -297,13 +308,20 @@ var sound_delay = 80;
 var currentTime = 0;
 const MAX_NOTE = 16;
 const MAX_BEATS=32;
+const gainNodes = [];
 
-var playing = false;
 
-let timerID; // global or scoped outside functions
+
+function setupGains() {
+    for (let i = 0; i < audioBuffers.length; i++) {
+        const gainNode = audioCtx.createGain();
+        gainNode.connect(audioCtx.destination);
+        gainNodes[i] = gainNode;
+    }
+    console.log("gain nodes set up");
+}
 
 function stop() {
-    playing = false;
     if (timerID) {
         clearTimeout(timerID);
         timerID = null;
@@ -341,46 +359,6 @@ const soundFiles = [
 ];
 
 
-function playSound(i) {
-    const source = audioCtx.createBufferSource();
-    source.buffer = audioBuffers[i];
-    source.connect(gainNodes[i]); // Connect to the instrument’s gain node
-    source.start();
-}
-
-async function renderNextColumn(currentTime) {
-    var row = instrumentTable.getElementsByTagName("tr")[0];
-    var tempoTableCurrent = currentTime + 1;
-    var td = row.getElementsByTagName("th")[tempoTableCurrent];
-    td.style.background = "#D6EEEE";
-    var prevTd;
-    if (tempoTableCurrent === 1) {
-        prevTd = row.getElementsByTagName("th")[32];
-    } else {
-        prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
-    }
-    prevTd.style.background = "black";
-}
-
-
-function playNextTime() {
-    audioCtx.resume();
-
-    renderNextColumn(currentTime);
-
-    for (var i = 0; i < MAX_NOTE; i++) {
-        if (currentBeat[i][currentTime]) {
-            playSound(i);
-        }
-    }
-    if (playing) {
-        currentTime = currentTime + 1;
-        if (currentTime >= currentBeat[0].length) {
-            currentTime = 0;
-        }
-        setTimeout(playNextTime, sound_delay, 0);
-    }
-}
 
 
 
