@@ -13,6 +13,7 @@
 <body>
 
   <form id="settingsForm" class="berimbauForm">
+	  <br>
 	  <label for="beatSelect" title="Changes Toque for playing">Toque:</label>
 	  <select id="beatSelect" onchange="changeBeat();">
 		  <option selected="selected" value="0">SBGrandeAngola</option>
@@ -40,7 +41,8 @@
 		  <option value="168">Vivace (168)</option>
 		  <option value="176">Presto (176)</option>
 		  <option value="200">Prestissimo (200)</option>
-	  </select>	  <br>
+	  </select>
+
 	  <input type="button" id="playButton" value="Play" onmousedown="startPlayback()" title="will play current Toque">
 	  <input type="button" id="stopButton"  value="Stop" onmousedown="stop()" title="Stop playing">
 
