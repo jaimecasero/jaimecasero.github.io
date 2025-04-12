@@ -206,11 +206,25 @@ function changeViola() {
     renderBeatArray();
 }
 
-function changeVolume(volumeLevel, intrumentArray) {
-    var newVolume = volumeLevel  / 100;
-    for(var i = 0; i < intrumentArray.length; i++) {
-        audioElement[intrumentArray[i]].volume = newVolume;
+function changeVolume(volumeLevel, instrumentArray) {
+    const newVolume = volumeLevel / 100;
+    for (let i = 0; i < instrumentArray.length; i++) {
+        const index = instrumentArray[i];
+        if (gainNodes[index]) {
+            gainNodes[index].gain.value = newVolume;
+        }
     }
+}
+
+const gainNodes = [];
+
+function setupGains() {
+    for (let i = 0; i < audioBuffers.length; i++) {
+        const gainNode = audioCtx.createGain();
+        gainNode.connect(audioCtx.destination);
+        gainNodes[i] = gainNode;
+    }
+    console.log("gain nodes set up");
 }
 
 function changeNote(tdButton) {
@@ -220,12 +234,12 @@ function changeNote(tdButton) {
 }
 
 function muteNote(tdButton, instrumentIndex) {
-    audioElement[tdButton.parentElement.parentElement.rowIndex].muted = !audioElement[tdButton.parentElement.parentElement.rowIndex].muted;
+    /**audioElement[tdButton.parentElement.parentElement.rowIndex].muted = !audioElement[tdButton.parentElement.parentElement.rowIndex].muted;
     if (audioElement[tdButton.parentElement.parentElement.rowIndex].muted) {
         tdButton.parentElement.style.background ="red";
     } else {
         tdButton.parentElement.style.background ="green";
-    }
+    }**/
 }
 
 
@@ -238,7 +252,6 @@ const reverbImpulseURL = "./factory.hall.wav";
 var convolver;
 var sound_delay = 80;
 var currentTime = 0;
-const audioElement = [];
 const MAX_NOTE = 16;
 const MAX_BEATS=32;
 
@@ -254,6 +267,43 @@ function stop() {
     playing = false;
 }
 
+let audioBuffers = [];
+async function loadSounds() {
+    for (let i = 0; i < soundFiles.length; i++) {
+        const response = await fetch(soundFiles[i]);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = await audioCtx.decodeAudioData(arrayBuffer);
+        audioBuffers[i] = buffer;
+    }
+    console.log("sounds loaded");
+}
+
+const soundFiles = [
+    "./audio/gunga-chi.wav",
+    "./audio/gunga-don.wav",
+    "./audio/gunga-din.wav",
+    "./audio/medio-chi.wav",
+    "./audio/medio-don.wav",
+    "./audio/medio-din.wav",
+    "./audio/viola-chi.wav",
+    "./audio/viola-don.wav",
+    "./audio/viola-din.wav",
+    "./audio/palma.wav",
+    "./audio/atabaqueDak.wav",
+    "./audio/atabaqueDum.wav",
+    "./audio/agogo_dom.wav",
+    "./audio/agogo_dim.wav",
+    "./audio/pandeiro-slap.wav",
+    "./audio/pandeiro-tum.wav"
+];
+
+
+function playSound(i) {
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffers[i];
+    source.connect(gainNodes[i]); // Connect to the instrument’s gain node
+    source.start();
+}
 
 
 function playNextTime() {
@@ -273,8 +323,7 @@ function playNextTime() {
 
     for (var i = 0; i < MAX_NOTE; i++) {
         if (currentBeat[i][currentTime]) {
-            audioElement[i].currentTime = 0;
-            audioElement[i].play();
+            playSound(i);
         }
     }
     if (playing) {
@@ -288,21 +337,16 @@ function playNextTime() {
 
 
 
-function initAudio() {
+async function initAudio() {
     console.log("init audio");
 
-    for (var i = 0; i < MAX_NOTE; i++) {
-
-        audioElement[i] = document.getElementById('audio' + i);
-        console.log("audio element found");
-    };
-
-
-    convolver = audioCtx.createConvolver();
-    convolver.connect(audioCtx.destination);
-    loadImpulse(reverbImpulseURL);
+    //convolver = audioCtx.createConvolver();
+    //convolver.connect(audioCtx.destination);
+    //loadImpulse(reverbImpulseURL);
 
     console.log("audio started")
+    await loadSounds();
+    setupGains();
 }
 
 var loadImpulse = function ( url )
