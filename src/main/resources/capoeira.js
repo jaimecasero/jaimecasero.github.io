@@ -126,7 +126,7 @@ const violaVariation6 = [
 ];
 const violaArray = [violaVariation1,violaVariation2, violaVariation3, violaVariation4, violaVariation5,violaVariation6];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
-const beatBPMArray = [150, 120, 140, 180];
+const beatBPMArray = [168, 108, 120, 176];
 let timerID; // global or scoped outside functions
 var currentBeat= beatArray[0];
 
@@ -147,7 +147,7 @@ window.onload = init;
 	//Cache DOMs
     beatSelect = document.getElementById('beatSelect');
     violaSelect = document.getElementById('violaSelect');
-    bpmInput = document.getElementById('bpmInput');
+    bpmInput = document.getElementById('bpmSelect');
     instrumentTable = document.getElementById('instrumentTable');
 
 
