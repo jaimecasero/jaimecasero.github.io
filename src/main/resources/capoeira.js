@@ -1,6 +1,9 @@
 ////////////////////////MODEL //////////////////////////////////////
-const saoBentoGrandeAngola = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const soundFiles = ["./audio/gunga-chi.wav", "./audio/gunga-din.wav", "./audio/gunga-don.wav", "./audio/medio-chi.wav", "./audio/medio-din.wav", "./audio/medio-don.wav", "./audio/viola-chi.wav", "./audio/viola-din.wav", "./audio/viola-don.wav", "./audio/palma.wav", "./audio/atabaqueDak.wav", "./audio/atabaqueDum.wav", "./audio/agogo_dom.wav", "./audio/agogo_dim.wav", "./audio/pandeiro-slap.wav", "./audio/pandeiro-tum.wav", "./audio/metro-1.wav", "./audio/metro-n.wav",];
+const soundLabel = ["Gunga chi", "Gunga din", "Gunga don", "Medio chi", "Medio din", "Medio don", "Viola chi", "Viola din", "Viola don", "palma", "Atabaque Dak", "Atabaque Dum", "Agogo dom", "Agogo dim", "Pandeiro dak", "Pandeiro tum", "metro-1", "metro-n",];
+
+
+const saoBentoGrandeAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],//gunga don
 
@@ -26,8 +29,7 @@ const saoBentoGrandeAngola = [
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
-const angola = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const angola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -51,8 +53,7 @@ const angola = [
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
-const saoBentoPequenoAngola = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const saoBentoPequenoAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -76,8 +77,7 @@ const saoBentoPequenoAngola = [
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
 
-const saoBentoGrandeRegional = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const saoBentoGrandeRegional = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -104,33 +104,27 @@ const saoBentoGrandeRegional = [
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
 
-const violaVariation1 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation1 = [[1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
-const violaVariation2 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation2 = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
-const violaVariation3 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation3 = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
-const violaVariation4 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation4 = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
-const violaVariation5 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation5 = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
-const violaVariation6 = [
-    [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
+const violaVariation6 = [[1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//viola din
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
@@ -160,7 +154,7 @@ var instrumentTable;
         bpmInput = document.getElementById('bpmSelect');
         instrumentTable = document.getElementById('instrumentTable');
 
-
+        initTable();
         initAudio();
         changeBeat();
         changeBpm();
@@ -180,13 +174,61 @@ function changeBeat() {
     renderBeatArray();
 }
 
+function initTable() {
+    let tBody = instrumentTable.getElementsByTagName("tbody")[0];
+    let tHead = instrumentTable.getElementsByTagName("thead")[0];
+
+    let newHeaderRow = document.createElement("tr");
+    tHead.appendChild(newHeaderRow);
+    for (let i = 0; i < MAX_BEATS + 1; i++) {
+        let newCell = document.createElement("th");
+        newHeaderRow.appendChild(newCell)
+        if (i === 0) {
+            newCell.innerHTML = "Instrument";
+        } else {
+            newCell.innerHTML = "" + (i);
+        }
+    }
+    for (let i = 0; i < MAX_NOTE; i++) {
+        let newTableRow = document.createElement("tr");
+        tBody.appendChild(newTableRow);
+        for (let j = 0; j < MAX_BEATS + 1; j++) {
+            let newCell = document.createElement("td");
+            newTableRow.appendChild(newCell)
+            if (j === 0) {
+                let newRange = document.createElement("input");
+                newRange.type = "range";
+                newRange.min = 1;
+                newRange.max = 100;
+                newRange.value = 50;
+                newRange.addEventListener("change", (event) => {
+                    changeVolume(event.target.value, [i]);
+                });
+                let insLabel = document.createElement("div");
+                insLabel.innerHTML = soundLabel[i];
+                newCell.appendChild(insLabel);
+                newCell.appendChild(newRange);
+            } else {
+                let newButton = document.createElement("input");
+                newButton.type = "button";
+                newButton.addEventListener("click", (event) => {
+                    changeNote(event.target);
+                });
+                newCell.appendChild(newButton);
+            }
+        }
+    }
+}
+
 function renderBeatArray() {
-    for (var i = 0; i < instrumentTable.getElementsByTagName("tr").length; i++) {
-        var tr = instrumentTable.getElementsByTagName("tr")[i + 1];
+    let tBody = instrumentTable.getElementsByTagName("tbody")[0];
+    let bodyRowArray = tBody.getElementsByTagName("tr");
+    for (let i = 0; i < bodyRowArray.length; i++) {
+        let tr = bodyRowArray[i];
         if (tr !== undefined) {
-            for (var j = 0; j < MAX_BEATS; j++) {
-                var td = tr.getElementsByTagName("td")[j + 1];
-                var tdButton = td.getElementsByTagName("input")[0];
+            for (let j = 0; j < MAX_BEATS; j++) {
+                let td = tr.getElementsByTagName("td")[j + 1];
+                let tdButton = td.getElementsByTagName("input")[0];
                 if (currentBeat[i][j]) {
                     tdButton.style.background = "orangered";
                 } else {
@@ -281,7 +323,7 @@ function scheduleNote(index, when) {
 function nextNote() {
     nextNoteTime += sound_delay / 1000;
     currentTime++;
-    if (currentTime >= currentBeat[0].length) currentTime = 0;
+    if (currentTime >= MAX_BEATS) currentTime = 0;
 }
 
 function startPlayback() {
@@ -297,13 +339,14 @@ function startPlayback() {
 }
 
 async function renderNextColumn(currentTime) {
-    var row = instrumentTable.getElementsByTagName("tr")[0];
-    var tempoTableCurrent = currentTime + 1;
-    var td = row.getElementsByTagName("th")[tempoTableCurrent];
+    let tHead = instrumentTable.getElementsByTagName("thead")[0];
+    let row = tHead.getElementsByTagName("tr")[0];
+    let tempoTableCurrent = currentTime + 1;
+    let td = row.getElementsByTagName("th")[tempoTableCurrent];
     td.style.background = "#D6EEEE";
-    var prevTd;
+    let prevTd;
     if (tempoTableCurrent === 1) {
-        prevTd = row.getElementsByTagName("th")[32];
+        prevTd = row.getElementsByTagName("th")[MAX_BEATS];
     } else {
         prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
     }
@@ -318,7 +361,7 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext);
 var sound_delay = 80;
 var currentTime = 0;
 const MAX_NOTE = 18;
-const MAX_BEATS = 32;
+const MAX_BEATS = 16;
 const gainNodes = [];
 
 
@@ -349,28 +392,6 @@ async function loadSounds() {
     }
     console.log("sounds loaded");
 }
-
-const soundFiles = [
-    "./audio/gunga-chi.wav",
-    "./audio/gunga-don.wav",
-    "./audio/gunga-din.wav",
-    "./audio/medio-chi.wav",
-    "./audio/medio-don.wav",
-    "./audio/medio-din.wav",
-    "./audio/viola-chi.wav",
-    "./audio/viola-don.wav",
-    "./audio/viola-din.wav",
-    "./audio/palma.wav",
-    "./audio/atabaqueDak.wav",
-    "./audio/atabaqueDum.wav",
-    "./audio/agogo_dom.wav",
-    "./audio/agogo_dim.wav",
-    "./audio/pandeiro-slap.wav",
-    "./audio/pandeiro-tum.wav",
-    "./audio/metro-1.wav",
-    "./audio/metro-n.wav",
-
-];
 
 
 async function initAudio() {
