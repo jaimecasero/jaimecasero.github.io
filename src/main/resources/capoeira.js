@@ -330,7 +330,6 @@ function startPlayback() {
     nextNoteTime = audioCtx.currentTime;
     audioCtx.resume().then(() => {
         loadSounds().then(() => {
-            setupGains();
             currentTime = 0;
             nextNoteTime = audioCtx.currentTime;
             scheduler();
