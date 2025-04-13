@@ -64,6 +64,37 @@ table.instrument_table td:nth-child(1) {
     width: 70px;
 }
 
+/* Contenedor del panel colapsable */
+.collapsible-panel {
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Botón para colapsar/expandir */
+.collapsible-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+}
+/* Contenido del panel (colapsado por defecto) */
+.panel-content {
+    font-size: 1.5em;
+    display: none; /* Oculto inicialmente */
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Hover en el botón */
+.collapsible-button:hover {
+    background-color: #45a049;
+}
 
 
 #logInput {

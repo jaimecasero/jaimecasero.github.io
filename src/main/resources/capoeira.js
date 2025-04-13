@@ -148,6 +148,22 @@ var instrumentTable;
         // #document has its nodes
         console.log("init");
 
+        document.getElementById("toggle-button").addEventListener("click", () => {
+            // Prevenir comportamientos por defecto
+            event.preventDefault();
+            const panelContent = document.getElementById("panel-content");
+            const toggleButton = document.getElementById("toggle-button");
+
+            // Alternar entre mostrar u ocultar el contenido
+            if (panelContent.style.display === "none" || panelContent.style.display === "") {
+                panelContent.style.display = "block"; // Mostrar contenido
+                toggleButton.textContent = "Hide Configuration"; // Cambiar el texto del botón
+            } else {
+                panelContent.style.display = "none"; // Ocultar contenido
+                toggleButton.textContent = "Show Configuration"; // Cambiar el texto del botón
+            }
+        });
+
         //Cache DOMs
         beatSelect = document.getElementById('beatSelect');
         violaSelect = document.getElementById('violaSelect');
@@ -237,7 +253,7 @@ function initTable() {
                 insLabel.innerHTML = soundLabel[i];
                 newCell.appendChild(insLabel);
                 newCell.appendChild(volumeRange);
-                newCell.appendChild(panningRange);
+                //newCell.appendChild(panningRange);
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
