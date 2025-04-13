@@ -174,6 +174,17 @@ function changeBeat() {
     renderBeatArray();
 }
 
+function changePanning(panValue, instrumentArray) {
+    console.log("Pan:", panValue, "Instrumentos:", instrumentArray);
+    const newPan = parseFloat(panValue);
+    for (let i = 0; i < instrumentArray.length; i++) {
+        const index = instrumentArray[i];
+        if (pannerNodes[index]) {
+            pannerNodes[index].pan.value = newPan; // Ajustar paneo del panner
+        }
+    }
+}
+
 function initTable() {
     let tBody = instrumentTable.getElementsByTagName("tbody")[0];
     let tHead = instrumentTable.getElementsByTagName("thead")[0];
@@ -196,18 +207,37 @@ function initTable() {
             let newCell = document.createElement("td");
             newTableRow.appendChild(newCell)
             if (j === 0) {
-                let newRange = document.createElement("input");
-                newRange.type = "range";
-                newRange.min = 1;
-                newRange.max = 100;
-                newRange.value = 50;
-                newRange.addEventListener("change", (event) => {
+                let volumeRange = document.createElement("input");
+                volumeRange.type = "range";
+                volumeRange.min = 1;
+                volumeRange.max = 100;
+                volumeRange.value = 50;
+                volumeRange.step = 10;
+                volumeRange.addEventListener("change", (event) => {
                     changeVolume(event.target.value, [i]);
                 });
+
+                // Control deslizante de paneo estéreo
+                let panningRange = document.createElement("input");
+                panningRange.type = "range";
+                panningRange.min = -1; // Izquierda
+                panningRange.max = 1;  // Derecha
+                panningRange.step = 1; // Precisión
+                if (i < 9) {
+                    panningRange.value = 1;
+                }else {
+                    panningRange.value = -1; // Centrado
+                }
+                panningRange.addEventListener("change", (event) => {
+                    changePanning(event.target.value, [i]);
+                });
+                panningRange.title = "Panning: -1 (Left), 0 (Centre), 1 (Right)";
+                volumeRange.title = "Volume: 1 (Min), 100 (Max)";
                 let insLabel = document.createElement("div");
                 insLabel.innerHTML = soundLabel[i];
                 newCell.appendChild(insLabel);
-                newCell.appendChild(newRange);
+                newCell.appendChild(volumeRange);
+                newCell.appendChild(panningRange);
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
@@ -311,7 +341,7 @@ function scheduleNote(index, when) {
         if (currentBeat[i][index]) {
             const source = audioCtx.createBufferSource();
             source.buffer = audioBuffers[i];
-            source.connect(gainNodes[i]);
+            source.connect(pannerNodes[i]);
             source.start(when);
         }
     }
@@ -362,6 +392,7 @@ var currentTime = 0;
 const MAX_NOTE = 18;
 const MAX_BEATS = 16;
 const gainNodes = [];
+const pannerNodes = [];
 
 
 function setupGains() {
@@ -369,8 +400,12 @@ function setupGains() {
         const gainNode = audioCtx.createGain();
         gainNode.connect(audioCtx.destination);
         gainNodes[i] = gainNode;
+        // Configuración de paneo estéreo
+        const pannerNode = audioCtx.createStereoPanner();
+        pannerNode.connect(gainNode); // Conecta el panner al nodo de ganancia
+        pannerNodes[i] = pannerNode;
     }
-    console.log("gain nodes set up");
+    console.log("gain/panners nodes set up");
 }
 
 function stop() {
