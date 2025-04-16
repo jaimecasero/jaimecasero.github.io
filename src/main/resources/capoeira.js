@@ -35,7 +35,7 @@ const angola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 
 
     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio chi
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//medio din
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio don
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio don
 
 
     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
@@ -223,37 +223,9 @@ function initTable() {
             let newCell = document.createElement("td");
             newTableRow.appendChild(newCell)
             if (j === 0) {
-                let volumeRange = document.createElement("input");
-                volumeRange.type = "range";
-                volumeRange.min = 1;
-                volumeRange.max = 100;
-                volumeRange.value = 50;
-                volumeRange.step = 10;
-                volumeRange.addEventListener("change", (event) => {
-                    changeVolume(event.target.value, [i]);
-                });
-
-                // Control deslizante de paneo estéreo
-                let panningRange = document.createElement("input");
-                panningRange.type = "range";
-                panningRange.min = -1; // Izquierda
-                panningRange.max = 1;  // Derecha
-                panningRange.step = 1; // Precisión
-                if (i < 9) {
-                    panningRange.value = 1;
-                }else {
-                    panningRange.value = -1; // Centrado
-                }
-                panningRange.addEventListener("change", (event) => {
-                    changePanning(event.target.value, [i]);
-                });
-                panningRange.title = "Panning: -1 (Left), 0 (Centre), 1 (Right)";
-                volumeRange.title = "Volume: 1 (Min), 100 (Max)";
                 let insLabel = document.createElement("div");
                 insLabel.innerHTML = soundLabel[i];
                 newCell.appendChild(insLabel);
-                newCell.appendChild(volumeRange);
-                //newCell.appendChild(panningRange);
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
