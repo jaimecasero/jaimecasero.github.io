@@ -94,6 +94,7 @@ table.instrument_table td:nth-child(1) {
     text-align: left;
     cursor: pointer;
     outline: none;
+    width: 100%;
     transition: background-color 0.3s;
 }
 /* Contenido del panel (colapsado por defecto) */
@@ -101,6 +102,7 @@ table.instrument_table td:nth-child(1) {
     font-size: 1.5em;
     display: none; /* Oculto inicialmente */
     padding: 10px;
+    width: 100%;
     background-color: #f9f9f9;
 }
 
@@ -117,9 +119,13 @@ table.instrument_table td:nth-child(1) {
 
 #playButton {
     width: 200px;
+    display: inline-block; /* Asegura que los botones estén en línea */
+    margin-right: 10px; /* Espaciado entre los botones opcional */
 }
 #stopButton {
     width: 200px;
+    display: inline-block; /* Asegura que los botones estén en línea */
+    margin-right: 10px; /* Espaciado entre los botones opcional */
 }
 
 #bpmInput {
