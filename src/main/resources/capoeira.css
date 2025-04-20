@@ -16,19 +16,16 @@ table.instrument_table  td {
 }
 
 table.instrument_table td:nth-child(2) {
-    background-color: orange;
+    background-color: #CCCCCC;
 }
 table.instrument_table td:nth-child(6) {
-    background-color: orange;
+    background-color: #CCCCCC;
 }
 table.instrument_table td:nth-child(10) {
-    background-color: orange;
+    background-color: #CCCCCC;
 }
 table.instrument_table td:nth-child(14) {
-    background-color: orange;
-}
-table.instrument_table td:nth-child(18) {
-    background-color: orange;
+    background-color: #CCCCCC;
 }
 
 table.instrument_table td:nth-child(22) {
