@@ -135,3 +135,33 @@ table.instrument_table td:nth-child(1) {
 .panSlider {
     width: 50px;
 }
+
+input[type="range"].panSlider {
+    -webkit-appearance: none; /* Elimina el estilo predeterminado para navegadores webkit */
+    appearance: none; /* Elimina el estilo predeterminado general */
+    width: 100px; /* Define el ancho del slider */
+    height: 6px; /* Altura de la pista del slider */
+    background: #ddd; /* Color de la pista del slider */
+    border-radius: 0; /* Sin bordes redondeados para asegurarse de que sea cuadrado */
+    outline: none; /* Quita el contorno al hacer foco */
+}
+
+/* Personalización del "thumb" (botón que se mueve en el slider) */
+input[type="range"].panSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Elimina estilos por defecto del navegador */
+    appearance: none; /* Aplica también a otros navegadores */
+    width: 15px; /* Ancho del thumb */
+    height: 15px; /* Altura del thumb */
+    background: #333; /* Color del thumb */
+    border-radius: 0; /* Ahora el thumb será cuadrado */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el thumb */
+}
+
+input[type="range"].panSlider::-moz-range-thumb {
+    width: 15px; /* Ancho del thumb para Firefox */
+    height: 15px; /* Altura del thumb para Firefox */
+    background: #333; /* Color del thumb */
+    border: none; /* Sin borde */
+    border-radius: 0; /* Hace que sea cuadrado */
+    cursor: pointer; /* Cambia el cursor en Firefox */
+}
