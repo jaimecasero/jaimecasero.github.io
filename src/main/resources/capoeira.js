@@ -251,6 +251,7 @@ function initTable() {
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
+                newButton.className = "noteButton";
                 newButton.addEventListener("click", (event) => {
                     changeNote(event.target);
                 });
@@ -272,7 +273,7 @@ function renderBeatArray() {
                 if (currentBeat[i][j]) {
                     tdButton.style.background = "orangered";
                 } else {
-                    tdButton.style.background = "white";
+                    tdButton.style.background = "#f3f3f3";
 
                 }
             }
@@ -414,6 +415,10 @@ function setupGains() {
         const pannerNode = audioCtx.createStereoPanner();
         pannerNode.connect(gainNode); // Conecta el panner al nodo de ganancia
         pannerNodes[i] = pannerNode;
+        pannerNode.pan.value= 1;
+        if (i < 9) {
+            pannerNode.pan.value= -1;
+        }
     }
     console.log("gain/panners nodes set up");
 }

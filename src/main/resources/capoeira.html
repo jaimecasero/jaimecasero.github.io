@@ -53,19 +53,29 @@
 
             <BR>
             <label for="gunga_slider" title="changes volume">Gunga:</label>
-            <input type="range" min="1" max="100" value="50" id="gunga_slider" onchange="changeVolume(this.value, [0, 1, 2])"><BR>
+            <input type="range" min="1" max="100" value="50" id="gunga_slider" onchange="changeVolume(this.value, [0, 1, 2])">
+            <input class="panSlider" type="range" min="-1" max="1" value="-1" step="1" id="gunga_pan_slider" onchange="changePanning(this.value, [0, 1, 2])"><BR>
             <label for="medio_slider" title="changes volume">Medio:</label>
-            <input type="range" min="1" max="100" value="50" id="medio_slider" onchange="changeVolume(this.value, [3, 4, 5])"><BR>
+            <input type="range" min="1" max="100" value="50" id="medio_slider" onchange="changeVolume(this.value, [3, 4, 5])">
+            <input class="panSlider" type="range" min="-1" max="1" value="-1" step="1" id="medio_pan_slider" onchange="changePanning(this.value, [3, 4, 5])"><BR>
             <label for="viola_slider" title="changes volume">Viola:</label>
-            <input type="range" min="1" max="100" value="50" id="viola_slider" onchange="changeVolume(this.value, [6, 7, 8])"><BR>
+            <input type="range" min="1" max="100" value="50" id="viola_slider" onchange="changeVolume(this.value, [6, 7, 8])">
+            <input class="panSlider" type="range" min="-1" max="1" value="-1" step="1" id="viola_pan_slider" onchange="changePanning(this.value, [6, 7, 8])"><BR>
             <label for="atabaque_slider" title="changes volume">Atabaque:</label>
-            <input type="range" min="1" max="100" value="50" class="slider" id="atabaque_slider" onchange="changeVolume(this.value, [9,10])"><BR>
+            <input type="range" min="1" max="100" value="50" class="slider" id="atabaque_slider" onchange="changeVolume(this.value, [9,10])">
+            <input class="panSlider" type="range" min="-1" max="1" value="1" step="1" id="atabaque_pan_slider" onchange="changePanning(this.value, [9,10])"><BR>
             <label for="pandeiro_slider" title="changes volume">Pandeiro:</label>
-            <input type="range" min="1" max="100" value="50" class="slider" id="pandeiro_slider" onchange="changeVolume(this.value, [11,12])"><BR>
+            <input type="range" min="1" max="100" value="50" class="slider" id="pandeiro_slider" onchange="changeVolume(this.value, [11,12])">
+            <input class="panSlider" type="range" min="-1" max="1" value="1" step="1" id="pandeiro_pan_slider" onchange="changePanning(this.value, [11, 12])"><BR>
             <label for="agogo_slider" title="changes volume">Agogo:</label>
-            <input type="range" min="1" max="100" value="50" class="slider" id="agogo_slider" onchange="changeVolume(this.value, [13,14])"><BR>
+            <input type="range" min="1" max="100" value="50" class="slider" id="agogo_slider" onchange="changeVolume(this.value, [13,14])">
+            <input class="panSlider" type="range" min="-1" max="1" value="1" step="1" id="agogo_pan_slider" onchange="changePanning(this.value, [13, 14])"><BR>
             <label for="clap_slider" title="changes volume">Clap:</label>
-            <input type="range" min="1" max="100" value="50" class="slider" id="clap_slider" onchange="changeVolume(this.value, [15])"><BR>
+            <input type="range" min="1" max="100" value="50" class="slider" id="clap_slider" onchange="changeVolume(this.value, [15])">
+            <input class="panSlider" type="range" min="-1" max="1" value="1" step="1" id="clap_pan_slider" onchange="changePanning(this.value, [15])"><BR>
+            <label for="metro_slider" title="changes volume">Metro:</label>
+            <input type="range" min="1" max="100" value="50" class="slider" id="metro_slider" onchange="changeVolume(this.value, [16,17])">
+            <input class="panSlider" type="range" min="-1" max="1" value="1" step="1" id="metro_pan_slider" onchange="changePanning(this.value, [16,17])">
 
 
 
