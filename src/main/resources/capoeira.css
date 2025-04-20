@@ -44,7 +44,7 @@ table.instrument_table td:nth-child(30) {
 
 td {
     width: 20px;
-    height: 20px;
+    height: 40px;
 }
 
 table.instrument_table tr:nth-child(3) td{
@@ -116,10 +116,10 @@ table.instrument_table td:nth-child(1) {
 }
 
 #playButton {
-    width: 220px;
+    width: 200px;
 }
 #stopButton {
-    width: 220px;
+    width: 200px;
 }
 
 #bpmInput {
