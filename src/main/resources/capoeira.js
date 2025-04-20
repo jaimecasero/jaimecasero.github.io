@@ -7,12 +7,12 @@ const soundFiles = ["./audio/gunga-chi.wav", "./audio/gunga-din.wav", "./audio/g
     "./audio/agogo_dom.wav", "./audio/agogo_dim.wav",
     "./audio/palma.wav",
     "./audio/metro-1.wav", "./audio/metro-n.wav",];
-const soundLabel = ["Gunga chi", "Gunga din", "Gunga don",
-    "Medio chi", "Medio din", "Medio don",
-    "Viola chi", "Viola din", "Viola don",
-     "Atabaque Dak", "Atabaque Dum",
-    "Pandeiro dak", "Pandeiro tum",
-    "Agogo dom", "Agogo dim",
+const soundLabel = ["Gun chi", "Gun din", "Gun don",
+    "Med chi", "Med din", "Med don",
+    "Vio chi", "Vio din", "Vio don",
+     "Ata Dak", "Ata Dum",
+    "Pan dak", "Pan tum",
+    "Ago dom", "Ago dim",
     "palma",
     "metro-1", "metro-n",];
 
