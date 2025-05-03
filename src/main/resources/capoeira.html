@@ -19,26 +19,6 @@
         <button id="toggle-button" class="collapsible-button">Show Configuration</button>
         <div id="panel-content" class="panel-content">
 
-            <br>
-            <label for="beatSelect" title="Changes Toque for playing">Toque:</label>
-            <select id="beatSelect" onchange="changeBeat();">
-                <option selected="selected" value="0">SBGrandeAngola</option>
-                <option value="1">Angola</option>
-                <option value="2">SBPeqAngola</option>
-                <option value="3">SBGrandeReg</option>
-            </select>
-            <br>
-            <label for="violaSelect" title="Changes viola variation">Viola:</label>
-            <select id="violaSelect" onchange="changeViola();">
-                <option selected="selected" value="-1">base</option>
-                <option value="0">variation 1</option>
-                <option value="1">variation 2</option>
-                <option value="2">variation 3</option>
-                <option value="3">variation 4</option>
-                <option value="4">variation 5</option>
-                <option value="5">variation 6</option>
-            </select>
-            <br>
             <label for="bpmSelect" title="Changes music speed">Bpm:</label>
             <select id="bpmSelect" title="Select music speed" onchange="changeBpm()">
                 <option value="40">Largo (40)</option>
@@ -83,8 +63,23 @@
     </div>
     <table>
         <tr>
-            <td><input type="button" id="playButton" value="Play" onmousedown="startPlayback()" title="will play current Toque"></td>
-            <td><input type="button" id="stopButton" value="Stop" onmousedown="stop()" title="Stop playing"></td>
+            <td>
+                <select id="beatSelect" onchange="changeBeat();">
+                    <option selected="selected" value="0">SBGrandeAngola</option>
+                    <option value="1">Angola</option>
+                    <option value="2">SBPeqAngola</option>
+                    <option value="3">SBGrandeReg</option>
+                </select></td>
+            <td><select id="violaSelect" onchange="changeViola();">
+                <option selected="selected" value="-1">base</option>
+                <option value="0">variation 1</option>
+                <option value="1">variation 2</option>
+                <option value="2">variation 3</option>
+                <option value="3">variation 4</option>
+                <option value="4">variation 5</option>
+                <option value="5">variation 6</option>
+            </select></td>
+            <td><input type="button" id="playButton" value="Play" onmousedown="playPause()" title="will play current Toque"></td>
         </tr>
     </table>
 

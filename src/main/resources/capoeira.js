@@ -155,12 +155,14 @@ const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBento
 const beatBPMArray = [168, 108, 120, 176];
 let timerID; // global or scoped outside functions
 var currentBeat = beatArray[0];
+let isPlaying = false;
 
 ////////DOM CACHING//////////////////
 var beatSelect;
 var violaSelect;
 var bpmInput;
 var instrumentTable;
+var playButton;
 
 (function (window, document, undefined) {
     window.onload = init;
@@ -191,7 +193,7 @@ var instrumentTable;
         violaSelect = document.getElementById('violaSelect');
         bpmInput = document.getElementById('bpmSelect');
         instrumentTable = document.getElementById('instrumentTable');
-
+        playButton = document.getElementById('playButton');
         initTable();
         initAudio();
         changeBeat();
@@ -365,6 +367,18 @@ function nextNote() {
     nextNoteTime += sound_delay / 1000;
     currentTime++;
     if (currentTime >= MAX_BEATS) currentTime = 0;
+}
+
+function playPause() {
+
+    if (isPlaying) {
+        stop();
+        playButton.value = "Play";
+    } else {
+        startPlayback();
+        playButton.value = "Pause";
+    }
+    isPlaying = !isPlaying;
 }
 
 function startPlayback() {

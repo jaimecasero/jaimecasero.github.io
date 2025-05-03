@@ -40,6 +40,7 @@ var beatSelect;
 var caxixiSelect;
 var inputSelect;
 var logInput;
+var playButton;
 const inputElement=[];
 var currentNote = 0;
 (function(window, document, undefined){
@@ -56,7 +57,7 @@ window.onload = init;
     caxixiSelect = document.getElementById('caxixiSelect');
     inputSelect = document.getElementById('inputSelect');
     logInput = document.getElementById('logInput');
-
+    playButton = document.getElementById('playButton');
 
     //cachec inputs and register touch
     for (var i = 0; i < MAX_NOTE; i++) {
@@ -252,8 +253,14 @@ const track = [];
 
 var playing = false;
 function playToque() {
-    playing = true;
-    setTimeout(playNextNote, 0, 0);
+    playing = !playing;
+
+    if (playing)    {
+        playButton.textContent = "Play";
+    } else {
+        playButton.textContent = "Pause";
+        setTimeout(playNextNote, 0, 0);
+    }
 }
 
 
