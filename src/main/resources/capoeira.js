@@ -187,6 +187,22 @@ const violaVariation6 = [[1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 const violaArray = [violaVariation1, violaVariation2, violaVariation3, violaVariation4, violaVariation5, violaVariation6];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional, empty];
 const beatBPMArray = [168, 108, 120, 176, 120];
+var soundVolumeArray = [50, 50, 50,
+    50, 50, 50,
+    50, 50, 50,
+    50, 50,
+    50, 50,
+    50, 50,
+    50,
+    50, 50,];
+var soundPanArray = [-1, -1, -1,
+    -1, -1, -1,
+    -1, -1, -1,
+    1, 1,
+    1, 1,
+    1, 1,
+    1,
+    1, 1,];
 let timerID; // global or scoped outside functions
 var currentBeat = beatArray[0];
 let isPlaying = false;
@@ -236,6 +252,7 @@ function changeBeat() {
 
 function changePanning(panValue, instrumentArray) {
     console.log("Pan:", panValue, "Instrumentos:", instrumentArray);
+    soundPanArray[instrumentArray] = panValue;
     const newPan = parseFloat(panValue);
     for (let i = 0; i < instrumentArray.length; i++) {
         const index = instrumentArray[i];
@@ -296,7 +313,7 @@ function initTable() {
                         volSlide.type = "range";
                         volSlide.min = "0";
                         volSlide.max = "100";
-                        volSlide.value = "50";
+                        volSlide.value = soundVolumeArray[i];
                         volSlide.className = "volumeSlider";
                         volSlide.step = "10";
                         volSlide.addEventListener("change", (event) => {
@@ -309,7 +326,7 @@ function initTable() {
                         panSlide.type = "range";
                         panSlide.min = "-1";
                         panSlide.max = "1";
-                        panSlide.value = "0";
+                        panSlide.value = soundPanArray[i];
                         panSlide.className = "panSlider";
                         panSlide.step = "1";
                         panSlide.addEventListener("change", (event) => {
@@ -373,7 +390,8 @@ function changeViola() {
 }
 
 function changeVolume(volumeLevel, instrumentArray) {
-    console.log("volume:" + volumeLevel + " instrumentArray:" + instrumentArray);
+    console.log("volume:" + volumeLevel + " instrumentArray:" + instrumentArray)
+    soundVolumeArray[instrumentArray[0]] = volumeLevel;
     const newVolume = volumeLevel / 100;
     for (let i = 0; i < instrumentArray.length; i++) {
         const index = instrumentArray[i];
