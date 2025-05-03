@@ -297,7 +297,7 @@ function initTable() {
                         volSlide.min = "0";
                         volSlide.max = "100";
                         volSlide.value = "50";
-                        volSlide.className = "volumeSlide";
+                        volSlide.className = "volumeSlider";
                         volSlide.step = "10";
                         volSlide.addEventListener("change", (event) => {
                             changeVolume(event.target.value, [i])

@@ -74,38 +74,18 @@ table.instrument_table td:nth-child(1) {
     width: 70px;
 }
 
-/* Contenedor del panel colapsable */
-.collapsible-panel {
-    margin: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+
+
+#instrumentTable td:first-child {
+    white-space: nowrap; /* Evita que el texto se ajuste a nuevas líneas */
+    width: 80px; /* Fija la columna a un ancho específico */
 }
 
-/* Botón para colapsar/expandir */
-.collapsible-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    outline: none;
-    width: 100%;
-    transition: background-color 0.3s;
+.panSlider {
+    width: 70px;
 }
-/* Contenido del panel (colapsado por defecto) */
-.panel-content {
-    font-size: 1.5em;
-    display: none; /* Oculto inicialmente */
-    padding: 10px;
-    width: 100%;
-    background-color: #f9f9f9;
-}
-
-/* Hover en el botón */
-.collapsible-button:hover {
-    background-color: #45a049;
+.volumeSlider {
+    width: 70px;
 }
 
 
@@ -129,14 +109,12 @@ table.instrument_table td:nth-child(1) {
     width: 30px;
 }
 
-.panSlider {
-    width: 50px;
-}
+
 
 input[type="range"].panSlider {
     -webkit-appearance: none; /* Elimina el estilo predeterminado para navegadores webkit */
     appearance: none; /* Elimina el estilo predeterminado general */
-    width: 100px; /* Define el ancho del slider */
+    width: 70px; /* Define el ancho del slider */
     height: 6px; /* Altura de la pista del slider */
     background: #ddd; /* Color de la pista del slider */
     border-radius: 0; /* Sin bordes redondeados para asegurarse de que sea cuadrado */
