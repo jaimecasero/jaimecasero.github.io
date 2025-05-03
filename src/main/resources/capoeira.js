@@ -17,7 +17,8 @@ const soundLabel = ["Gun chi", "Gun din", "Gun don",
     "metro-1", "metro-n",];
 
 
-const saoBentoGrandeAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const saoBentoGrandeAngola = [
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],//gunga don
 
@@ -45,7 +46,8 @@ const saoBentoGrandeAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
-const angola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const angola = [
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -75,7 +77,8 @@ const angola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
-const saoBentoPequenoAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const saoBentoPequenoAngola = [
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -99,7 +102,8 @@ const saoBentoPequenoAngola = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
 ];
 
-const saoBentoGrandeRegional = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+const saoBentoGrandeRegional = [
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],//gunga din
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//gunga don
 
@@ -121,6 +125,36 @@ const saoBentoGrandeRegional = [[1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], //agogo din
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //clap
+
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
+    [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
+];
+
+const empty = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga din
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga don
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio chi
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio din
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//medio don
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola chi
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola din
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
+
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//atabaque dak
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //atabaque dum
+
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//pandeiro don
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //pandeiro dim];
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//agogo don
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //agogo din
+
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //clap
 
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], //metro n
@@ -151,11 +185,12 @@ const violaVariation6 = [[1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//viola don
 ];
 const violaArray = [violaVariation1, violaVariation2, violaVariation3, violaVariation4, violaVariation5, violaVariation6];
-const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional];
-const beatBPMArray = [168, 108, 120, 176];
+const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional, empty];
+const beatBPMArray = [168, 108, 120, 176, 120];
 let timerID; // global or scoped outside functions
 var currentBeat = beatArray[0];
 let isPlaying = false;
+let mode=0;//controls what to show in first column table 0= labels 1=volume 2=pan
 
 ////////DOM CACHING//////////////////
 var beatSelect;
@@ -172,28 +207,13 @@ var playButton;
         // #document has its nodes
         console.log("init");
 
-        document.getElementById("toggle-button").addEventListener("click", () => {
-            // Prevenir comportamientos por defecto
-            event.preventDefault();
-            const panelContent = document.getElementById("panel-content");
-            const toggleButton = document.getElementById("toggle-button");
-
-            // Alternar entre mostrar u ocultar el contenido
-            if (panelContent.style.display === "none" || panelContent.style.display === "") {
-                panelContent.style.display = "block"; // Mostrar contenido
-                toggleButton.textContent = "Hide Configuration"; // Cambiar el texto del botón
-            } else {
-                panelContent.style.display = "none"; // Ocultar contenido
-                toggleButton.textContent = "Show Configuration"; // Cambiar el texto del botón
-            }
-        });
-
         //Cache DOMs
         beatSelect = document.getElementById('beatSelect');
         violaSelect = document.getElementById('violaSelect');
         bpmInput = document.getElementById('bpmSelect');
         instrumentTable = document.getElementById('instrumentTable');
         playButton = document.getElementById('playButton');
+        initHeader();
         initTable();
         initAudio();
         changeBeat();
@@ -225,8 +245,7 @@ function changePanning(panValue, instrumentArray) {
     }
 }
 
-function initTable() {
-    let tBody = instrumentTable.getElementsByTagName("tbody")[0];
+function initHeader() {
     let tHead = instrumentTable.getElementsByTagName("thead")[0];
 
     let newHeaderRow = document.createElement("tr");
@@ -235,11 +254,32 @@ function initTable() {
         let newCell = document.createElement("th");
         newHeaderRow.appendChild(newCell)
         if (i === 0) {
-            newCell.innerHTML = "Instrument";
+            let modeButton = document.createElement("input");
+            modeButton.type = "button";
+            modeButton.className = "modeButton";
+            modeButton.value = "Sound";
+            modeButton.addEventListener("click", (event) => {
+                mode = mode + 1;
+                if (mode > 2) {
+                    mode = 0;
+                }
+                initTable();
+                changeBeat();
+            });
+            newCell.appendChild(modeButton);
         } else {
             newCell.innerHTML = "" + (i);
         }
     }
+}
+
+function initTable() {
+    let tBody = instrumentTable.getElementsByTagName("tbody")[0];
+    while (tBody.firstChild) {
+        tBody.removeChild(tBody.firstChild);
+    }
+
+
     for (let i = 0; i < MAX_NOTE; i++) {
         let newTableRow = document.createElement("tr");
         tBody.appendChild(newTableRow);
@@ -247,9 +287,37 @@ function initTable() {
             let newCell = document.createElement("td");
             newTableRow.appendChild(newCell)
             if (j === 0) {
-                let insLabel = document.createElement("div");
-                insLabel.innerHTML = soundLabel[i];
-                newCell.appendChild(insLabel);
+                switch (mode) {
+                    case 0:
+                        newCell.innerHTML = soundLabel[i];
+                        break;
+                    case 1:
+                        let volSlide = document.createElement("input");
+                        volSlide.type = "range";
+                        volSlide.min = "0";
+                        volSlide.max = "100";
+                        volSlide.value = "50";
+                        volSlide.className = "volumeSlide";
+                        volSlide.step = "10";
+                        volSlide.addEventListener("change", (event) => {
+                            changeVolume(event.target.value, [i])
+                        });
+                        newCell.appendChild(volSlide);
+                        break;
+                    case 2:
+                        let panSlide = document.createElement("input");
+                        panSlide.type = "range";
+                        panSlide.min = "-1";
+                        panSlide.max = "1";
+                        panSlide.value = "0";
+                        panSlide.className = "panSlider";
+                        panSlide.step = "1";
+                        panSlide.addEventListener("change", (event) => {
+                            changePanning(event.target.value, [i])
+                        });
+                        newCell.appendChild(panSlide);
+                        break;
+                }
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
