@@ -263,7 +263,7 @@ function changePanning(panValue, instrumentArray) {
 }
 
 function initHeader() {
-    let tHead = instrumentTable.getElementsByTagName("thead")[0];
+    let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
 
     let newHeaderRow = document.createElement("tr");
     tHead.appendChild(newHeaderRow);
@@ -479,7 +479,7 @@ function startPlayback() {
 }
 
 async function renderNextColumn(currentTime) {
-    let tHead = instrumentTable.getElementsByTagName("thead")[0];
+    let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
     let row = tHead.getElementsByTagName("tr")[0];
     let tempoTableCurrent = currentTime + 1;
     let td = row.getElementsByTagName("th")[tempoTableCurrent];
