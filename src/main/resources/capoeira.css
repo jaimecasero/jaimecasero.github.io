@@ -140,3 +140,61 @@ input[type="range"].panSlider::-moz-range-thumb {
     border-radius: 0; /* Hace que sea cuadrado */
     cursor: pointer; /* Cambia el cursor en Firefox */
 }
+
+/* ===== SHAREABLE PATTERNS - Add to capoeira.css ===== */
+
+#shareButton {
+    margin-left: 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+    background: #2a7a2a;
+    color: white;
+    border: 1px solid #1a5a1a;
+    border-radius: 3px;
+    font-weight: bold;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#shareButton:hover {
+    background: #35933a;
+}
+
+#shareButton:active {
+    transform: scale(0.96);
+}
+
+#shareButton.share-success {
+    background: #1a8a5a;
+}
+
+/* Banner shown when a shared pattern is loaded */
+.shared-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #2a7a2a;
+    color: white;
+    text-align: center;
+    padding: 10px 16px;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1000;
+    transition: opacity 0.5s;
+}
+
+.shared-banner.banner-fade {
+    opacity: 0;
+}
+
+.banner-close {
+    cursor: pointer;
+    margin-left: 16px;
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.banner-close:hover {
+    opacity: 1;
+}

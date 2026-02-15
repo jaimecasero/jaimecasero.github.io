@@ -264,7 +264,12 @@ var playButton;
         initHeader();
         initTable();
         initAudio();
-        changeBeat();
+
+        // Check for shared pattern in URL first
+        if (!loadSharedPattern()) {
+            // No shared pattern — use default
+            changeBeat();
+        }
         changeBpm();
 
         console.log("initiated");
@@ -581,3 +586,160 @@ async function initAudio() {
     await loadSounds();
     setupGains();
 }
+
+
+////////////////////// SHAREABLE PATTERNS //////////////////////
+
+function encodePattern() {
+    // Pack the current state into a compact JSON object
+    const state = {
+        b: parseInt(beatSelect.value),       // beat/toque index
+        v: parseInt(violaSelect.value),       // viola variation
+        bpm: parseInt(bpmInput.value),        // BPM
+        g: currentBeat.map(row =>             // grid: convert each row to a compact bitfield string
+            row.map(cell => cell ? 1 : 0).join('')
+        )
+    };
+    const json = JSON.stringify(state);
+    // Encode to Base64 (URL-safe)
+    const encoded = btoa(json)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    return encoded;
+}
+
+function decodePattern(encoded) {
+    try {
+        // Restore Base64 padding
+        let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) base64 += '=';
+        const json = atob(base64);
+        const state = JSON.parse(json);
+        return state;
+    } catch (e) {
+        console.error("Failed to decode pattern:", e);
+        return null;
+    }
+}
+
+function sharePattern() {
+    const encoded = encodePattern();
+    const url = window.location.origin + window.location.pathname + '?p=' + encoded;
+
+    // Copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            showShareFeedback("Link copied!");
+        }).catch(() => {
+            fallbackCopyToClipboard(url);
+        });
+    } else {
+        fallbackCopyToClipboard(url);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showShareFeedback("Link copied!");
+    } catch (e) {
+        showShareFeedback("Copy failed — check console");
+        console.log("Share URL:", text);
+    }
+    document.body.removeChild(textarea);
+}
+
+function showShareFeedback(message) {
+    const btn = document.getElementById('shareButton');
+    const originalValue = btn.value;
+    btn.value = message;
+    btn.classList.add('share-success');
+    setTimeout(() => {
+        btn.value = originalValue;
+        btn.classList.remove('share-success');
+    }, 2000);
+}
+
+function loadSharedPattern() {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('p');
+    if (!encoded) return false;
+
+    const state = decodePattern(encoded);
+    if (!state) return false;
+
+    console.log("Loading shared pattern:", state);
+
+    // Apply beat selection
+    if (state.b !== undefined && state.b >= 0 && state.b < beatArray.length) {
+        beatSelect.value = state.b;
+    }
+
+    // Apply viola selection
+    if (state.v !== undefined) {
+        violaSelect.value = state.v;
+    }
+
+    // Apply BPM
+    if (state.bpm !== undefined) {
+        // Set closest BPM option or exact value
+        let bpmFound = false;
+        for (let i = 0; i < bpmInput.options.length; i++) {
+            if (parseInt(bpmInput.options[i].value) === state.bpm) {
+                bpmInput.value = state.bpm;
+                bpmFound = true;
+                break;
+            }
+        }
+        if (!bpmFound) {
+            // Add a custom option for this BPM
+            const opt = document.createElement('option');
+            opt.value = state.bpm;
+            opt.text = 'Custom (' + state.bpm + ')';
+            bpmInput.appendChild(opt);
+            bpmInput.value = state.bpm;
+        }
+    }
+
+    // First load the base beat pattern
+    currentBeat = beatArray[beatSelect.value].map(row => [...row]);
+
+    // Then overlay the shared grid (this preserves any custom edits the sharer made)
+    if (state.g && Array.isArray(state.g)) {
+        for (let i = 0; i < state.g.length && i < currentBeat.length; i++) {
+            const rowStr = state.g[i];
+            if (typeof rowStr === 'string') {
+                for (let j = 0; j < rowStr.length && j < currentBeat[i].length; j++) {
+                    currentBeat[i][j] = parseInt(rowStr[j]) ? 1 : 0;
+                }
+            }
+        }
+    }
+
+    changeBpm();
+    renderBeatArray();
+
+    // Show a subtle indicator that a shared pattern was loaded
+    showSharedPatternBanner();
+
+    return true;
+}
+
+function showSharedPatternBanner() {
+    const banner = document.createElement('div');
+    banner.id = 'sharedBanner';
+    banner.className = 'shared-banner';
+    banner.innerHTML = 'Shared pattern loaded! <span class="banner-close" onclick="this.parentElement.remove()">✕</span>';
+    document.body.insertBefore(banner, document.body.firstChild);
+    setTimeout(() => {
+        if (banner.parentElement) banner.classList.add('banner-fade');
+        setTimeout(() => { if (banner.parentElement) banner.remove(); }, 500);
+    }, 4000);
+}works
