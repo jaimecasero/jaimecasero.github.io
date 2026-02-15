@@ -591,31 +591,69 @@ async function initAudio() {
 ////////////////////// SHAREABLE PATTERNS //////////////////////
 
 function encodePattern() {
-    // Pack the current state into a compact JSON object
-    const state = {
-        b: parseInt(beatSelect.value),       // beat/toque index
-        v: parseInt(violaSelect.value),       // viola variation
-        bpm: parseInt(bpmInput.value),        // BPM
-        g: currentBeat.map(row =>             // grid: convert each row to a compact bitfield string
-            row.map(cell => cell ? 1 : 0).join('')
-        )
-    };
-    const json = JSON.stringify(state);
-    // Encode to Base64 (URL-safe)
-    const encoded = btoa(json)
+    // Header: 3 bytes [beatIndex, violaIndex+1 (offset to avoid negative), bpm]
+    // Grid: 18 rows × 4 bytes each (32 bits packed into a uint32) = 72 bytes
+    // Total: 75 bytes → ~100 chars base64 (vs ~800+ before)
+    const bytes = new Uint8Array(75);
+    bytes[0] = parseInt(beatSelect.value);
+    bytes[1] = parseInt(violaSelect.value) + 2; // offset: -1 becomes 1, 0 becomes 2, etc.
+    bytes[2] = parseInt(bpmInput.value);
+
+    for (let row = 0; row < MAX_NOTE; row++) {
+        // Pack 32 cells into 4 bytes (big-endian)
+        let bits = 0;
+        for (let col = 0; col < 32; col++) {
+            if (currentBeat[row] && currentBeat[row][col]) {
+                bits |= (1 << (31 - col));
+            }
+        }
+        const offset = 3 + row * 4;
+        bytes[offset]     = (bits >>> 24) & 0xFF;
+        bytes[offset + 1] = (bits >>> 16) & 0xFF;
+        bytes[offset + 2] = (bits >>> 8) & 0xFF;
+        bytes[offset + 3] = bits & 0xFF;
+    }
+
+    // Convert to URL-safe base64
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary)
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');
-    return encoded;
 }
 
 function decodePattern(encoded) {
     try {
-        // Restore Base64 padding
+        // Restore base64 padding
         let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
         while (base64.length % 4) base64 += '=';
-        const json = atob(base64);
-        const state = JSON.parse(json);
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+
+        const state = {
+            b: bytes[0],
+            v: bytes[1] - 2, // undo offset
+            bpm: bytes[2],
+            g: []
+        };
+
+        for (let row = 0; row < MAX_NOTE; row++) {
+            const offset = 3 + row * 4;
+            const bits = (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
+                         (bytes[offset + 2] << 8) | bytes[offset + 3];
+            const rowArr = [];
+            for (let col = 0; col < 32; col++) {
+                rowArr.push((bits & (1 << (31 - col))) ? 1 : 0);
+            }
+            state.g.push(rowArr);
+        }
+
         return state;
     } catch (e) {
         console.error("Failed to decode pattern:", e);
@@ -711,14 +749,11 @@ function loadSharedPattern() {
     // First load the base beat pattern
     currentBeat = beatArray[beatSelect.value].map(row => [...row]);
 
-    // Then overlay the shared grid (this preserves any custom edits the sharer made)
+    // Overlay the shared grid directly (already decoded as arrays of 0/1)
     if (state.g && Array.isArray(state.g)) {
         for (let i = 0; i < state.g.length && i < currentBeat.length; i++) {
-            const rowStr = state.g[i];
-            if (typeof rowStr === 'string') {
-                for (let j = 0; j < rowStr.length && j < currentBeat[i].length; j++) {
-                    currentBeat[i][j] = parseInt(rowStr[j]) ? 1 : 0;
-                }
+            if (Array.isArray(state.g[i])) {
+                currentBeat[i] = state.g[i];
             }
         }
     }
@@ -742,4 +777,4 @@ function showSharedPatternBanner() {
         if (banner.parentElement) banner.classList.add('banner-fade');
         setTimeout(() => { if (banner.parentElement) banner.remove(); }, 500);
     }, 4000);
-}works
+}
