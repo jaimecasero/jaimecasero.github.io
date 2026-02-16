@@ -299,6 +299,13 @@ function changePanning(panValue, instrumentArray) {
     }
 }
 
+const subdivisionLabels = [
+    "1", "e", "+", "a",
+    "2", "e", "+", "a",
+    "3", "e", "+", "a",
+    "4", "e", "+", "a"
+];
+
 function initHeader() {
     let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
 
@@ -322,7 +329,7 @@ function initHeader() {
             });
             newCell.appendChild(modeButton);
         } else {
-            newCell.innerHTML = "" + (i);
+            newCell.innerHTML = "" + subdivisionLabels[i - 1];
         }
     }
 }
