@@ -232,11 +232,11 @@ function clearAllNotes() {
 
 function changeType() {
     var typeValue = typeSelect.value;
-    document.getElementById("source0").src = "./audio/" + typeValue + "-chi.mp3";
-    audioElement[0].load;
-    document.getElementById("source1").src ="./audio/" + typeValue + "-don.mp3";
+    document.getElementById("source0").src = "./audio/" + typeValue + "-chi.wav";
+    audioElement[0].load();
+    document.getElementById("source1").src ="./audio/" + typeValue + "-don.wav";
     audioElement[1].load();
-    document.getElementById("source2").src = "./audio/" + typeValue + "-din.mp3";
+    document.getElementById("source2").src = "./audio/" + typeValue + "-din.wav";
     audioElement[2].load();
     console.log("audio src changed");
 }
