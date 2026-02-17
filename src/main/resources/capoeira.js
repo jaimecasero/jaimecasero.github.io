@@ -219,22 +219,31 @@ const violaVariation6 = [[2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//viol
 const violaArray = [violaVariation1, violaVariation2, violaVariation3, violaVariation4, violaVariation5, violaVariation6];
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional, benguela, empty];
 const beatBPMArray = [168, 108, 120, 176, 120, 120];
-var soundVolumeArray = [50, 50, 50,
-    50, 50, 50,
-    50, 50, 50,
-    50, 50,
-    50, 50,
-    50, 50,
-    50,
-    50, 50,];
-var soundPanArray = [-1, -1, -1,
-    -1, -1, -1,
-    -1, -1, -1,
-    1, 1,
-    1, 1,
-    1, 1,
-    1,
-    1, 1,];
+
+// Instrument groups: maps each group to its row indices
+const instrumentGroups = [
+    { name: "Gunga",    rows: [0, 1, 2] },
+    { name: "Medio",    rows: [3, 4, 5] },
+    { name: "Viola",    rows: [6, 7, 8] },
+    { name: "Atabaque", rows: [9, 10] },
+    { name: "Pandeiro", rows: [11, 12] },
+    { name: "Agogo",    rows: [13, 14] },
+    { name: "Palma",    rows: [15] },
+    { name: "Metro",    rows: [16, 17] },
+];
+
+// Volume and pan are now per instrument group (8 groups)
+var groupVolumeArray = [50, 50, 50, 50, 50, 50, 50, 50];
+var groupPanArray = [-1, -1, -1, 1, 1, 1, 1, 1];
+
+// Helper: get group index for a given row
+function getGroupForRow(rowIndex) {
+    for (let g = 0; g < instrumentGroups.length; g++) {
+        if (instrumentGroups[g].rows.includes(rowIndex)) return g;
+    }
+    return 0;
+}
+
 let timerID; // global or scoped outside functions
 var currentBeat = beatArray[0];
 let isPlaying = false;
@@ -287,14 +296,13 @@ function changeBeat() {
     renderBeatArray();
 }
 
-function changePanning(panValue, instrumentArray) {
-    console.log("Pan:", panValue, "Instrumentos:", instrumentArray);
-    soundPanArray[instrumentArray] = panValue;
-    const newPan = parseFloat(panValue);
-    for (let i = 0; i < instrumentArray.length; i++) {
-        const index = instrumentArray[i];
-        if (pannerNodes[index]) {
-            pannerNodes[index].pan.value = newPan; // Ajustar paneo del panner
+function changePanning(panValue, groupIndex) {
+    console.log("Pan:", panValue, "Group:", groupIndex);
+    groupPanArray[groupIndex] = parseFloat(panValue);
+    const rows = instrumentGroups[groupIndex].rows;
+    for (let i = 0; i < rows.length; i++) {
+        if (pannerNodes[rows[i]]) {
+            pannerNodes[rows[i]].pan.value = parseFloat(panValue);
         }
     }
 }
@@ -340,45 +348,54 @@ function initTable() {
         tBody.removeChild(tBody.firstChild);
     }
 
-
     for (let i = 0; i < MAX_NOTE; i++) {
         let newTableRow = document.createElement("tr");
         tBody.appendChild(newTableRow);
+
+        // Determine which group this row belongs to and if it's the first row
+        let groupIndex = getGroupForRow(i);
+        let group = instrumentGroups[groupIndex];
+        let isFirstRowOfGroup = (group.rows[0] === i);
+        let groupRowSpan = group.rows.length;
+
         for (let j = 0; j < MAX_BEATS + 1; j++) {
             let newCell = document.createElement("td");
             newTableRow.appendChild(newCell)
             if (j === 0) {
-                switch (mode) {
-                    case 0:
-                        newCell.innerHTML = soundLabel[i];
-                        break;
-                    case 1:
+                // First column: label, volume slider, or pan slider
+                if (mode === 0) {
+                    newCell.innerHTML = soundLabel[i];
+                } else if (isFirstRowOfGroup) {
+
+                    if (mode === 1) {
                         let volSlide = document.createElement("input");
                         volSlide.type = "range";
                         volSlide.min = "0";
                         volSlide.max = "100";
-                        volSlide.value = soundVolumeArray[i];
+                        volSlide.value = groupVolumeArray[groupIndex];
                         volSlide.className = "volumeSlider";
                         volSlide.step = "10";
+                        const gIdx = groupIndex;
                         volSlide.addEventListener("change", (event) => {
-                            changeVolume(event.target.value, [i])
+                            changeVolume(event.target.value, gIdx);
                         });
                         newCell.appendChild(volSlide);
-                        break;
-                    case 2:
+                    } else if (mode === 2) {
                         let panSlide = document.createElement("input");
                         panSlide.type = "range";
                         panSlide.min = "-1";
                         panSlide.max = "1";
-                        panSlide.value = soundPanArray[i];
+                        panSlide.value = groupPanArray[groupIndex];
                         panSlide.className = "panSlider";
                         panSlide.step = "1";
+                        const gIdx = groupIndex;
                         panSlide.addEventListener("change", (event) => {
-                            changePanning(event.target.value, [i])
+                            changePanning(event.target.value, gIdx);
                         });
                         newCell.appendChild(panSlide);
-                        break;
+                    }
                 }
+                // Non-first rows of group in mode 1/2: no cell (rowspan covers it)
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
@@ -429,14 +446,14 @@ function changeViola() {
     renderBeatArray();
 }
 
-function changeVolume(volumeLevel, instrumentArray) {
-    console.log("volume:" + volumeLevel + " instrumentArray:" + instrumentArray)
-    soundVolumeArray[instrumentArray[0]] = volumeLevel;
+function changeVolume(volumeLevel, groupIndex) {
+    console.log("volume:" + volumeLevel + " group:" + groupIndex);
+    groupVolumeArray[groupIndex] = volumeLevel;
     const newVolume = volumeLevel / 100;
-    for (let i = 0; i < instrumentArray.length; i++) {
-        const index = instrumentArray[i];
-        if (gainNodes[index]) {
-            gainNodes[index].gain.value = newVolume;
+    const rows = instrumentGroups[groupIndex].rows;
+    for (let i = 0; i < rows.length; i++) {
+        if (gainNodes[rows[i]]) {
+            gainNodes[rows[i]].gain.value = newVolume;
         }
     }
 }
@@ -449,6 +466,13 @@ const velocityMultiplier = [0, 0.5, 1.0, 1.5]; // volume multipliers per velocit
 function changeNote(tdButton) {
     let row = tdButton.parentElement.parentElement.rowIndex;
     let col = tdButton.parentElement.cellIndex - 1;
+    // In mode 1/2, non-first rows of a group have no first-column td,
+    // so cellIndex is off by 1 — adjust using the actual column offset
+    let groupIndex = getGroupForRow(row);
+    let isFirstRowOfGroup = (instrumentGroups[groupIndex].rows[0] === row);
+    if (mode !== 0 && !isFirstRowOfGroup) {
+        col = tdButton.parentElement.cellIndex;
+    }
     let current = currentBeat[row][col] || 0;
     currentBeat[row][col] = (current + 1) % 4;
     renderBeatArray();
@@ -562,14 +586,13 @@ function setupGains() {
         const gainNode = audioCtx.createGain();
         gainNode.connect(audioCtx.destination);
         gainNodes[i] = gainNode;
-        // Configuración de paneo estéreo
+        // Stereo panning setup - use group pan values
         const pannerNode = audioCtx.createStereoPanner();
-        pannerNode.connect(gainNode); // Conecta el panner al nodo de ganancia
+        pannerNode.connect(gainNode);
         pannerNodes[i] = pannerNode;
-        pannerNode.pan.value= 1;
-        if (i < 9) {
-            pannerNode.pan.value= -1;
-        }
+        let groupIndex = getGroupForRow(i);
+        pannerNode.pan.value = groupPanArray[groupIndex];
+        gainNode.gain.value = groupVolumeArray[groupIndex] / 100;
     }
     console.log("gain/panners nodes set up");
 }
@@ -762,7 +785,7 @@ function loadSharedPattern() {
     // First load the base beat pattern
     currentBeat = beatArray[beatSelect.value].map(row => [...row]);
 
-    // Overlay the shared grid directly (already decoded as arrays of 0/1)
+    // Overlay the shared grid directly (already decoded as arrays of 0/1/2/3)
     if (state.g && Array.isArray(state.g)) {
         for (let i = 0; i < state.g.length && i < currentBeat.length; i++) {
             if (Array.isArray(state.g[i])) {
