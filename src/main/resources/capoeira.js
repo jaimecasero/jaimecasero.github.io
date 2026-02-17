@@ -460,7 +460,7 @@ function changeVolume(volumeLevel, groupIndex) {
 
 
 // Velocity colors: 0=off, 1=soft, 2=normal, 3=loud
-const velocityColors = ["#f3f3f3", "#ffcc80", "orangered", "#cc0000"];
+const velocityColors = ["white", "#FFA500", "#FF7500", "#FF0000"];
 const velocityMultiplier = [0, 0.5, 1.0, 1.5]; // volume multipliers per velocity level
 
 function changeNote(tdButton) {
