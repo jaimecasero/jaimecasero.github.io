@@ -260,8 +260,6 @@ var playButton;
     window.onload = init;
 
     function init() {
-        // the code to be called when the dom has loaded
-        // #document has its nodes
         console.log("init");
 
         //Cache DOMs
@@ -276,7 +274,6 @@ var playButton;
 
         // Check for shared pattern in URL first
         if (!loadSharedPattern()) {
-            // No shared pattern — use default
             changeBeat();
         }
         changeBpm();
@@ -356,17 +353,14 @@ function initTable() {
         let groupIndex = getGroupForRow(i);
         let group = instrumentGroups[groupIndex];
         let isFirstRowOfGroup = (group.rows[0] === i);
-        let groupRowSpan = group.rows.length;
 
         for (let j = 0; j < MAX_BEATS + 1; j++) {
             let newCell = document.createElement("td");
             newTableRow.appendChild(newCell)
             if (j === 0) {
-                // First column: label, volume slider, or pan slider
                 if (mode === 0) {
                     newCell.innerHTML = soundLabel[i];
                 } else if (isFirstRowOfGroup) {
-
                     if (mode === 1) {
                         let volSlide = document.createElement("input");
                         volSlide.type = "range";
@@ -457,7 +451,6 @@ function changeVolume(volumeLevel, groupIndex) {
     }
 }
 
-
 // Velocity colors: 0=off, 1=soft, 2=normal, 3=loud
 const velocityColors = ["white", "#FFA500", "#FF7500", "#FF0000"];
 const velocityMultiplier = [0, 0.5, 1.0, 1.5]; // volume multipliers per velocity level
@@ -465,30 +458,9 @@ const velocityMultiplier = [0, 0.5, 1.0, 1.5]; // volume multipliers per velocit
 function changeNote(tdButton) {
     let row = tdButton.parentElement.parentElement.rowIndex;
     let col = tdButton.parentElement.cellIndex - 1;
-    // In mode 1/2, non-first rows of a group have no first-column td,
-    // so cellIndex is off by 1 — adjust using the actual column offset
-    let groupIndex = getGroupForRow(row);
-    let isFirstRowOfGroup = (instrumentGroups[groupIndex].rows[0] === row);
-    if (mode !== 0 && !isFirstRowOfGroup) {
-        col = tdButton.parentElement.cellIndex;
-    }
     let current = currentBeat[row][col] || 0;
     currentBeat[row][col] = (current + 1) % 4;
     renderBeatArray();
-}
-
-function muteNote(tdButton, instrumentIndex) {
-    console.log("instrumentIndex:" + instrumentIndex);
-
-    if (tdButton.parentElement.style.background === "green") {
-        tdButton.parentElement.style.background = "red";
-        changeVolume(1, [instrumentIndex]);
-
-    } else {
-        tdButton.parentElement.style.background = "green";
-        changeVolume(50, [instrumentIndex]);
-
-    }
 }
 
 
@@ -530,7 +502,6 @@ function nextNote() {
 }
 
 function playPause() {
-
     if (isPlaying) {
         stop();
         playButton.value = "Play";
@@ -579,7 +550,6 @@ const MAX_BEATS = 16;
 const gainNodes = [];
 const pannerNodes = [];
 
-
 function setupGains() {
     for (let i = 0; i < audioBuffers.length; i++) {
         const gainNode = audioCtx.createGain();
@@ -615,10 +585,8 @@ async function loadSounds() {
     console.log("sounds loaded");
 }
 
-
 async function initAudio() {
     console.log("init audio");
-    console.log("audio started")
     await loadSounds();
     setupGains();
 }
