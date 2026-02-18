@@ -71,7 +71,7 @@ table.instrument_table tr:nth-child(16) td{
 }
 
 table.instrument_table td:nth-child(1) {
-    width: 70px;
+    width: 200px;
 }
 
 
@@ -79,13 +79,16 @@ table.instrument_table td:nth-child(1) {
 #instrumentTable td:first-child {
     white-space: nowrap; /* Evita que el texto se ajuste a nuevas líneas */
     width: 80px; /* Fija la columna a un ancho específico */
+    height: 30px;
 }
 
 .panSlider {
     width: 70px;
+    height: 20px;
 }
 .volumeSlider {
     width: 70px;
+    height: 20px;
 }
 
 

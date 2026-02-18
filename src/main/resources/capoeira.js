@@ -326,7 +326,7 @@ function initHeader() {
             let modeButton = document.createElement("input");
             modeButton.type = "button";
             modeButton.className = "modeButton";
-            modeButton.value = "Sound";
+            modeButton.value = "Vol/Pan";
             modeButton.addEventListener("click", (event) => {
                 mode = mode + 1;
                 if (mode > 2) {
@@ -395,7 +395,6 @@ function initTable() {
                         newCell.appendChild(panSlide);
                     }
                 }
-                // Non-first rows of group in mode 1/2: no cell (rowspan covers it)
             } else {
                 let newButton = document.createElement("input");
                 newButton.type = "button";
