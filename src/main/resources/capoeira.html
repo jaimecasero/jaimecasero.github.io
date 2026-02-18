@@ -2,9 +2,10 @@
 <head>
     <script src="capoeira.js"></script>
     <link rel="stylesheet" href="capoeira.css">
+    <link rel="manifest" href="capoeira_manifest.json">
     <meta name="viewport" content="width=device-width,user-scalable=no">
     <meta charset="UTF-8">
-    <meta property="og:title" content="Capoeira Music">
+    <meta property="og:title" content="Berimbot">
     <meta property="og:description" content="Learn Capoeira Music and try your own beats">
     <meta property="og:image"
           content="https://yt3.googleusercontent.com/ytc/AIdro_k8CmWRypNHJMdGnUpqwFc4GIu_P_rdCfYCG_R3pQpfDg0=s160-c-k-c0x00ffffff-no-rj">
@@ -12,6 +13,10 @@
           href="https://yt3.googleusercontent.com/ytc/AIdro_k8CmWRypNHJMdGnUpqwFc4GIu_P_rdCfYCG_R3pQpfDg0=s160-c-k-c0x00ffffff-no-rj"
           type="image/jpeg">
     <meta property="og:type" content="website">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Capoeira">
+    <link rel="apple-touch-icon" href="img/berimbot_192.png">
 </head>
 <body>
 <form id="settingsForm" class="berimbauForm">
@@ -66,4 +71,14 @@
 <br><br><br>
 <a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
 </body>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => console.log('[PWA] Service Worker registered, scope:', reg.scope))
+                .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
+        });
+    }
+</script>
 </html>

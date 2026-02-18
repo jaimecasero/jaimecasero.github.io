@@ -1,0 +1,22 @@
+{
+  "name": "Berimbot",
+  "short_name": "Berimbot",
+  "description": "Learn Capoeira Music and practice with a full bateria at any speed",
+  "start_url": "./capoeira.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FF4500",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "img/berimbot_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/berimbot_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
