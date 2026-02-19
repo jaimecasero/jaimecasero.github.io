@@ -1,10 +1,9 @@
 const CACHE_NAME = 'capoeira-v1';
 const ASSETS_TO_CACHE = [
-    './',
     './capoeira.html',
     './capoeira.js',
     './capoeira.css',
-    './manifest.json',
+    './capoeira_manifest.json',
     './img/berimbot_192.png',
     './img/berimbot_512.png',
     './audio/gunga-chi.wav',
