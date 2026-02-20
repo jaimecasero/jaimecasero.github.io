@@ -398,10 +398,6 @@ function initTable() {
                 if (mode === 0) {
                     newCell.innerHTML = soundLabel[i];
                 } else if (isFirstRowOfGroup) {
-                    let label = document.createElement("div");
-                    label.className = "groupLabel";
-                    label.innerHTML = group.name;
-                    newCell.appendChild(label);
                     if (mode === 1) {
                         let volSlide = document.createElement("input");
                         volSlide.type = "range";
