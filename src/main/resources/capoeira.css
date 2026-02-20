@@ -15,32 +15,21 @@ table.instrument_table  td {
     vertical-align: middle;
 }
 
-table.instrument_table td:nth-child(2) {
-    background-color: #CCCCCC;
-}
-table.instrument_table td:nth-child(6) {
-    background-color: #CCCCCC;
-}
-table.instrument_table td:nth-child(10) {
-    background-color: #CCCCCC;
-}
-table.instrument_table td:nth-child(14) {
-    background-color: #CCCCCC;
+/* Downbeat columns (1, 2, 3, 4) get subtle highlight */
+table.instrument_table td.downbeat {
+    background-color: #DDDDDD;
 }
 
-table.instrument_table td:nth-child(22) {
-    background-color: orange;
+table.instrument_table th.downbeat {
+    color: #FFD700;
 }
 
-table.instrument_table td:nth-child(26) {
-    background-color: orange;
-}
-table.instrument_table td:nth-child(30) {
-    background-color: orange;
+table.instrument_table {
+    table-layout: fixed;
+    width: 100%;
 }
 
 td {
-    width: 20px;
     height: 30px;
 }
 
@@ -71,14 +60,12 @@ table.instrument_table tr:nth-child(16) td{
 }
 
 table.instrument_table td:nth-child(1) {
-    width: 200px;
+    width: 80px;
 }
 
-
-
 #instrumentTable td:first-child {
-    white-space: nowrap; /* Evita que el texto se ajuste a nuevas líneas */
-    width: 80px; /* Fija la columna a un ancho específico */
+    white-space: nowrap;
+    width: 80px;
     height: 30px;
 }
 
@@ -99,13 +86,13 @@ table.instrument_table td:nth-child(1) {
 
 #playButton {
     width: 200px;
-    display: inline-block; /* Asegura que los botones estén en línea */
-    margin-right: 10px; /* Espaciado entre los botones opcional */
+    display: inline-block;
+    margin-right: 10px;
 }
 #stopButton {
     width: 200px;
-    display: inline-block; /* Asegura que los botones estén en línea */
-    margin-right: 10px; /* Espaciado entre los botones opcional */
+    display: inline-block;
+    margin-right: 10px;
 }
 
 #bpmInput {
@@ -115,36 +102,35 @@ table.instrument_table td:nth-child(1) {
 
 
 input[type="range"].panSlider {
-    -webkit-appearance: none; /* Elimina el estilo predeterminado para navegadores webkit */
-    appearance: none; /* Elimina el estilo predeterminado general */
-    width: 70px; /* Define el ancho del slider */
-    height: 6px; /* Altura de la pista del slider */
-    background: #ddd; /* Color de la pista del slider */
-    border-radius: 0; /* Sin bordes redondeados para asegurarse de que sea cuadrado */
-    outline: none; /* Quita el contorno al hacer foco */
+    -webkit-appearance: none;
+    appearance: none;
+    width: 70px;
+    height: 6px;
+    background: #ddd;
+    border-radius: 0;
+    outline: none;
 }
 
-/* Personalización del "thumb" (botón que se mueve en el slider) */
 input[type="range"].panSlider::-webkit-slider-thumb {
-    -webkit-appearance: none; /* Elimina estilos por defecto del navegador */
-    appearance: none; /* Aplica también a otros navegadores */
-    width: 15px; /* Ancho del thumb */
-    height: 15px; /* Altura del thumb */
-    background: #333; /* Color del thumb */
-    border-radius: 0; /* Ahora el thumb será cuadrado */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el thumb */
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #333;
+    border-radius: 0;
+    cursor: pointer;
 }
 
 input[type="range"].panSlider::-moz-range-thumb {
-    width: 15px; /* Ancho del thumb para Firefox */
-    height: 15px; /* Altura del thumb para Firefox */
-    background: #333; /* Color del thumb */
-    border: none; /* Sin borde */
-    border-radius: 0; /* Hace que sea cuadrado */
-    cursor: pointer; /* Cambia el cursor en Firefox */
+    width: 15px;
+    height: 15px;
+    background: #333;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
 }
 
-/* ===== SHAREABLE PATTERNS - Add to capoeira.css ===== */
+/* ===== SHAREABLE PATTERNS ===== */
 
 #shareButton {
     margin-left: 8px;
@@ -170,7 +156,6 @@ input[type="range"].panSlider::-moz-range-thumb {
     background: #1a8a5a;
 }
 
-/* Banner shown when a shared pattern is loaded */
 .shared-banner {
     position: fixed;
     top: 0;
@@ -200,4 +185,31 @@ input[type="range"].panSlider::-moz-range-thumb {
 
 .banner-close:hover {
     opacity: 1;
+}
+
+/* ===== SUBDIVISION TOGGLE ===== */
+
+#subdivButton {
+    margin-left: 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 3px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+#subdivButton:hover {
+    background: #555;
+}
+
+/* ===== INSTRUMENT GROUP LABELS ===== */
+
+.groupLabel {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    font-family: sans-serif;
 }

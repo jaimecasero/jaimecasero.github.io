@@ -5,6 +5,11 @@
     <link rel="manifest" href="capoeira_manifest.json">
     <meta name="viewport" content="width=device-width,user-scalable=no">
     <meta charset="UTF-8">
+    <meta name="theme-color" content="#FF4500">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Berimbot">
+    <link rel="apple-touch-icon" href="img/berimbot_192.png">
     <meta property="og:title" content="Berimbot">
     <meta property="og:description" content="Learn Capoeira Music and try your own beats">
     <meta property="og:image"
@@ -13,10 +18,6 @@
           href="https://yt3.googleusercontent.com/ytc/AIdro_k8CmWRypNHJMdGnUpqwFc4GIu_P_rdCfYCG_R3pQpfDg0=s160-c-k-c0x00ffffff-no-rj"
           type="image/jpeg">
     <meta property="og:type" content="website">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="BerimBot">
-    <link rel="apple-touch-icon" href="img/berimbot_192.png">
 </head>
 <body>
 <form id="settingsForm" class="berimbauForm">
@@ -31,6 +32,7 @@
     <td>
         <input type="button" id="playButton" value="Play" onmousedown="playPause()" title="will play current Toque">
         <input type="button" id="shareButton" value="Share" onclick="sharePattern()" title="Copy a shareable link to this pattern">
+        <input type="button" id="subdivButton" value="16th" onclick="toggleSubdivision()" title="Toggle between 8th and 16th note grid">
     </td>
     <BR>
     <table>
@@ -70,7 +72,6 @@
 
 <br><br><br>
 <a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
-</body>
 
 <script>
     if ('serviceWorker' in navigator) {
@@ -81,4 +82,5 @@
         });
     }
 </script>
+</body>
 </html>

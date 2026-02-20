@@ -247,7 +247,28 @@ function getGroupForRow(rowIndex) {
 let timerID; // global or scoped outside functions
 var currentBeat = beatArray[0];
 let isPlaying = false;
-let mode=0;//controls what to show in first column table 0= labels 1=volume 2=pan
+let mode = 0; // 0= labels 1=volume 2=pan
+
+// Subdivision: 8 = 8th notes (8 visible columns), 16 = 16th notes (16 visible columns)
+let subdivision = 8;
+
+// Maps visible column indices to actual beat array indices
+function getVisibleColumns() {
+    if (subdivision === 16) {
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    } else {
+        // 8th notes: every other column (0, 2, 4, 6, 8, 10, 12, 14)
+        return [0, 2, 4, 6, 8, 10, 12, 14];
+    }
+}
+
+function getVisibleLabels() {
+    if (subdivision === 16) {
+        return ["1", "e", "&", "a", "2", "e", "&", "a", "3", "e", "&", "a", "4", "e", "&", "a"];
+    } else {
+        return ["1", "&", "2", "&", "3", "&", "4", "&"];
+    }
+}
 
 ////////DOM CACHING//////////////////
 var beatSelect;
@@ -304,21 +325,29 @@ function changePanning(panValue, groupIndex) {
     }
 }
 
-const subdivisionLabels = [
-    "1", "e", "&", "a",
-    "2", "e", "&", "a",
-    "3", "e", "&", "a",
-    "4", "e", "&", "a"
-];
+function toggleSubdivision() {
+    subdivision = (subdivision === 8) ? 16 : 8;
+    document.getElementById('subdivButton').value = (subdivision === 8) ? "16th" : "8th";
+    // Rebuild header and table for new column count
+    let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
+    while (tHead.firstChild) {
+        tHead.removeChild(tHead.firstChild);
+    }
+    initHeader();
+    initTable();
+    renderBeatArray();
+}
 
 function initHeader() {
     let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
+    let labels = getVisibleLabels();
+    let numCols = labels.length;
 
     let newHeaderRow = document.createElement("tr");
     tHead.appendChild(newHeaderRow);
-    for (let i = 0; i < MAX_BEATS + 1; i++) {
+    for (let i = 0; i < numCols + 1; i++) {
         let newCell = document.createElement("th");
-        newHeaderRow.appendChild(newCell)
+        newHeaderRow.appendChild(newCell);
         if (i === 0) {
             let modeButton = document.createElement("input");
             modeButton.type = "button";
@@ -330,11 +359,16 @@ function initHeader() {
                     mode = 0;
                 }
                 initTable();
-                changeBeat();
+                renderBeatArray();
             });
             newCell.appendChild(modeButton);
         } else {
-            newCell.innerHTML = subdivisionLabels[i - 1];
+            let visCols = getVisibleColumns();
+            let beatCol = visCols[i - 1];
+            if (beatCol % 4 === 0) {
+                newCell.classList.add("downbeat");
+            }
+            newCell.innerHTML = labels[i - 1];
         }
     }
 }
@@ -345,6 +379,9 @@ function initTable() {
         tBody.removeChild(tBody.firstChild);
     }
 
+    let visCols = getVisibleColumns();
+    let numCols = visCols.length;
+
     for (let i = 0; i < MAX_NOTE; i++) {
         let newTableRow = document.createElement("tr");
         tBody.appendChild(newTableRow);
@@ -354,13 +391,17 @@ function initTable() {
         let group = instrumentGroups[groupIndex];
         let isFirstRowOfGroup = (group.rows[0] === i);
 
-        for (let j = 0; j < MAX_BEATS + 1; j++) {
+        for (let j = 0; j < numCols + 1; j++) {
             let newCell = document.createElement("td");
-            newTableRow.appendChild(newCell)
+            newTableRow.appendChild(newCell);
             if (j === 0) {
                 if (mode === 0) {
                     newCell.innerHTML = soundLabel[i];
                 } else if (isFirstRowOfGroup) {
+                    let label = document.createElement("div");
+                    label.className = "groupLabel";
+                    label.innerHTML = group.name;
+                    newCell.appendChild(label);
                     if (mode === 1) {
                         let volSlide = document.createElement("input");
                         volSlide.type = "range";
@@ -388,11 +429,21 @@ function initTable() {
                         });
                         newCell.appendChild(panSlide);
                     }
+                } else {
+                    newCell.innerHTML = group.name;
+                    newCell.className = "groupLabel";
                 }
             } else {
+                // Highlight downbeat columns (beats 1, 2, 3, 4 = indices 0, 4, 8, 12)
+                let beatCol = visCols[j - 1];
+                if (beatCol % 4 === 0) {
+                    newCell.classList.add("downbeat");
+                }
                 let newButton = document.createElement("input");
                 newButton.type = "button";
                 newButton.className = "noteButton";
+                // Store the actual beat index on the button for easy lookup
+                newButton.dataset.beatCol = visCols[j - 1];
                 newButton.addEventListener("click", (event) => {
                     changeNote(event.target);
                 });
@@ -405,14 +456,21 @@ function initTable() {
 function renderBeatArray() {
     let tBody = instrumentTable.getElementsByTagName("tbody")[0];
     let bodyRowArray = tBody.getElementsByTagName("tr");
+    let visCols = getVisibleColumns();
+
     for (let i = 0; i < bodyRowArray.length; i++) {
         let tr = bodyRowArray[i];
         if (tr !== undefined) {
-            for (let j = 0; j < MAX_BEATS; j++) {
+            for (let j = 0; j < visCols.length; j++) {
                 let td = tr.getElementsByTagName("td")[j + 1];
-                let tdButton = td.getElementsByTagName("input")[0];
-                let velocity = currentBeat[i][j] || 0;
-                tdButton.style.background = velocityColors[velocity];
+                if (td) {
+                    let tdButton = td.getElementsByTagName("input")[0];
+                    if (tdButton) {
+                        let beatCol = visCols[j];
+                        let velocity = currentBeat[i][beatCol] || 0;
+                        tdButton.style.background = velocityColors[velocity];
+                    }
+                }
             }
         }
     }
@@ -457,9 +515,9 @@ const velocityMultiplier = [0, 0.5, 1.0, 1.5]; // volume multipliers per velocit
 
 function changeNote(tdButton) {
     let row = tdButton.parentElement.parentElement.rowIndex;
-    let col = tdButton.parentElement.cellIndex - 1;
-    let current = currentBeat[row][col] || 0;
-    currentBeat[row][col] = (current + 1) % 4;
+    let beatCol = parseInt(tdButton.dataset.beatCol);
+    let current = currentBeat[row][beatCol] || 0;
+    currentBeat[row][beatCol] = (current + 1) % 4;
     renderBeatArray();
 }
 
@@ -476,6 +534,7 @@ function scheduler() {
     timerID = setTimeout(scheduler, lookahead);
 }
 
+// Playback always uses all 16 columns regardless of subdivision view
 function scheduleNote(index, when) {
     for (let i = 0; i < MAX_NOTE; i++) {
         let velocity = currentBeat[i][index] || 0;
@@ -523,19 +582,26 @@ function startPlayback() {
     });
 }
 
-async function renderNextColumn(currentTime) {
+function renderNextColumn(beatIndex) {
     let tHead = instrumentTable.getElementsByTagName("tfoot")[0];
     let row = tHead.getElementsByTagName("tr")[0];
-    let tempoTableCurrent = currentTime + 1;
-    let td = row.getElementsByTagName("th")[tempoTableCurrent];
-    td.style.background = "#D6EEEE";
-    let prevTd;
-    if (tempoTableCurrent === 1) {
-        prevTd = row.getElementsByTagName("th")[MAX_BEATS];
-    } else {
-        prevTd = row.getElementsByTagName("th")[tempoTableCurrent - 1];
+    let visCols = getVisibleColumns();
+
+    // Find the visible column index for this beat index
+    let visIdx = visCols.indexOf(beatIndex);
+
+    // Clear previous highlight
+    let allTh = row.getElementsByTagName("th");
+    // Find the previous beat index
+    let prevBeatIndex = (beatIndex === 0) ? MAX_BEATS - 1 : beatIndex - 1;
+    let prevVisIdx = visCols.indexOf(prevBeatIndex);
+
+    if (visIdx >= 0) {
+        allTh[visIdx + 1].style.background = "#D6EEEE";
     }
-    prevTd.style.background = "black";
+    if (prevVisIdx >= 0) {
+        allTh[prevVisIdx + 1].style.background = "black";
+    }
 }
 
 
