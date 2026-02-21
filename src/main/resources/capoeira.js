@@ -42,9 +42,6 @@ const saoBentoGrandeAngola = [
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
 
     [0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
-
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 const angola = [
     [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
@@ -74,8 +71,6 @@ const angola = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //clap
 
 
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 const saoBentoPequenoAngola = [
     [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//gunga chi
@@ -101,9 +96,6 @@ const saoBentoPequenoAngola = [
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
 
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
-
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 
 const saoBentoGrandeRegional = [
@@ -129,9 +121,6 @@ const saoBentoGrandeRegional = [
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
     [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
-
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 
 const benguela = [
@@ -157,9 +146,6 @@ const benguela = [
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
     [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
-
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 
 const empty = [
@@ -187,9 +173,6 @@ const empty = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //agogo din
 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //clap
-
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//metro 1
-    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //metro n
 ];
 
 const violaVariation1 = [[2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0],//viola chi
@@ -237,7 +220,7 @@ var groupPanArray = [-1, -1, -1, 1, 1, 1, 1];
 
 // Metronome state
 let metronomeEnabled = false;
-let metronomeVolume = 100; // 0-100
+let metronomeVolume = 150; // 0-100
 // Metronome pattern: row 16 = accent (beat 1), row 17 = normal (beats 2,3,4)
 // Fixed pattern, always the same
 const metronomePattern = [
@@ -345,16 +328,9 @@ function toggleSubdivision() {
     renderBeatArray();
 }
 
-function toggleMetronome() {
-    metronomeEnabled = !metronomeEnabled;
-    let btn = document.getElementById('metroButton');
-    if (metronomeEnabled) {
-        btn.classList.add('metro-active');
-        btn.value = "Metro ON";
-    } else {
-        btn.classList.remove('metro-active');
-        btn.value = "Metro";
-    }
+function changeMetronomeVolume(value) {
+    metronomeVolume = parseInt(value);
+    metronomeEnabled = (metronomeVolume > 0);
 }
 
 function initHeader() {
@@ -401,11 +377,10 @@ function initTable() {
     let visCols = getVisibleColumns();
     let numCols = visCols.length;
 
-    for (let i = 0; i < GRID_ROWS; i++) {
+    for (let i = 0; i < MAX_NOTE; i++) {
         let newTableRow = document.createElement("tr");
         tBody.appendChild(newTableRow);
 
-        // Determine which group this row belongs to and if it's the first row
         let groupIndex = getGroupForRow(i);
         let group = instrumentGroups[groupIndex];
         let isFirstRowOfGroup = (group.rows[0] === i);
@@ -507,7 +482,6 @@ function changeViola() {
         currentBeat[6] = violaArray[violaSelect.value][0];
         currentBeat[7] = violaArray[violaSelect.value][1];
         currentBeat[8] = violaArray[violaSelect.value][2];
-
     }
     renderBeatArray();
 }
@@ -552,7 +526,7 @@ function scheduler() {
 // Playback: grid rows from currentBeat, metronome from fixed pattern
 function scheduleNote(index, when) {
     // Play grid instruments (rows 0-15)
-    for (let i = 0; i < GRID_ROWS; i++) {
+    for (let i = 0; i < MAX_NOTE; i++) {
         let velocity = currentBeat[i][index] || 0;
         if (velocity > 0) {
             const source = audioCtx.createBufferSource();
@@ -638,12 +612,10 @@ function renderNextColumn(beatIndex) {
 
 ////////////////////// audio ctrl //////////////////////
 
-// create web audio api context
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
 var sound_delay = 80;
 var currentTime = 0;
-const MAX_NOTE = 18;  // total audio rows (including metronome)
-const GRID_ROWS = 16; // rows displayed in the grid (no metronome)
+const MAX_NOTE = 16;
 const MAX_BEATS = 16;
 const gainNodes = [];
 const pannerNodes = [];
@@ -653,13 +625,18 @@ function setupGains() {
         const gainNode = audioCtx.createGain();
         gainNode.connect(audioCtx.destination);
         gainNodes[i] = gainNode;
-        // Stereo panning setup - use group pan values
         const pannerNode = audioCtx.createStereoPanner();
         pannerNode.connect(gainNode);
         pannerNodes[i] = pannerNode;
-        let groupIndex = getGroupForRow(i);
-        pannerNode.pan.value = groupPanArray[groupIndex];
-        gainNode.gain.value = groupVolumeArray[groupIndex] / 100;
+        if (i < MAX_NOTE) {
+            let groupIndex = getGroupForRow(i);
+            pannerNode.pan.value = groupPanArray[groupIndex];
+            gainNode.gain.value = groupVolumeArray[groupIndex] / 100;
+        } else {
+            // Metronome rows (16, 17) - center pan, full volume
+            pannerNode.pan.value = 0;
+            gainNode.gain.value = 1.0;
+        }
     }
     console.log("gain/panners nodes set up");
 }
@@ -693,16 +670,12 @@ async function initAudio() {
 ////////////////////// SHAREABLE PATTERNS //////////////////////
 
 function encodePattern() {
-    // Header: 3 bytes [beatIndex, violaIndex+1 (offset to avoid negative), bpm]
-    // Grid: 18 rows × 4 bytes each (16 cells × 2 bits = 32 bits per row) = 72 bytes
-    // Total: 75 bytes → ~100 chars base64
-    const bytes = new Uint8Array(75);
+    const bytes = new Uint8Array(67);
     bytes[0] = parseInt(beatSelect.value);
     bytes[1] = parseInt(violaSelect.value) + 2;
     bytes[2] = parseInt(bpmInput.value);
 
     for (let row = 0; row < MAX_NOTE; row++) {
-        // Pack 16 cells × 2 bits = 32 bits into 4 bytes
         let bits = 0;
         for (let col = 0; col < MAX_BEATS; col++) {
             let vel = (currentBeat[row] && currentBeat[row][col]) || 0;
@@ -766,7 +739,6 @@ function sharePattern() {
     const encoded = encodePattern();
     const url = window.location.origin + window.location.pathname + '?p=' + encoded;
 
-    // Copy to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
             showShareFeedback("Link copied!");
@@ -847,10 +819,8 @@ function loadSharedPattern() {
         }
     }
 
-    // First load the base beat pattern
     currentBeat = beatArray[beatSelect.value].map(row => [...row]);
 
-    // Overlay the shared grid directly (already decoded as arrays of 0/1/2/3)
     if (state.g && Array.isArray(state.g)) {
         for (let i = 0; i < state.g.length && i < currentBeat.length; i++) {
             if (Array.isArray(state.g[i])) {
