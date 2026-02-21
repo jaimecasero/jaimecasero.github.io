@@ -125,7 +125,7 @@ const saoBentoGrandeRegional = [
 
 
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//pandeiro don
-    [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //pandeiro dim];
+    [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //pandeiro dim
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
     [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
@@ -153,7 +153,7 @@ const benguela = [
 
 
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//pandeiro don
-    [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //pandeiro dim];
+    [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //pandeiro dim
     [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0], //agogo din
     [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], //clap
@@ -181,7 +181,7 @@ const empty = [
 
 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//pandeiro don
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //pandeiro dim];
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //pandeiro dim
 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],//agogo don
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //agogo din
@@ -220,7 +220,7 @@ const violaArray = [violaVariation1, violaVariation2, violaVariation3, violaVari
 const beatArray = [saoBentoGrandeAngola, angola, saoBentoPequenoAngola, saoBentoGrandeRegional, benguela, empty];
 const beatBPMArray = [168, 108, 120, 176, 120, 120];
 
-// Instrument groups: maps each group to its row indices
+// Instrument groups: maps each group to its row indices (grid only, no metronome)
 const instrumentGroups = [
     { name: "Gunga",    rows: [0, 1, 2] },
     { name: "Medio",    rows: [3, 4, 5] },
@@ -229,12 +229,21 @@ const instrumentGroups = [
     { name: "Pandeiro", rows: [11, 12] },
     { name: "Agogo",    rows: [13, 14] },
     { name: "Palma",    rows: [15] },
-    { name: "Metro",    rows: [16, 17] },
 ];
 
-// Volume and pan are now per instrument group (8 groups)
-var groupVolumeArray = [50, 50, 50, 50, 50, 50, 50, 50];
-var groupPanArray = [-1, -1, -1, 1, 1, 1, 1, 1];
+// Volume and pan are now per instrument group (7 groups + metronome separate)
+var groupVolumeArray = [50, 50, 50, 50, 50, 50, 50];
+var groupPanArray = [-1, -1, -1, 1, 1, 1, 1];
+
+// Metronome state
+let metronomeEnabled = false;
+let metronomeVolume = 100; // 0-100
+// Metronome pattern: row 16 = accent (beat 1), row 17 = normal (beats 2,3,4)
+// Fixed pattern, always the same
+const metronomePattern = [
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // metro-1 (accent on beat 1)
+    [0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0], // metro-n (beats 2,3,4)
+];
 
 // Helper: get group index for a given row
 function getGroupForRow(rowIndex) {
@@ -244,7 +253,7 @@ function getGroupForRow(rowIndex) {
     return 0;
 }
 
-let timerID; // global or scoped outside functions
+let timerID;
 var currentBeat = beatArray[0];
 let isPlaying = false;
 let mode = 0; // 0= labels 1=volume 2=pan
@@ -283,7 +292,6 @@ var playButton;
     function init() {
         console.log("init");
 
-        //Cache DOMs
         beatSelect = document.getElementById('beatSelect');
         violaSelect = document.getElementById('violaSelect');
         bpmInput = document.getElementById('bpmSelect');
@@ -293,7 +301,6 @@ var playButton;
         initTable();
         initAudio();
 
-        // Check for shared pattern in URL first
         if (!loadSharedPattern()) {
             changeBeat();
         }
@@ -336,6 +343,18 @@ function toggleSubdivision() {
     initHeader();
     initTable();
     renderBeatArray();
+}
+
+function toggleMetronome() {
+    metronomeEnabled = !metronomeEnabled;
+    let btn = document.getElementById('metroButton');
+    if (metronomeEnabled) {
+        btn.classList.add('metro-active');
+        btn.value = "Metro ON";
+    } else {
+        btn.classList.remove('metro-active');
+        btn.value = "Metro";
+    }
 }
 
 function initHeader() {
@@ -382,7 +401,7 @@ function initTable() {
     let visCols = getVisibleColumns();
     let numCols = visCols.length;
 
-    for (let i = 0; i < MAX_NOTE; i++) {
+    for (let i = 0; i < GRID_ROWS; i++) {
         let newTableRow = document.createElement("tr");
         tBody.appendChild(newTableRow);
 
@@ -530,9 +549,10 @@ function scheduler() {
     timerID = setTimeout(scheduler, lookahead);
 }
 
-// Playback always uses all 16 columns regardless of subdivision view
+// Playback: grid rows from currentBeat, metronome from fixed pattern
 function scheduleNote(index, when) {
-    for (let i = 0; i < MAX_NOTE; i++) {
+    // Play grid instruments (rows 0-15)
+    for (let i = 0; i < GRID_ROWS; i++) {
         let velocity = currentBeat[i][index] || 0;
         if (velocity > 0) {
             const source = audioCtx.createBufferSource();
@@ -546,7 +566,22 @@ function scheduleNote(index, when) {
         }
     }
 
-    // Delay UI update slightly to match audio
+    // Play metronome (rows 16-17) if enabled
+    if (metronomeEnabled) {
+        for (let m = 0; m < 2; m++) {
+            let velocity = metronomePattern[m][index] || 0;
+            if (velocity > 0) {
+                const source = audioCtx.createBufferSource();
+                source.buffer = audioBuffers[16 + m];
+                const velocityGain = audioCtx.createGain();
+                velocityGain.gain.value = velocityMultiplier[velocity] * (metronomeVolume / 100);
+                velocityGain.connect(pannerNodes[16 + m]);
+                source.connect(velocityGain);
+                source.start(when);
+            }
+        }
+    }
+
     setTimeout(() => renderNextColumn(index), (when - audioCtx.currentTime) * 1000);
 }
 
@@ -607,7 +642,8 @@ function renderNextColumn(beatIndex) {
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
 var sound_delay = 80;
 var currentTime = 0;
-const MAX_NOTE = 18;
+const MAX_NOTE = 18;  // total audio rows (including metronome)
+const GRID_ROWS = 16; // rows displayed in the grid (no metronome)
 const MAX_BEATS = 16;
 const gainNodes = [];
 const pannerNodes = [];
