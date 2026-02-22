@@ -1,4 +1,4 @@
-const CACHE_NAME = 'capoeira-v1.0.14';
+const CACHE_NAME = 'capoeira-v1.0.15';
 const ASSETS_TO_CACHE = [
     './capoeira.html',
     './capoeira.js',

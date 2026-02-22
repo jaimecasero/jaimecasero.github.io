@@ -216,7 +216,7 @@ const instrumentGroups = [
 
 // Volume and pan are now per instrument group (7 groups + metronome separate)
 var groupVolumeArray = [50, 50, 50, 50, 50, 50, 50];
-var groupPanArray = [-1, -1, -1, 1, 1, 1, 1];
+var groupPanArray = [-1, -1, -1, 1, 1, 1, 0];
 
 // Metronome state
 let metronomeEnabled = false;
