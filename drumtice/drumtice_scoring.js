@@ -604,18 +604,20 @@ const scoringEngine = (function () {
     }
 
     function computeNoteLevelLocal(midiNote, absTick, ppq) {
-        const KICK = [35, 36], SNARE = [37, 38, 40], HH = [42, 44];
-        const isMainBeat = (absTick % ppq) === 0;
+        const KICK = [35, 36], SNARE = [37, 38, 40], HH = [42, 44, 46];
+        const CYMBALS = [49, 51, 57];
+        const TOMS = [41, 43, 45, 47, 48, 50];
+        const isQuarter = (absTick % ppq) === 0;
         const isEighth = (absTick % (ppq / 2)) === 0;
-        const beat = Math.floor(absTick / ppq) % 4;
+        const isSixteenth = (absTick % (ppq / 4)) === 0;
 
-        if (KICK.includes(midiNote) && isMainBeat && (beat === 0 || beat === 2)) return 1;
-        if (SNARE.includes(midiNote) && isMainBeat && (beat === 1 || beat === 3)) return 1;
-        if (HH.includes(midiNote) && isEighth) return 2;
-        if (KICK.includes(midiNote)) return 2;
-        if (SNARE.includes(midiNote)) return 2;
-        if ([46].includes(midiNote) || [41, 43, 45, 47, 48, 50].includes(midiNote)) return 3;
-        if (HH.includes(midiNote)) return 3;
+        // Level 1: kick/snare/hihat on quarter note positions only
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote)) && isQuarter) return 1;
+        // Level 2: adds cymbals and 8th note positions
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote) || CYMBALS.includes(midiNote)) && isEighth) return 2;
+        // Level 3: adds toms and 16th note positions
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote) || CYMBALS.includes(midiNote) || TOMS.includes(midiNote)) && isSixteenth) return 3;
+        // Level 4: everything else (unfiltered)
         return 4;
     }
 
