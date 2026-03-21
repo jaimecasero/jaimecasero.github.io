@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Ear Forge</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --bg: #0a0a0f;
+          --surface: #14141f;
+          --surface-light: #1e1e2e;
+          --accent: #e8c547;
+          --accent-dim: #b8962e;
+          --correct: #2dd4a0;
+          --wrong: #ef4444;
+          --text: #e8e6e3;
+          --text-dim: #7a7886;
+          --border: #2a2a3a;
+          --mic: #a78bfa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          height: 100dvh;
+          width: 100vw;
+          overflow: hidden;
+          position: fixed;
+          top: 0; left: 0;
+        }
+
+        .screen {
+          display: none;
+          flex-direction: column;
+          height: 100dvh;
+          width: 100vw;
+          overflow: hidden;
+        }
+        .screen.active { display: flex; }
+
+        .serif { font-family: 'Instrument Serif', serif; font-weight: 400; }
+
+        button {
+          font-family: 'DM Sans', sans-serif;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        button:active { transform: scale(0.97); }
+
+        .top-bar {
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-shrink: 0;
+        }
+        .top-bar-spread { justify-content: space-between; }
+
+        .back-btn {
+          background: none;
+          color: var(--text-dim);
+          padding: 4px;
+          font-size: 0;
+        }
+
+        .scrollable {
+          flex: 1;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 0 20px;
+        }
+
+        .bottom-action {
+          padding: 16px 20px 28px;
+          flex-shrink: 0;
+        }
+
+        .label {
+          color: var(--text-dim);
+          font-size: 13px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          margin: 0 0 12px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .flex-col { display: flex; flex-direction: column; gap: 10px; }
+        .flex-row { display: flex; gap: 8px; }
+        .flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .chip {
+          padding: 12px 8px;
+          background: var(--surface);
+          color: var(--text-dim);
+          border: 1px solid var(--border);
+          font-size: 13px;
+          font-weight: 400;
+          text-align: center;
+        }
+        .chip.active {
+          background: rgba(232, 197, 71, 0.12);
+          color: var(--accent);
+          border-color: rgba(232, 197, 71, 0.3);
+          font-weight: 600;
+        }
+
+        .key-chip {
+          padding: 10px 14px;
+          min-width: 44px;
+          background: var(--surface);
+          color: var(--text-dim);
+          border: 1px solid var(--border);
+          font-size: 14px;
+        }
+        .key-chip.active {
+          background: rgba(232, 197, 71, 0.12);
+          color: var(--accent);
+          border-color: rgba(232, 197, 71, 0.3);
+          font-weight: 700;
+        }
+
+        .mode-chip {
+          padding: 14px 16px;
+          background: var(--surface);
+          color: var(--text-dim);
+          border: 1px solid var(--border);
+          font-size: 14px;
+          text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .mode-chip.active {
+          background: rgba(232, 197, 71, 0.12);
+          color: var(--accent);
+          border-color: rgba(232, 197, 71, 0.3);
+          font-weight: 600;
+        }
+
+        .dir-chip {
+          flex: 1;
+          padding: 12px 8px;
+          background: var(--surface);
+          color: var(--text-dim);
+          border: 1px solid var(--border);
+          font-size: 13px;
+          text-transform: capitalize;
+        }
+        .dir-chip.active {
+          background: rgba(232, 197, 71, 0.12);
+          color: var(--accent);
+          border-color: rgba(232, 197, 71, 0.3);
+          font-weight: 600;
+        }
+
+        .primary-btn {
+          width: 100%;
+          padding: 16px;
+          background: var(--accent);
+          color: var(--bg);
+          font-size: 16px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+        .primary-btn:disabled {
+          background: var(--surface-light);
+          color: var(--text-dim);
+        }
+
+        .menu-btn {
+          padding: 20px;
+          background: var(--surface-light);
+          color: var(--text);
+          font-size: 16px;
+          font-weight: 500;
+          border: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          width: 100%;
+          text-align: left;
+        }
+
+        .menu-icon {
+          width: 44px; height: 44px;
+          border-radius: 10px;
+          background: rgba(232, 197, 71, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--accent);
+          font-size: 20px;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+
+        .menu-label { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+        .progress-bar {
+          padding: 0 20px;
+          margin-bottom: 8px;
+          flex-shrink: 0;
+        }
+        .progress-track {
+          height: 3px;
+          background: var(--surface);
+          border-radius: 2px;
+          overflow: hidden;
+        }
+        .progress-fill {
+          height: 100%;
+          background: var(--accent);
+          border-radius: 2px;
+          transition: width 0.4s ease;
+        }
+
+        .game-center {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          overflow-y: auto;
+          padding: 8px 16px;
+        }
+
+        .play-btn {
+          width: 88px; height: 88px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+          color: var(--bg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 32px rgba(232, 197, 71, 0.18);
+          font-size: 0;
+        }
+
+        .answer-grid { padding: 0 16px 32px; flex-shrink: 0; }
+
+        .answer-btn {
+          padding: 16px 8px;
+          background: var(--surface-light);
+          color: var(--text);
+          border: 1px solid var(--border);
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+        .answer-btn .short { font-weight: 700; font-size: 16px; display: block; }
+        .answer-btn .long { font-size: 11px; color: var(--text-dim); margin-top: 2px; display: block; }
+        .answer-btn.correct-answer {
+          background: rgba(45, 212, 160, 0.12);
+          color: var(--correct);
+          border-color: rgba(45, 212, 160, 0.3);
+        }
+        .answer-btn.correct-answer .long { color: var(--correct); }
+        .answer-btn.wrong-answer {
+          background: rgba(239, 68, 68, 0.12);
+          color: var(--wrong);
+          border-color: rgba(239, 68, 68, 0.3);
+        }
+        .answer-btn.wrong-answer .long { color: var(--wrong); }
+        .answer-btn.dimmed { opacity: 0.35; }
+
+        .feedback-pill {
+          padding: 10px 20px;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .feedback-pill.correct {
+          background: rgba(45, 212, 160, 0.1);
+          color: var(--correct);
+          border: 1px solid rgba(45, 212, 160, 0.2);
+        }
+        .feedback-pill.wrong {
+          background: rgba(239, 68, 68, 0.1);
+          color: var(--wrong);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .ring {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .results-center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100dvh;
+          padding: 20px;
+        }
+        .score-ring { position: relative; width: 140px; height: 140px; margin-bottom: 32px; }
+        .score-ring-text {
+          position: absolute;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 36px;
+          font-weight: 700;
+        }
+        .history-dots { display: flex; gap: 6px; margin-bottom: 40px; }
+        .dot {
+          width: 28px; height: 28px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+        }
+        .dot.ok { background: rgba(45, 212, 160, 0.12); color: var(--correct); }
+        .dot.fail { background: rgba(239, 68, 68, 0.12); color: var(--wrong); }
+
+        .result-btns { display: flex; gap: 12px; width: 280px; }
+        .result-btns button { flex: 1; padding: 14px; font-size: 14px; }
+        .result-btns .secondary { background: var(--surface-light); color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+        .result-btns .primary { background: var(--accent); color: var(--bg); font-weight: 700; }
+
+        .info-text { color: var(--text-dim); font-size: 14px; }
+        .score-text { display: flex; gap: 16px; font-size: 14px; }
+
+        .notes-reveal {
+          margin-top: 8px;
+          padding: 10px 16px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          max-width: 340px;
+          text-align: center;
+        }
+        .notes-reveal-label {
+          font-size: 11px;
+          color: var(--text-dim);
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+        .notes-reveal-notes {
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--text);
+          line-height: 1.7;
+          word-spacing: 1px;
+          font-family: 'DM Sans', monospace;
+        }
+        .note-char { color: var(--accent); font-weight: 700; }
+
+        /* ── Sing mode ── */
+        .mic-ring {
+          width: 120px; height: 120px;
+          border-radius: 50%;
+          border: 3px solid var(--border);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .mic-ring.listening {
+          border-color: var(--mic);
+          box-shadow: 0 0 30px rgba(167, 139, 250, 0.2);
+          animation: mic-pulse 1.5s ease-in-out infinite;
+        }
+        .mic-ring.got-note1 {
+          border-color: var(--accent);
+          box-shadow: 0 0 20px rgba(232, 197, 71, 0.15);
+          animation: none;
+        }
+        .mic-ring.success {
+          border-color: var(--correct);
+          box-shadow: 0 0 30px rgba(45, 212, 160, 0.25);
+          animation: none;
+        }
+        .mic-ring.fail {
+          border-color: var(--wrong);
+          box-shadow: 0 0 30px rgba(239, 68, 68, 0.25);
+          animation: none;
+        }
+        @keyframes mic-pulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(167, 139, 250, 0.15); }
+          50% { box-shadow: 0 0 40px rgba(167, 139, 250, 0.3); }
+        }
+
+        .sing-interval-label {
+          font-family: 'Instrument Serif', serif;
+          font-size: 28px;
+          color: var(--text);
+        }
+        .sing-direction-label {
+          font-size: 13px;
+          color: var(--text-dim);
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+        }
+        .sing-detected {
+          font-size: 13px;
+          color: var(--text-dim);
+          min-height: 20px;
+          text-align: center;
+        }
+        .sing-detected .note-name {
+          color: var(--mic);
+          font-weight: 700;
+          font-size: 15px;
+        }
+        .sing-note-slots {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 4px 0;
+        }
+        .sing-slot {
+          width: 64px; height: 48px;
+          border-radius: 10px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--text-dim);
+          transition: all 0.3s ease;
+        }
+        .sing-slot.filled {
+          background: rgba(232, 197, 71, 0.12);
+          color: var(--accent);
+          border-color: rgba(232, 197, 71, 0.3);
+        }
+        .sing-slot.correct-slot {
+          background: rgba(45, 212, 160, 0.12);
+          color: var(--correct);
+          border-color: rgba(45, 212, 160, 0.3);
+        }
+        .sing-slot.wrong-slot {
+          background: rgba(239, 68, 68, 0.12);
+          color: var(--wrong);
+          border-color: rgba(239, 68, 68, 0.3);
+        }
+        .sing-arrow { color: var(--text-dim); font-size: 18px; }
+        .sing-skip-btn {
+          padding: 10px 24px;
+          background: var(--surface-light);
+          color: var(--text-dim);
+          border: 1px solid var(--border);
+          font-size: 13px;
+          font-weight: 500;
+        }
+        .sing-ref-btn {
+          padding: 8px 20px;
+          background: var(--surface);
+          color: var(--mic);
+          border: 1px solid rgba(167, 139, 250, 0.3);
+          font-size: 12px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="home" class="screen active" style="align-items:center;justify-content:center;position:relative;">
+    <div class="ring" style="top:-80px;right:-80px;width:260px;height:260px;border:1px solid var(--border);opacity:0.3;"></div>
+    <div class="ring" style="bottom:-60px;left:-60px;width:200px;height:200px;border:1px solid var(--accent);opacity:0.1;"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+            <path d="M6 18.5C6 20.43 7.57 22 9.5 22c1.93 0 3.5-1.57 3.5-3.5V17c0-1.1.9-2 2-2h.5c2.49 0 4.5-2.01 4.5-4.5S17.99 6 15.5 6h-.5"/>
+            <path d="M9 2C5.69 2 3 4.69 3 8s2.69 6 6 6"/><circle cx="9" cy="8" r="2"/>
+        </svg>
+        <h1 class="serif" style="font-size:36px;letter-spacing:-0.5px;">Ear Forge</h1>
+    </div>
+    <p style="color:var(--text-dim);font-size:14px;margin-bottom:48px;letter-spacing:2px;text-transform:uppercase;">Train your musical ear</p>
+    <div style="display:flex;flex-direction:column;gap:16px;width:280px;">
+        <button class="menu-btn" onclick="showScreen('intervalSetup')">
+            <div class="menu-icon">♫</div>
+            <div><div>Intervals</div><div class="menu-label">Identify intervals by ear</div></div>
+        </button>
+        <button class="menu-btn" onclick="showScreen('modeSetup')">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
+            </div>
+            <div><div>Keys & Modes</div><div class="menu-label">Recognize scales & modes</div></div>
+        </button>
+        <button class="menu-btn" onclick="showScreen('singSetup')">
+            <div class="menu-icon" style="background:rgba(167,139,250,0.08);color:var(--mic);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--mic)"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="var(--mic)" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="12" y1="19" x2="12" y2="23" stroke="var(--mic)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div><div>Sing Intervals</div><div class="menu-label">Reproduce intervals with your voice</div></div>
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════════ INTERVAL SETUP ═══════════════ -->
+<div id="intervalSetup" class="screen">
+    <div class="top-bar">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <h2 class="serif" style="font-size:22px;">Intervals</h2>
+    </div>
+    <div class="scrollable">
+        <p class="label">Select intervals (min 2)</p>
+        <div id="intervalChips" class="grid-2" style="margin-bottom:24px;"></div>
+        <p class="label">Direction</p>
+        <div id="dirChips" class="flex-row" style="margin-bottom:24px;"></div>
+    </div>
+    <div class="bottom-action">
+        <button id="startIntervalBtn" class="primary-btn" onclick="startIntervalGame()">Start Training</button>
+    </div>
+</div>
+
+<!-- ═══════════════ MODE SETUP ═══════════════ -->
+<div id="modeSetup" class="screen">
+    <div class="top-bar">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <h2 class="serif" style="font-size:22px;">Keys & Modes</h2>
+    </div>
+    <div class="scrollable">
+        <p class="label">Root key</p>
+        <div id="keyChips" class="flex-wrap" style="margin-bottom:24px;"></div>
+        <p class="label">Modes to guess (min 2)</p>
+        <div id="modeChips" class="flex-col" style="margin-bottom:24px;"></div>
+    </div>
+    <div class="bottom-action">
+        <button id="startModeBtn" class="primary-btn" onclick="startModeGame()">Start Training</button>
+    </div>
+</div>
+
+<!-- ═══════════════ SING SETUP ═══════════════ -->
+<div id="singSetup" class="screen">
+    <div class="top-bar">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <h2 class="serif" style="font-size:22px;">Sing Intervals</h2>
+    </div>
+    <div class="scrollable">
+        <p class="label">Select intervals (min 2)</p>
+        <div id="singIntervalChips" class="grid-2" style="margin-bottom:24px;"></div>
+        <p class="label">Direction</p>
+        <div id="singDirChips" class="flex-row" style="margin-bottom:24px;"></div>
+    </div>
+    <div class="bottom-action">
+        <button id="startSingBtn" class="primary-btn" onclick="startSingGame()">Start Training</button>
+    </div>
+</div>
+
+<!-- ═══════════════ INTERVAL GAME ═══════════════ -->
+<div id="intervalGame" class="screen">
+    <div class="top-bar top-bar-spread">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <div class="score-text">
+            <span style="color:var(--text-dim)">Round <span id="igRound" style="color:var(--text);font-weight:600">1/10</span></span>
+            <span id="igScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+        </div>
+    </div>
+    <div class="progress-bar"><div class="progress-track"><div id="igProgress" class="progress-fill" style="width:0%"></div></div></div>
+    <div class="game-center">
+        <div id="igDirection" style="color:var(--text-dim);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;"></div>
+        <button class="play-btn" onclick="replayQuestion()"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--bg)"><polygon points="5,3 19,12 5,21"/></svg></button>
+        <span style="color:var(--text-dim);font-size:12px;">Tap to replay</span>
+        <div id="igFeedback"></div>
+    </div>
+    <div class="answer-grid"><div id="igAnswers" class="grid-2" style="gap:10px;"></div></div>
+</div>
+
+<!-- ═══════════════ MODE GAME ═══════════════ -->
+<div id="modeGame" class="screen">
+    <div class="top-bar top-bar-spread">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <div class="score-text">
+            <span style="color:var(--text-dim)">Round <span id="mgRound" style="color:var(--text);font-weight:600">1/10</span></span>
+            <span id="mgScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+        </div>
+    </div>
+    <div class="progress-bar"><div class="progress-track"><div id="mgProgress" class="progress-fill" style="width:0%"></div></div></div>
+    <div class="game-center">
+        <div id="mgKeyLabel" style="color:var(--text-dim);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;"></div>
+        <button class="play-btn" onclick="replayQuestion()"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--bg)"><polygon points="5,3 19,12 5,21"/></svg></button>
+        <span style="color:var(--text-dim);font-size:12px;">Tap to replay melody</span>
+        <div id="mgFeedback"></div>
+    </div>
+    <div class="answer-grid"><div id="mgAnswers" class="flex-col" style="gap:10px;"></div></div>
+</div>
+
+<!-- ═══════════════ SING GAME ═══════════════ -->
+<div id="singGame" class="screen">
+    <div class="top-bar top-bar-spread">
+        <button class="back-btn" onclick="stopSingGame(); showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <div class="score-text">
+            <span style="color:var(--text-dim)">Round <span id="sgRound" style="color:var(--text);font-weight:600">1/10</span></span>
+            <span id="sgScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+        </div>
+    </div>
+    <div class="progress-bar"><div class="progress-track"><div id="sgProgress" class="progress-fill" style="width:0%"></div></div></div>
+    <div class="game-center">
+        <div id="sgIntervalLabel" class="sing-interval-label"></div>
+        <div id="sgDirectionLabel" class="sing-direction-label"></div>
+
+        <div id="sgMicRing" class="mic-ring">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--text-dim)"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="19" x2="12" y2="23" stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <div id="sgDetected" class="sing-detected"></div>
+
+        <div class="sing-note-slots">
+            <div id="sgSlot1" class="sing-slot">?</div>
+            <span class="sing-arrow">→</span>
+            <div id="sgSlot2" class="sing-slot">?</div>
+        </div>
+
+        <div id="sgFeedback"></div>
+
+        <div style="display:flex;gap:10px;">
+            <button class="sing-ref-btn" onclick="replayRefNote()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--mic)"><polygon points="5,3 19,12 5,21"/></svg>
+                Hear reference
+            </button>
+            <button class="sing-skip-btn" onclick="skipSingRound()">Skip</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div id="results" class="screen">
+    <div class="results-center">
+        <div id="resEmoji" style="font-size:48px;margin-bottom:8px;"></div>
+        <h2 id="resMessage" class="serif" style="font-size:32px;margin-bottom:4px;"></h2>
+        <p id="resSubtext" class="info-text" style="margin-bottom:32px;"></p>
+        <div class="score-ring">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="60" fill="none" stroke="var(--surface)" stroke-width="8"/>
+                <circle id="resArc" cx="70" cy="70" r="60" fill="none" stroke="var(--accent)" stroke-width="8"
+                        stroke-linecap="round" stroke-dasharray="0 377" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div id="resPct" class="score-ring-text"></div>
+        </div>
+        <div id="resDots" class="history-dots"></div>
+        <div class="result-btns">
+            <button class="secondary" onclick="stopSingGame(); showScreen('home')">Home</button>
+            <button class="primary" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── Audio Engine ────────────────────────────────────────
+    const AudioEng = (() => {
+      let ctx = null;
+      const getCtx = () => {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      };
+      const midiToFreq = m => 440 * Math.pow(2, (m - 69) / 12);
+
+      const playNote = (midi, startTime = 0, duration = 0.6, vol = 0.5) => {
+        const c = getCtx();
+        const t = c.currentTime + startTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        const filter = c.createBiquadFilter();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(midiToFreq(midi), t);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2000, t);
+        filter.Q.setValueAtTime(1, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(vol, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(c.destination);
+        osc.start(t);
+        osc.stop(t + duration + 0.05);
+      };
+
+      return {
+        playNote,
+        playInterval(base, semitones, dir, gap = 0.7) {
+          const n2 = dir === 'descending' ? base - semitones : base + semitones;
+          playNote(base, 0, 0.7, 0.5);
+          playNote(n2, gap, 0.7, 0.5);
+        },
+        playMelody(notes, tempo = 0.28) {
+          notes.forEach((n, i) => playNote(n, i * tempo, 0.32, 0.45));
+        }
+      };
+    })();
+
+    // ─── Data ────────────────────────────────────────────────
+    const INTERVALS = [
+      { name: 'Minor 2nd',   short: 'm2',  semi: 1 },
+      { name: 'Major 2nd',   short: 'M2',  semi: 2 },
+      { name: 'Minor 3rd',   short: 'm3',  semi: 3 },
+      { name: 'Major 3rd',   short: 'M3',  semi: 4 },
+      { name: 'Perfect 4th', short: 'P4',  semi: 5 },
+      { name: 'Tritone',     short: 'TT',  semi: 6 },
+      { name: 'Perfect 5th', short: 'P5',  semi: 7 },
+      { name: 'Minor 6th',   short: 'm6',  semi: 8 },
+      { name: 'Major 6th',   short: 'M6',  semi: 9 },
+      { name: 'Minor 7th',   short: 'm7',  semi: 10 },
+      { name: 'Major 7th',   short: 'M7',  semi: 11 },
+      { name: 'Octave',      short: 'P8',  semi: 12 },
+    ];
+    const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    const MODES = [
+      { name: 'Ionian',     iv: [0,2,4,5,7,9,11], char: [] },
+      { name: 'Dorian',     iv: [0,2,3,5,7,9,10], char: [2,5] },
+      { name: 'Phrygian',   iv: [0,1,3,5,7,8,10], char: [1,5] },
+      { name: 'Lydian',     iv: [0,2,4,6,7,9,11], char: [3] },
+      { name: 'Mixolydian', iv: [0,2,4,5,7,9,10], char: [6] },
+      { name: 'Aeolian',    iv: [0,2,3,5,7,8,10], char: [2,5,6] },
+      { name: 'Locrian',    iv: [0,1,3,5,6,8,10], char: [1,4] },
+    ];
+    const TOTAL = 10;
+
+    // ─── State ───────────────────────────────────────────────
+    let selIntervals = new Set([0,1,2,3]);
+    let direction = 'ascending';
+    let selKey = 0;
+    let selModes = new Set([0,1,5]);
+    let singSelIntervals = new Set([0,1,2,3]);
+    let singDirection = 'ascending';
+
+    let gameType = '';
+    let round = 0, score = 0;
+    let answered = false;
+    let question = null;
+    let history = [];
+
+    // ─── Utility ─────────────────────────────────────────────
+    const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+    const $ = id => document.getElementById(id);
+    function midiToNoteName(midi) {
+      return NOTES[midi % 12] + (Math.floor(midi / 12) - 1);
+    }
+    function isSameNote(m1, m2) { return m1 % 12 === m2 % 12; }
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      $(id).classList.add('active');
+    }
+
+    // ─── Build Setup UIs ─────────────────────────────────────
+    function buildIntervalSetup() {
+      const container = $('intervalChips');
+      container.innerHTML = '';
+      INTERVALS.forEach((iv, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (selIntervals.has(i) ? ' active' : '');
+        btn.innerHTML = `<strong>${iv.short}</strong> ${iv.name}`;
+        btn.onclick = () => {
+          if (selIntervals.has(i)) { if (selIntervals.size <= 2) return; selIntervals.delete(i); }
+          else selIntervals.add(i);
+          buildIntervalSetup();
+        };
+        container.appendChild(btn);
+      });
+      const dirCont = $('dirChips');
+      dirCont.innerHTML = '';
+      const arrows = { ascending: '↑', descending: '↓', both: '↕' };
+      ['ascending','descending','both'].forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'dir-chip' + (direction === d ? ' active' : '');
+        btn.textContent = arrows[d] + ' ' + d;
+        btn.onclick = () => { direction = d; buildIntervalSetup(); };
+        dirCont.appendChild(btn);
+      });
+      $('startIntervalBtn').disabled = selIntervals.size < 2;
+    }
+
+    function buildSingSetup() {
+      const container = $('singIntervalChips');
+      container.innerHTML = '';
+      INTERVALS.forEach((iv, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (singSelIntervals.has(i) ? ' active' : '');
+        btn.innerHTML = `<strong>${iv.short}</strong> ${iv.name}`;
+        btn.onclick = () => {
+          if (singSelIntervals.has(i)) { if (singSelIntervals.size <= 2) return; singSelIntervals.delete(i); }
+          else singSelIntervals.add(i);
+          buildSingSetup();
+        };
+        container.appendChild(btn);
+      });
+      const dirCont = $('singDirChips');
+      dirCont.innerHTML = '';
+      const arrows = { ascending: '↑', descending: '↓', both: '↕' };
+      ['ascending','descending','both'].forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'dir-chip' + (singDirection === d ? ' active' : '');
+        btn.textContent = arrows[d] + ' ' + d;
+        btn.onclick = () => { singDirection = d; buildSingSetup(); };
+        dirCont.appendChild(btn);
+      });
+      $('startSingBtn').disabled = singSelIntervals.size < 2;
+    }
+
+    function buildModeSetup() {
+      const keyCont = $('keyChips');
+      keyCont.innerHTML = '';
+      NOTES.forEach((n, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'key-chip' + (selKey === i ? ' active' : '');
+        btn.textContent = n;
+        btn.onclick = () => { selKey = i; buildModeSetup(); };
+        keyCont.appendChild(btn);
+      });
+      const modeCont = $('modeChips');
+      modeCont.innerHTML = '';
+      MODES.forEach((m, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'mode-chip' + (selModes.has(i) ? ' active' : '');
+        btn.innerHTML = `<span>${m.name}</span>` + (selModes.has(i) ? '<span style="font-size:14px">✓</span>' : '');
+        btn.onclick = () => {
+          if (selModes.has(i)) { if (selModes.size <= 2) return; selModes.delete(i); }
+          else selModes.add(i);
+          buildModeSetup();
+        };
+        modeCont.appendChild(btn);
+      });
+      $('startModeBtn').disabled = selModes.size < 2;
+    }
+
+    // ─── Question Generation ─────────────────────────────────
+    function genIntervalQ() {
+      const arr = [...selIntervals];
+      const idx = arr[randInt(0, arr.length - 1)];
+      let dir = direction;
+      if (dir === 'both') dir = Math.random() > 0.5 ? 'ascending' : 'descending';
+      const baseMidi = randInt(55, 72);
+      const note2 = dir === 'descending' ? baseMidi - INTERVALS[idx].semi : baseMidi + INTERVALS[idx].semi;
+      return { type: 'interval', intervalIdx: idx, dir, baseMidi, playedNotes: [baseMidi, note2] };
+    }
+
+    function genMelody(rootMidi, mode) {
+      const modeIv = mode.iv, charIndices = mode.char;
+      const scale = modeIv.map(i => rootMidi + i);
+      const scale2 = [...scale, ...scale.map(n => n + 12)];
+      const scaleLen = scale.length;
+      const notes = [];
+      const deg = d => {
+        const oct = Math.floor(d / scaleLen);
+        const idx = ((d % scaleLen) + scaleLen) % scaleLen;
+        return scale[idx] + oct * 12;
+      };
+      for (let i = 0; i < 5; i++) notes.push(deg(i));
+      if (charIndices.length > 0) {
+        for (let i = 0; i < 8; i++) {
+          if (i % 2 === 0) {
+            const ci = charIndices[i % charIndices.length];
+            notes.push(deg(ci + (Math.random() > 0.5 ? scaleLen : 0)));
+          } else {
+            const ci = charIndices[(i - 1) % charIndices.length];
+            const nb = Math.random() > 0.5 ? ci + 1 : ci - 1;
+            notes.push(deg(nb >= 0 ? nb : 0));
+          }
+        }
+      } else {
+        for (let i = 0; i < 8; i++) notes.push(deg(i < 4 ? i + 3 : 10 - i));
+      }
+      let pos = 4;
+      for (let i = 0; i < 7; i++) { pos = Math.max(0, Math.min(13, pos + randInt(-3, 3))); notes.push(scale2[pos]); }
+      notes.push(deg(4));
+      if (charIndices.length > 0) notes.push(deg(charIndices[0]));
+      notes.push(deg(1));
+      notes.push(rootMidi);
+      notes[0] = rootMidi;
+      return notes;
+    }
+
+    function genModeQ() {
+      const arr = [...selModes];
+      const idx = arr[randInt(0, arr.length - 1)];
+      const rootMidi = 60 + selKey;
+      return { type: 'mode', modeIdx: idx, melody: genMelody(rootMidi, MODES[idx]), rootMidi };
+    }
+
+    function genSingQ() {
+      const arr = [...singSelIntervals];
+      const idx = arr[randInt(0, arr.length - 1)];
+      let dir = singDirection;
+      if (dir === 'both') dir = Math.random() > 0.5 ? 'ascending' : 'descending';
+      const baseMidi = randInt(48, 60);
+      const targetSemi = INTERVALS[idx].semi;
+      const note2 = dir === 'descending' ? baseMidi - targetSemi : baseMidi + targetSemi;
+      return { type: 'sing', intervalIdx: idx, dir, baseMidi, note2, targetSemi };
+    }
+
+    // ─── Play / Replay ───────────────────────────────────────
+    function playQuestion() {
+      if (!question) return;
+      if (question.type === 'interval') AudioEng.playInterval(question.baseMidi, INTERVALS[question.intervalIdx].semi, question.dir);
+      else if (question.type === 'mode') AudioEng.playMelody(question.melody);
+    }
+    function replayQuestion() { playQuestion(); }
+    function replayRefNote() {
+      if (question && question.type === 'sing') AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5);
+    }
+
+    // ─── Render Game UIs ─────────────────────────────────────
+    function renderIntervalGame() {
+      $('igRound').textContent = `${round + 1}/${TOTAL}`;
+      $('igScore').textContent = `${score} ✓`;
+      $('igProgress').style.width = `${(round / TOTAL) * 100}%`;
+      $('igDirection').textContent = question.dir === 'ascending' ? '↑ Ascending' : '↓ Descending';
+      $('igFeedback').innerHTML = '';
+      const cont = $('igAnswers'); cont.innerHTML = '';
+      [...selIntervals].forEach(idx => {
+        const iv = INTERVALS[idx], btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="short">${iv.short}</span><span class="long">${iv.name}</span>`;
+        btn.onclick = () => handleAnswer(idx); btn.dataset.idx = idx;
+        cont.appendChild(btn);
+      });
+    }
+
+    function renderModeGame() {
+      $('mgRound').textContent = `${round + 1}/${TOTAL}`;
+      $('mgScore').textContent = `${score} ✓`;
+      $('mgProgress').style.width = `${(round / TOTAL) * 100}%`;
+      $('mgKeyLabel').textContent = `Key of ${NOTES[selKey]}`;
+      $('mgFeedback').innerHTML = '';
+      const cont = $('mgAnswers'); cont.innerHTML = '';
+      [...selModes].forEach(idx => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn'; btn.style.cssText = 'text-align:left;padding:16px;font-size:15px';
+        btn.textContent = MODES[idx].name;
+        btn.onclick = () => handleAnswer(idx); btn.dataset.idx = idx;
+        cont.appendChild(btn);
+      });
+    }
+
+    function renderSingGame() {
+      $('sgRound').textContent = `${round + 1}/${TOTAL}`;
+      $('sgScore').textContent = `${score} ✓`;
+      $('sgProgress').style.width = `${(round / TOTAL) * 100}%`;
+      const iv = INTERVALS[question.intervalIdx];
+      $('sgIntervalLabel').textContent = `${iv.short} — ${iv.name}`;
+      $('sgDirectionLabel').textContent = question.dir === 'ascending' ? '↑ Ascending' : '↓ Descending';
+      $('sgMicRing').className = 'mic-ring listening';
+      $('sgMicRing').style.background = '';
+      $('sgDetected').innerHTML = 'Listening... sing and hold a note (~1s)';
+      $('sgSlot1').className = 'sing-slot'; $('sgSlot1').textContent = '?';
+      $('sgSlot2').className = 'sing-slot'; $('sgSlot2').textContent = '?';
+      $('sgFeedback').innerHTML = '';
+      singState = { phase: 'wait-note1', note1: null, note2: null };
+      resetPitchCollection();
+      micSilenceFrames = 0;
+      micLastNote = -1;
+      micDetectedCycles = 0;
+    }
+
+    // ─── Answer Handling (Interval & Mode) ───────────────────
+    function handleAnswer(chosenIdx) {
+      if (answered) return;
+      answered = true;
+      const correctIdx = question.type === 'interval' ? question.intervalIdx : question.modeIdx;
+      const correct = chosenIdx === correctIdx;
+      if (correct) score++;
+      history.push({ correct });
+
+      const sid = question.type === 'interval' ? 'ig' : 'mg';
+      $(sid + 'Answers').querySelectorAll('.answer-btn').forEach(btn => {
+        const idx = parseInt(btn.dataset.idx);
+        if (idx === correctIdx) btn.classList.add('correct-answer');
+        else if (idx === chosenIdx && !correct) btn.classList.add('wrong-answer');
+        else btn.classList.add('dimmed');
+      });
+
+      const label = question.type === 'interval' ? INTERVALS[correctIdx].name : MODES[correctIdx].name;
+      let notesHtml = '';
+      if (question.type === 'interval') {
+        notesHtml = question.playedNotes.map(m => `<span class="note-char">${midiToNoteName(m)}</span>`).join('  →  ');
+      } else {
+        const mode = MODES[question.modeIdx];
+        const cs = new Set(mode.char.map(ci => mode.iv[ci]));
+        notesHtml = question.melody.map(m => {
+          const s = ((m - question.rootMidi) % 12 + 12) % 12;
+          return cs.has(s) ? `<span class="note-char">${midiToNoteName(m)}</span>` : `<span>${midiToNoteName(m)}</span>`;
+        }).join(' ');
+      }
+
+      $(sid + 'Feedback').innerHTML =
+        `<div class="feedback-pill ${correct ? 'correct' : 'wrong'}">${correct ? 'Correct!' : 'Wrong — it was ' + label}</div>
+        <div class="notes-reveal">
+          <div class="notes-reveal-label">Notes played${question.type === 'mode' ? ' (characteristic tones highlighted)' : ''}</div>
+          <div class="notes-reveal-notes">${notesHtml}</div>
+        </div>`;
+      $(sid + 'Score').textContent = `${score} ✓`;
+
+      setTimeout(() => {
+        round++;
+        if (round >= TOTAL) { showResults(); return; }
+        answered = false;
+        question = question.type === 'interval' ? genIntervalQ() : genModeQ();
+        if (question.type === 'interval') renderIntervalGame(); else renderModeGame();
+        setTimeout(playQuestion, 200);
+      }, question.type === 'interval' ? 2500 : 3500);
+    }
+
+    // ─── Start Games ─────────────────────────────────────────
+    function startIntervalGame() {
+      gameType = 'interval'; round = 0; score = 0; answered = false; history = [];
+      question = genIntervalQ(); showScreen('intervalGame'); renderIntervalGame();
+      setTimeout(playQuestion, 300);
+    }
+    function startModeGame() {
+      gameType = 'mode'; round = 0; score = 0; answered = false; history = [];
+      question = genModeQ(); showScreen('modeGame'); renderModeGame();
+      setTimeout(playQuestion, 300);
+    }
+    function startSingGame() {
+      gameType = 'sing'; round = 0; score = 0; answered = false; history = [];
+      question = genSingQ(); showScreen('singGame'); renderSingGame();
+      setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 300);
+      startMicListening();
+    }
+    function playAgain() {
+      if (gameType === 'interval') startIntervalGame();
+      else if (gameType === 'mode') startModeGame();
+      else startSingGame();
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  SING MODE — Microphone Pitch Detection
+    // ═════════════════════════════════════════════════════════
+
+    let micAudioCtx = null, micStream = null, micAnalyser = null, micBuf = null;
+    let micActive = false, micRafId = null;
+    let micDetectedCycles = 0, micLastNote = -1;
+    const MIC_CYCLE_THRESHOLD = 8;
+    let singState = { phase: 'wait-note1', note1: null, note2: null };
+
+    async function startMicListening() {
+      if (micActive) return;
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        micAudioCtx = new AudioContext();
+        const src = micAudioCtx.createMediaStreamSource(micStream);
+        micAnalyser = micAudioCtx.createAnalyser();
+        micAnalyser.fftSize = 2048;
+        micBuf = new Float32Array(2048);
+        src.connect(micAnalyser);
+        micActive = true;
+        micDetectedCycles = 0; micLastNote = -1;
+        micUpdatePitch();
+      } catch (err) {
+        $('sgDetected').innerHTML = '<span style="color:var(--wrong)">Mic access denied. Please allow microphone.</span>';
+      }
+    }
+
+    function stopMicListening() {
+      micActive = false;
+      if (micRafId) { cancelAnimationFrame(micRafId); micRafId = null; }
+      if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+      if (micAudioCtx) { micAudioCtx.close().catch(() => {}); micAudioCtx = null; }
+    }
+    function stopSingGame() { stopMicListening(); }
+
+    let micSilenceFrames = 0;
+    const SILENCE_FRAMES_NEEDED = 15; // ~250ms of silence to confirm note ended
+
+    // Pitch averaging system
+    let pitchSamples = [];        // raw MIDI note values collected
+    let pitchCollecting = false;  // are we currently collecting samples for a note?
+    let pitchStartTime = 0;       // when we started collecting
+    const HOLD_DURATION_MS = 900; // user must sustain note for ~0.9s
+    const PITCH_TOLERANCE = 1.5;  // semitones tolerance for "same note" during collection
+    let pitchAnchor = -1;         // the first detected midi note as reference
+
+    function resetPitchCollection() {
+      pitchSamples = [];
+      pitchCollecting = false;
+      pitchStartTime = 0;
+      pitchAnchor = -1;
+    }
+
+    function getAverageMidi(samples) {
+      if (samples.length === 0) return -1;
+      const sum = samples.reduce((a, b) => a + b, 0);
+      return Math.round(sum / samples.length);
+    }
+
+    function micUpdatePitch() {
+      if (!micActive) return;
+      micAnalyser.getFloatTimeDomainData(micBuf);
+      const freq = autoCorrelate(micBuf, micAudioCtx.sampleRate);
+      const now = performance.now();
+
+      if (freq === -1) {
+        // Silence
+        micSilenceFrames++;
+
+        if (pitchCollecting && micSilenceFrames > 8) {
+          // User stopped singing mid-collection — reset
+          resetPitchCollection();
+          updateHoldIndicator(0);
+        }
+
+        // Handle phase transitions on silence
+        if (singState.phase === 'note1-held') {
+          if (micSilenceFrames >= SILENCE_FRAMES_NEEDED) {
+            singState.phase = 'wait-note2';
+            resetPitchCollection();
+            $('sgDetected').innerHTML = `<span class="note-name">${midiToNoteName(singState.note1)}</span> locked — now sing the second note`;
+          }
+        }
+      } else {
+        micSilenceFrames = 0;
+        const rawMidi = noteFromPitch(freq);
+        // Use fractional midi for better averaging
+        const fracMidi = 12 * (Math.log(freq / 440) / Math.log(2)) + 69;
+
+        // ── Phase: waiting for note 1 ──
+        if (singState.phase === 'wait-note1') {
+          if (!pitchCollecting) {
+            // Start collecting
+            pitchCollecting = true;
+            pitchStartTime = now;
+            pitchAnchor = rawMidi;
+            pitchSamples = [fracMidi];
+          } else {
+            // Check if still within tolerance of anchor
+            if (Math.abs(rawMidi - pitchAnchor) <= PITCH_TOLERANCE) {
+              pitchSamples.push(fracMidi);
+              const elapsed = now - pitchStartTime;
+              updateHoldIndicator(Math.min(1, elapsed / HOLD_DURATION_MS));
+
+              // Show live detected note
+              $('sgDetected').innerHTML = `Hearing: <span class="note-name">${midiToNoteName(rawMidi)}</span> — hold it...`;
+
+              if (elapsed >= HOLD_DURATION_MS) {
+                // Note 1 is stable!
+                const avgMidi = Math.round(getAverageMidi(pitchSamples));
+                singState.note1 = avgMidi;
+                singState.phase = 'note1-held';
+                $('sgSlot1').textContent = midiToNoteName(avgMidi);
+                $('sgSlot1').className = 'sing-slot filled';
+                $('sgMicRing').className = 'mic-ring got-note1';
+                $('sgDetected').innerHTML = `<span class="note-name">${midiToNoteName(avgMidi)}</span> — release, then sing the interval`;
+                updateHoldIndicator(1);
+                resetPitchCollection();
+              }
+            } else {
+              // Pitch jumped — restart collection
+              resetPitchCollection();
+              pitchCollecting = true;
+              pitchStartTime = now;
+              pitchAnchor = rawMidi;
+              pitchSamples = [fracMidi];
+              updateHoldIndicator(0);
+            }
+          }
+        }
+
+        // ── Phase: note 1 held, still singing same note ──
+        else if (singState.phase === 'note1-held') {
+          // Still singing note 1 — just wait for silence or pitch change
+          if (Math.abs(rawMidi - singState.note1) > PITCH_TOLERANCE) {
+            // Pitch changed — go straight to collecting note 2
+            singState.phase = 'wait-note2';
+            resetPitchCollection();
+            pitchCollecting = true;
+            pitchStartTime = now;
+            pitchAnchor = rawMidi;
+            pitchSamples = [fracMidi];
+          }
+        }
+
+        // ── Phase: waiting for note 2 ──
+        else if (singState.phase === 'wait-note2' && !answered) {
+          // Reject if same pitch class as note 1
+          if (isSameNote(rawMidi, singState.note1)) {
+            // Still on note 1, reset
+            if (pitchCollecting) { resetPitchCollection(); updateHoldIndicator(0); }
+            return requestAnimationFrame(micUpdatePitch) && undefined;
+          }
+
+          if (!pitchCollecting) {
+            pitchCollecting = true;
+            pitchStartTime = now;
+            pitchAnchor = rawMidi;
+            pitchSamples = [fracMidi];
+          } else {
+            if (Math.abs(rawMidi - pitchAnchor) <= PITCH_TOLERANCE) {
+              pitchSamples.push(fracMidi);
+              const elapsed = now - pitchStartTime;
+              updateHoldIndicator(Math.min(1, elapsed / HOLD_DURATION_MS));
+
+              $('sgDetected').innerHTML = `Hearing: <span class="note-name">${midiToNoteName(rawMidi)}</span> — hold it...`;
+
+              if (elapsed >= HOLD_DURATION_MS) {
+                // Note 2 is stable!
+                const avgMidi = Math.round(getAverageMidi(pitchSamples));
+                onNote2Confirmed(avgMidi);
+                resetPitchCollection();
+                updateHoldIndicator(1);
+              }
+            } else {
+              // Pitch jumped — restart
+              resetPitchCollection();
+              pitchCollecting = true;
+              pitchStartTime = now;
+              pitchAnchor = rawMidi;
+              pitchSamples = [fracMidi];
+              updateHoldIndicator(0);
+            }
+          }
+        }
+      }
+
+      micRafId = requestAnimationFrame(micUpdatePitch);
+    }
+
+    function updateHoldIndicator(progress) {
+      // Update the mic ring border to show hold progress via a conic gradient trick
+      const ring = $('sgMicRing');
+      if (progress <= 0) {
+        ring.style.background = '';
+      } else if (progress >= 1) {
+        ring.style.background = '';
+      } else {
+        const deg = Math.round(progress * 360);
+        ring.style.background = `conic-gradient(rgba(167,139,250,0.15) ${deg}deg, transparent ${deg}deg)`;
+      }
+    }
+
+    function onNote2Confirmed(midiNote) {
+      if (answered) return;
+      const noteName = midiToNoteName(midiNote);
+
+      singState.note2 = midiNote;
+      singState.phase = 'done';
+      answered = true;
+
+      $('sgSlot2').textContent = noteName;
+      $('sgDetected').innerHTML = `<span class="note-name">${midiToNoteName(singState.note1)}</span> → <span class="note-name">${noteName}</span>`;
+
+      const sungSemi = Math.abs(midiNote - singState.note1);
+      const sungDir = midiNote > singState.note1 ? 'ascending' : 'descending';
+      const dirOk = sungDir === question.dir;
+      const semiOk = sungSemi === question.targetSemi;
+      const correct = semiOk && dirOk;
+
+      if (correct) {
+        score++;
+        $('sgSlot1').className = 'sing-slot correct-slot';
+        $('sgSlot2').className = 'sing-slot correct-slot';
+        $('sgMicRing').className = 'mic-ring success';
+        $('sgMicRing').style.background = '';
+        $('sgFeedback').innerHTML = `<div class="feedback-pill correct">Correct!</div>`;
+      } else {
+        $('sgSlot2').className = 'sing-slot wrong-slot';
+        $('sgMicRing').className = 'mic-ring fail';
+        $('sgMicRing').style.background = '';
+        let reason = '';
+        if (!semiOk) {
+          const actual = INTERVALS.find(iv => iv.semi === sungSemi);
+          reason = `You sang: ${actual ? actual.name : sungSemi + ' semitones'}`;
+        } else {
+          reason = `Wrong direction (sang ${sungDir})`;
+        }
+        $('sgFeedback').innerHTML = `<div class="feedback-pill wrong">${reason}</div>`;
+      }
+
+      $('sgFeedback').innerHTML += `<div class="notes-reveal" style="margin-top:8px">
+        <div class="notes-reveal-label">Expected interval</div>
+        <div class="notes-reveal-notes">
+          <span class="note-char">${midiToNoteName(question.baseMidi)}</span> → <span class="note-char">${midiToNoteName(question.note2)}</span>
+        </div>
+      </div>`;
+
+      history.push({ correct });
+      $('sgScore').textContent = `${score} ✓`;
+
+      setTimeout(() => {
+        round++;
+        if (round >= TOTAL) { stopMicListening(); showResults(); return; }
+        answered = false;
+        question = genSingQ(); renderSingGame();
+        setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 200);
+      }, 2500);
+    }
+
+    function skipSingRound() {
+      if (answered) return;
+      answered = true;
+      history.push({ correct: false });
+      $('sgMicRing').className = 'mic-ring fail';
+      $('sgMicRing').style.background = '';
+      $('sgFeedback').innerHTML = `<div class="feedback-pill wrong">Skipped</div>
+        <div class="notes-reveal" style="margin-top:8px">
+          <div class="notes-reveal-label">Expected interval</div>
+          <div class="notes-reveal-notes">
+            <span class="note-char">${midiToNoteName(question.baseMidi)}</span> → <span class="note-char">${midiToNoteName(question.note2)}</span>
+          </div>
+        </div>`;
+      $('sgScore').textContent = `${score} ✓`;
+      setTimeout(() => {
+        round++;
+        if (round >= TOTAL) { stopMicListening(); showResults(); return; }
+        answered = false;
+        question = genSingQ(); renderSingGame();
+        setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 200);
+      }, 2000);
+    }
+
+    // ─── Pitch Detection (ACF2+) ────────────────────────────
+    function noteFromPitch(f) { return Math.round(12 * (Math.log(f / 440) / Math.log(2))) + 69; }
+
+    function autoCorrelate(buf, sampleRate) {
+      let SIZE = buf.length, rms = 0;
+      for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.01) return -1;
+
+      let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+      for (let i = 0; i < SIZE / 2; i++) if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+      for (let i = 1; i < SIZE / 2; i++) if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+
+      buf = buf.slice(r1, r2);
+      SIZE = buf.length;
+
+      const c = new Array(SIZE).fill(0);
+      for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE - i; j++) c[i] += buf[j] * buf[j + i];
+
+      let d = 0;
+      while (c[d] > c[d + 1]) d++;
+      let maxval = -1, maxpos = -1;
+      for (let i = d; i < SIZE; i++) if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+      let T0 = maxpos;
+
+      const x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
+      const a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2;
+      if (a) T0 = T0 - b / (2 * a);
+      return sampleRate / T0;
+    }
+
+    // ─── Results ─────────────────────────────────────────────
+    function showResults() {
+      showScreen('results');
+      const pct = Math.round((score / TOTAL) * 100);
+      const emoji = pct >= 80 ? '🔥' : pct >= 60 ? '👏' : pct >= 40 ? '🎯' : '💪';
+      const msg = pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Good job!' : pct >= 40 ? 'Getting there!' : 'Keep practicing!';
+      const ringColor = pct >= 60 ? 'var(--correct)' : 'var(--accent)';
+      $('resEmoji').textContent = emoji;
+      $('resMessage').textContent = msg;
+      $('resSubtext').textContent = `You scored ${score} out of ${TOTAL}`;
+      $('resArc').setAttribute('stroke', ringColor);
+      $('resArc').setAttribute('stroke-dasharray', `${(pct / 100) * 377} 377`);
+      $('resPct').textContent = pct + '%';
+      $('resPct').style.color = ringColor;
+      const dots = $('resDots'); dots.innerHTML = '';
+      history.forEach(h => {
+        const d = document.createElement('div');
+        d.className = 'dot ' + (h.correct ? 'ok' : 'fail');
+        d.textContent = h.correct ? '✓' : '✗';
+        dots.appendChild(d);
+      });
+    }
+
+    // ─── Init ────────────────────────────────────────────────
+    buildIntervalSetup();
+    buildModeSetup();
+    buildSingSetup();
+</script>
+</body>
+</html>

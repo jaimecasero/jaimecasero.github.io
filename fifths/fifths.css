@@ -1,0 +1,49 @@
+
+
+.diatonicClass{
+	border-color: blue;
+}
+
+.nonDiatonicClass {
+    border-color: black;
+}
+
+.disabledNoteClass {
+   color:grey;
+}
+
+#circleCanvas {
+	  touch-action: manipulation;
+}
+
+#keyFormulaInput {
+	width: 90px;
+}
+
+#keyMajorRelativeInput {
+	width: 120px;
+}
+
+#keySignatureInput {
+	width: 90px;
+}
+
+input[name="octaveSelect"] {
+	height:35px; width:65px; vertical-align: middle;
+	  touch-action: manipulation;
+}
+
+input[name="chordModeSelect"] {
+	height:35px; width:65px; vertical-align: middle;
+}
+
+input[name="scaleButton"] {
+	height:65px; width:70px; vertical-align: middle;
+	  touch-action: manipulation;
+}
+
+input[name="chordModifierRadio"] {
+	height:65px; width:55px; vertical-align: middle;
+	  touch-action: manipulation;
+}
+
