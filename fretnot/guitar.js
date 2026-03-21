@@ -291,13 +291,16 @@ function renderFretboard() {
     ctx.clearRect(0, 0, fretCanvas.width, fretCanvas.height);
 
 
-    //draw strings
+    //draw strings - thicker for lower strings like a real guitar
+    const STRING_WIDTHS = [5, 4, 3, 2.5, 2, 1.5]; // E A D G B e
     for (let i=0; i < STD_TUNING.length ; i++) {
         ctx.beginPath();
+        ctx.lineWidth = STRING_WIDTHS[i];
         ctx.moveTo(STRING_SEPARATION * i + STRING_OFFSET[i] + STRING_SEPARATION_HALF, 0);
         ctx.lineTo(STRING_SEPARATION * i + STRING_SEPARATION_HALF, fretCanvas.height);
         ctx.stroke();
     }
+    ctx.lineWidth = 1;
 
     //draw frets & markers
     for (let i=0; i <= FRET_NUM ; i++){
