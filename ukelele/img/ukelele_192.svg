@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="24" fill="#000"/>
+  <rect x="55" y="25" width="82" height="135" rx="8" fill="none" stroke="#FF4500" stroke-width="3"/>
+  <line x1="72" y1="25" x2="72" y2="160" stroke="#FF4500" stroke-width="2"/>
+  <line x1="85" y1="25" x2="85" y2="160" stroke="#FF4500" stroke-width="2"/>
+  <line x1="107" y1="25" x2="107" y2="160" stroke="#FF4500" stroke-width="2"/>
+  <line x1="120" y1="25" x2="120" y2="160" stroke="#FF4500" stroke-width="2"/>
+  <line x1="55" y1="55" x2="137" y2="55" stroke="#FF4500" stroke-width="2" opacity="0.6"/>
+  <line x1="55" y1="85" x2="137" y2="85" stroke="#FF4500" stroke-width="2" opacity="0.6"/>
+  <line x1="55" y1="115" x2="137" y2="115" stroke="#FF4500" stroke-width="2" opacity="0.6"/>
+  <circle cx="107" cy="70" r="6" fill="#FF4500" opacity="0.8"/>
+  <circle cx="85" cy="100" r="6" fill="#FF4500" opacity="0.8"/>
+  <text x="96" y="183" text-anchor="middle" fill="#FF4500" font-family="sans-serif" font-size="13" font-weight="bold">UKELELE</text>
+</svg>
