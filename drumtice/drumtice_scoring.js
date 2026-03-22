@@ -413,13 +413,13 @@ const scoringEngine = (function () {
         const groups = {};
         const typeMap = {
             35: 'kick', 36: 'kick',
-            37: 'snare', 38: 'snare', 40: 'snare',
+            37: 'snare', 38: 'snare', 39: 'snare', 40: 'snare',
             42: 'hihat', 44: 'hihat', 46: 'hihat_open',
             41: 'tom_low', 43: 'tom_low', 45: 'tom_low',
             47: 'tom_mid', 48: 'tom_mid',
             50: 'tom_hi',
-            49: 'crash', 57: 'crash',
-            51: 'ride',
+            49: 'crash', 52: 'crash', 55: 'crash', 57: 'crash',
+            51: 'ride', 53: 'ride',
         };
 
         for (const note of notes) {
@@ -556,14 +556,14 @@ const scoringEngine = (function () {
     function isSameDrumType(midi1, midi2) {
         const typeMap = {
             35: 1, 36: 1,           // kick
-            37: 2, 38: 2, 40: 2,   // snare
+            37: 2, 38: 2, 39: 2, 40: 2, // snare/clap
             42: 3, 44: 3,           // closed hihat
             46: 4,                   // open hihat
             41: 5, 43: 5, 45: 5,   // floor tom
             47: 6, 48: 6,           // mid tom
             50: 7,                   // hi tom
-            49: 8, 57: 8,           // crash
-            51: 9,                   // ride
+            49: 8, 52: 8, 55: 8, 57: 8, // crash/china/splash
+            51: 9, 53: 9,           // ride/ride bell
         };
         return (typeMap[midi1] || midi1) === (typeMap[midi2] || midi2);
     }
@@ -604,8 +604,8 @@ const scoringEngine = (function () {
     }
 
     function computeNoteLevelLocal(midiNote, absTick, ppq) {
-        const KICK = [35, 36], SNARE = [37, 38, 40], HH = [42, 44, 46];
-        const CYMBALS = [49, 51, 57];
+        const KICK = [35, 36], SNARE = [37, 38, 39, 40], HH = [42, 44, 46];
+        const CYMBALS = [49, 51, 52, 53, 55, 57];
         const TOMS = [41, 43, 45, 47, 48, 50];
         const isQuarter = (absTick % ppq) === 0;
         const isEighth = (absTick % (ppq / 2)) === 0;
