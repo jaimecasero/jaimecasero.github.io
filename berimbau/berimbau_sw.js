@@ -1,15 +1,29 @@
-const CACHE_NAME = 'drumtice-v1.0.5';
+const CACHE_NAME = 'berimbau-v1.0.0';
 const ASSETS_TO_CACHE = [
-    './drumtice.html',
-    './drumtice.js',
-    './drumtice.css',
-    './drumtice_manifest.json',
-    './img/drumtice_192.png',
-    './img/drumtice_512.png',
-    './midi/in_the_end_chorus.mid',
-    './midi/in_the_end_pre_chorus.mid',
-    './midi/in_the_end_verse.mid',
-    './midi/pop_rock.mid',
+    './berimbau.html',
+    './berimbau.js',
+    './berimbau.css',
+    './berimbau_manifest.json',
+    './img/berimbau_192.svg',
+    './img/berimbau_512.svg',
+    './audio/gunga-chi.wav',
+    './audio/gunga-din.wav',
+    './audio/gunga-don.wav',
+    './audio/medio-chi.wav',
+    './audio/medio-din.wav',
+    './audio/medio-don.wav',
+    './audio/viola-chi.wav',
+    './audio/viola-din.wav',
+    './audio/viola-don.wav',
+    './audio/atabaqueDak.wav',
+    './audio/atabaqueDum.wav',
+    './audio/pandeiro-slap.wav',
+    './audio/pandeiro-tum.wav',
+    './audio/agogo_dom.wav',
+    './audio/agogo_dim.wav',
+    './audio/palma.wav',
+    './audio/metro-1.wav',
+    './audio/metro-n.wav',
 ];
 
 // Install: cache all assets
@@ -20,7 +34,6 @@ self.addEventListener('install', (event) => {
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
-    // Activate immediately without waiting for old SW to finish
     self.skipWaiting();
 });
 
@@ -38,7 +51,6 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    // Take control of all pages immediately
     self.clients.claim();
 });
 
@@ -49,9 +61,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Not in cache — fetch from network and cache for next time
             return fetch(event.request).then((response) => {
-                // Only cache successful same-origin responses
                 if (!response || response.status !== 200 || response.type !== 'basic') {
                     return response;
                 }

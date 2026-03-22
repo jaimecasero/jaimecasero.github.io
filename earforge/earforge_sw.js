@@ -1,15 +1,9 @@
-const CACHE_NAME = 'drumtice-v1.0.5';
+const CACHE_NAME = 'earforge-v1.0.0';
 const ASSETS_TO_CACHE = [
-    './drumtice.html',
-    './drumtice.js',
-    './drumtice.css',
-    './drumtice_manifest.json',
-    './img/drumtice_192.png',
-    './img/drumtice_512.png',
-    './midi/in_the_end_chorus.mid',
-    './midi/in_the_end_pre_chorus.mid',
-    './midi/in_the_end_verse.mid',
-    './midi/pop_rock.mid',
+    './index.html',
+    './earforge_manifest.json',
+    './img/earforge_192.svg',
+    './img/earforge_512.svg',
 ];
 
 // Install: cache all assets
@@ -20,7 +14,6 @@ self.addEventListener('install', (event) => {
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
-    // Activate immediately without waiting for old SW to finish
     self.skipWaiting();
 });
 
@@ -38,7 +31,6 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    // Take control of all pages immediately
     self.clients.claim();
 });
 
@@ -49,9 +41,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Not in cache — fetch from network and cache for next time
             return fetch(event.request).then((response) => {
-                // Only cache successful same-origin responses
                 if (!response || response.status !== 200 || response.type !== 'basic') {
                     return response;
                 }

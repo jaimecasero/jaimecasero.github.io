@@ -1,0 +1,22 @@
+{
+  "name": "Circle Of Fifths Player",
+  "short_name": "Fifths",
+  "description": "Explore music theory through the Circle of Fifths",
+  "start_url": "./fifths.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FF4500",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "img/fifths_192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "img/fifths_512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

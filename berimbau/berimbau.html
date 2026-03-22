@@ -2,8 +2,14 @@
 <head>
 	<script src="berimbau.js"></script>
 	<link rel="stylesheet" href="berimbau.css">
+	<link rel="manifest" href="berimbau_manifest.json">
 	<meta name="viewport" content="width=device-width,user-scalable=no">
 	<meta charset="UTF-8">
+	<meta name="theme-color" content="#FF4500">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Berimbau">
+	<link rel="apple-touch-icon" href="img/berimbau_192.svg">
 </head>
 <body>
 	<audio id="audio0" >
@@ -105,5 +111,14 @@
 	<br><br><br>
 	<a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
 
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./berimbau_sw.js')
+                .then((reg) => console.log('[PWA] Service Worker registered, scope:', reg.scope))
+                .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
+        });
+    }
+</script>
 </body>
 </html>
