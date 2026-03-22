@@ -39,6 +39,10 @@ const SPLASH_CYMBAL=55;
 const CRASH_CYMBAL_2=57;
 const INITIAL_MISTAKES = 0;
 
+// Velocity thresholds (MIDI 0-127)
+const GHOST_VELOCITY_MAX = 40;
+const ACCENT_VELOCITY_MIN = 100;
+
 //https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
 // Staff positions (top to bottom):
 // 0: Crash/China/Splash (above staff)    1: Hi-hat closed/open
@@ -381,6 +385,17 @@ function renderBeat() {
                             noteSymbol = "&#119107;"; // X notehead for side stick/cross stick
                             break;
                     }
+                    // Ghost & accent based on velocity
+                    const velocity = Math.round(midiData.tracks[drumTrack].notes[j].velocity * 127);
+                    if (velocity < GHOST_VELOCITY_MAX) {
+                        // Ghost note: wrap in parentheses
+                        noteSymbol = "(" + noteSymbol + ")";
+                        noteClass += " ghost-note";
+                    } else if (velocity >= ACCENT_VELOCITY_MIN) {
+                        // Accent note: add > mark above
+                        noteClass += " accent-note";
+                    }
+
                     setClefText(noteSymbol, noteClass, clefIndex, i);
                 }
             }
