@@ -47,7 +47,21 @@ const INITIAL_MISTAKES = 0;
 // 6: Low-Mid Tom (Tom 3, middle line)   7: Floor Tom (Tom 4 — Low Floor/High Floor/Low Tom)
 // 8: (empty)                            9: Kick/Bass drum
 // 10: (empty)                           11: Pedal Hi-hat
-const DRUM_MIDI_CODE = [[49,52,55,57],[42,46],[51,53],[50],[47,48],[37,38,39,40],[],[41,43,45],[],[35,36],[],[44],[],[]];
+const DRUM_MIDI_CODE = [
+    [CRASH_CYMBAL_1,CHINESE_CYMBAL,SPLASH_CYMBAL,CRASH_CYMBAL_2],
+    [CLOSED_HIHAT_MIDI,OPEN_HI_HAT_MIDI],
+    [RIDE_CYMBAL_1,RIDE_BELL],
+    [HIGH_TOM],
+    [LOW_MID_TOM,HI_MID_TOM],
+    [SIDE_STICK_MIDI,ACOUSTIC_SNARE_MIDI,HAND_CLAP_MIDI,ELECTRIC_SNARE_MIDI],
+    [],
+    [LOW_FLOOR_TOM_MIDI,HIGH_FLOOR_TOM_MIDI,LOW_TOM_MIDI],
+    [],
+    [ACOUSTIC_BASS_DRUM_MIDI,BASS_DRUM_MIDI],
+    [],
+    [PEDAL_HIHAT_MIDI],
+    [],[]
+];
 
 
 const CLEF_COLUMNS = 16;
