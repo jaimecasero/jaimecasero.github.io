@@ -35,12 +35,13 @@ table {
 
 #buttonTable {
     flex-shrink: 0;
+    height: 110px;
     margin: 4px 0;
 }
 
 #buttonTable td {
     width: 25px;
-    height: 20px;
+    height: 110px;
     position: relative;
 }
 
