@@ -503,6 +503,16 @@
             </div>
             <div><div>Keys & Modes</div><div class="menu-label">Recognize scales & modes</div></div>
         </button>
+        <button class="menu-btn" onclick="showScreen('chordSetup')">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="6" y="3" width="3" height="18" rx="1.5" fill="var(--accent)"/>
+                    <rect x="11" y="7" width="3" height="14" rx="1.5" fill="var(--accent)" opacity="0.7"/>
+                    <rect x="16" y="5" width="3" height="16" rx="1.5" fill="var(--accent)" opacity="0.5"/>
+                </svg>
+            </div>
+            <div><div>Chords</div><div class="menu-label">Identify chord qualities by ear</div></div>
+        </button>
         <button class="menu-btn" onclick="showScreen('singSetup')">
             <div class="menu-icon" style="background:rgba(167,139,250,0.08);color:var(--mic);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -565,6 +575,39 @@
     <div class="bottom-action">
         <button id="startSingBtn" class="primary-btn" onclick="startSingGame()">Start Training</button>
     </div>
+</div>
+
+<!-- ═══════════════ CHORD SETUP ═══════════════ -->
+<div id="chordSetup" class="screen">
+    <div class="top-bar">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <h2 class="serif" style="font-size:22px;">Chords</h2>
+    </div>
+    <div class="scrollable">
+        <p class="label">Select chord qualities (min 2)</p>
+        <div id="chordChips" class="grid-2" style="margin-bottom:24px;"></div>
+    </div>
+    <div class="bottom-action">
+        <button id="startChordBtn" class="primary-btn" onclick="startChordGame()">Start Training</button>
+    </div>
+</div>
+
+<!-- ═══════════════ CHORD GAME ═══════════════ -->
+<div id="chordGame" class="screen">
+    <div class="top-bar top-bar-spread">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <div class="score-text">
+            <span style="color:var(--text-dim)">Round <span id="cgRound" style="color:var(--text);font-weight:600">1/10</span></span>
+            <span id="cgScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+        </div>
+    </div>
+    <div class="progress-bar"><div class="progress-track"><div id="cgProgress" class="progress-fill" style="width:0%"></div></div></div>
+    <div class="game-center">
+        <button class="play-btn" onclick="replayQuestion()"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--bg)"><polygon points="5,3 19,12 5,21"/></svg></button>
+        <span style="color:var(--text-dim);font-size:12px;">Tap to replay chord</span>
+        <div id="cgFeedback"></div>
+    </div>
+    <div class="answer-grid"><div id="cgAnswers" class="grid-2" style="gap:10px;"></div></div>
 </div>
 
 <!-- ═══════════════ INTERVAL GAME ═══════════════ -->
@@ -708,6 +751,9 @@
           playNote(base, 0, 0.7, 0.5);
           playNote(n2, gap, 0.7, 0.5);
         },
+        playChord(baseMidi, intervals, duration = 1.2) {
+          intervals.forEach(iv => playNote(baseMidi + iv, 0, duration, 0.4));
+        },
         playMelody(notes, tempo = 0.28) {
           notes.forEach((n, i) => playNote(n, i * tempo, 0.32, 0.45));
         }
@@ -739,6 +785,26 @@
       { name: 'Aeolian',    iv: [0,2,3,5,7,8,10], char: [2,5,6] },
       { name: 'Locrian',    iv: [0,1,3,5,6,8,10], char: [1,4] },
     ];
+    const CHORDS = [
+      { name: 'Major',       short: 'Maj',   iv: [0, 4, 7] },
+      { name: 'Minor',       short: 'min',   iv: [0, 3, 7] },
+      { name: 'Diminished',  short: 'dim',   iv: [0, 3, 6] },
+      { name: 'Augmented',   short: 'aug',   iv: [0, 4, 8] },
+      { name: 'Sus2',        short: 'sus2',  iv: [0, 2, 7] },
+      { name: 'Sus4',        short: 'sus4',  iv: [0, 5, 7] },
+      { name: 'Major 7th',   short: 'Maj7',  iv: [0, 4, 7, 11] },
+      { name: 'Dominant 7th', short: '7',    iv: [0, 4, 7, 10] },
+      { name: 'Minor 7th',   short: 'min7',  iv: [0, 3, 7, 10] },
+      { name: '9th',         short: '9',     iv: [0, 4, 7, 10, 14] },
+      { name: 'Minor 9th',   short: 'min9',  iv: [0, 3, 7, 10, 14] },
+      { name: 'Major 9th',   short: 'Maj9',  iv: [0, 4, 7, 11, 14] },
+      { name: '11th',        short: '11',    iv: [0, 4, 7, 10, 14, 17] },
+      { name: 'Minor 11th',  short: 'min11', iv: [0, 3, 7, 10, 14, 17] },
+      { name: 'Major 11th',  short: 'Maj11', iv: [0, 4, 7, 11, 14, 17] },
+      { name: '13th',        short: '13',    iv: [0, 4, 7, 10, 14, 17, 21] },
+      { name: 'Minor 13th',  short: 'min13', iv: [0, 3, 7, 10, 14, 17, 21] },
+      { name: 'Major 13th',  short: 'Maj13', iv: [0, 4, 7, 11, 14, 17, 21] },
+    ];
     const TOTAL = 10;
 
     // ─── State ───────────────────────────────────────────────
@@ -748,6 +814,7 @@
     let selModes = new Set([0,1,5]);
     let singSelIntervals = new Set([0,1,2,3]);
     let singDirection = 'ascending';
+    let selChords = new Set([0,1]);
 
     let gameType = '';
     let round = 0, score = 0;
@@ -848,6 +915,23 @@
       $('startModeBtn').disabled = selModes.size < 2;
     }
 
+    function buildChordSetup() {
+      const container = $('chordChips');
+      container.innerHTML = '';
+      CHORDS.forEach((ch, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (selChords.has(i) ? ' active' : '');
+        btn.innerHTML = `<strong>${ch.short}</strong> ${ch.name}`;
+        btn.onclick = () => {
+          if (selChords.has(i)) { if (selChords.size <= 2) return; selChords.delete(i); }
+          else selChords.add(i);
+          buildChordSetup();
+        };
+        container.appendChild(btn);
+      });
+      $('startChordBtn').disabled = selChords.size < 2;
+    }
+
     // ─── Question Generation ─────────────────────────────────
     function genIntervalQ() {
       const arr = [...selIntervals];
@@ -913,11 +997,19 @@
       return { type: 'sing', intervalIdx: idx, dir, baseMidi, note2, targetSemi };
     }
 
+    function genChordQ() {
+      const arr = [...selChords];
+      const idx = arr[randInt(0, arr.length - 1)];
+      const baseMidi = randInt(55, 67);
+      return { type: 'chord', chordIdx: idx, baseMidi };
+    }
+
     // ─── Play / Replay ───────────────────────────────────────
     function playQuestion() {
       if (!question) return;
       if (question.type === 'interval') AudioEng.playInterval(question.baseMidi, INTERVALS[question.intervalIdx].semi, question.dir);
       else if (question.type === 'mode') AudioEng.playMelody(question.melody);
+      else if (question.type === 'chord') AudioEng.playChord(question.baseMidi, CHORDS[question.chordIdx].iv);
     }
     function replayQuestion() { playQuestion(); }
     function replayRefNote() {
@@ -957,6 +1049,21 @@
       });
     }
 
+    function renderChordGame() {
+      $('cgRound').textContent = `${round + 1}/${TOTAL}`;
+      $('cgScore').textContent = `${score} ✓`;
+      $('cgProgress').style.width = `${(round / TOTAL) * 100}%`;
+      $('cgFeedback').innerHTML = '';
+      const cont = $('cgAnswers'); cont.innerHTML = '';
+      [...selChords].forEach(idx => {
+        const ch = CHORDS[idx], btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="short">${ch.short}</span><span class="long">${ch.name}</span>`;
+        btn.onclick = () => handleAnswer(idx); btn.dataset.idx = idx;
+        cont.appendChild(btn);
+      });
+    }
+
     function renderSingGame() {
       $('sgRound').textContent = `${round + 1}/${TOTAL}`;
       $('sgScore').textContent = `${score} ✓`;
@@ -981,12 +1088,12 @@
     function handleAnswer(chosenIdx) {
       if (answered) return;
       answered = true;
-      const correctIdx = question.type === 'interval' ? question.intervalIdx : question.modeIdx;
+      const correctIdx = question.type === 'interval' ? question.intervalIdx : question.type === 'chord' ? question.chordIdx : question.modeIdx;
       const correct = chosenIdx === correctIdx;
       if (correct) score++;
       history.push({ correct });
 
-      const sid = question.type === 'interval' ? 'ig' : 'mg';
+      const sid = question.type === 'interval' ? 'ig' : question.type === 'chord' ? 'cg' : 'mg';
       $(sid + 'Answers').querySelectorAll('.answer-btn').forEach(btn => {
         const idx = parseInt(btn.dataset.idx);
         if (idx === correctIdx) btn.classList.add('correct-answer');
@@ -994,10 +1101,13 @@
         else btn.classList.add('dimmed');
       });
 
-      const label = question.type === 'interval' ? INTERVALS[correctIdx].name : MODES[correctIdx].name;
+      const label = question.type === 'interval' ? INTERVALS[correctIdx].name : question.type === 'chord' ? CHORDS[correctIdx].name : MODES[correctIdx].name;
       let notesHtml = '';
       if (question.type === 'interval') {
         notesHtml = question.playedNotes.map(m => `<span class="note-char">${midiToNoteName(m)}</span>`).join('  →  ');
+      } else if (question.type === 'chord') {
+        const ch = CHORDS[question.chordIdx];
+        notesHtml = ch.iv.map(iv => `<span class="note-char">${midiToNoteName(question.baseMidi + iv)}</span>`).join('  ');
       } else {
         const mode = MODES[question.modeIdx];
         const cs = new Set(mode.char.map(ci => mode.iv[ci]));
@@ -1010,7 +1120,7 @@
       $(sid + 'Feedback').innerHTML =
         `<div class="feedback-pill ${correct ? 'correct' : 'wrong'}">${correct ? 'Correct!' : 'Wrong — it was ' + label}</div>
         <div class="notes-reveal">
-          <div class="notes-reveal-label">Notes played${question.type === 'mode' ? ' (characteristic tones highlighted)' : ''}</div>
+          <div class="notes-reveal-label">${question.type === 'chord' ? 'Chord notes' : 'Notes played'}${question.type === 'mode' ? ' (characteristic tones highlighted)' : ''}</div>
           <div class="notes-reveal-notes">${notesHtml}</div>
         </div>`;
       $(sid + 'Score').textContent = `${score} ✓`;
@@ -1019,10 +1129,12 @@
         round++;
         if (round >= TOTAL) { showResults(); return; }
         answered = false;
-        question = question.type === 'interval' ? genIntervalQ() : genModeQ();
-        if (question.type === 'interval') renderIntervalGame(); else renderModeGame();
+        question = question.type === 'interval' ? genIntervalQ() : question.type === 'chord' ? genChordQ() : genModeQ();
+        if (question.type === 'interval') renderIntervalGame();
+        else if (question.type === 'chord') renderChordGame();
+        else renderModeGame();
         setTimeout(playQuestion, 200);
-      }, question.type === 'interval' ? 2500 : 3500);
+      }, question.type === 'mode' ? 3500 : 2500);
     }
 
     // ─── Start Games ─────────────────────────────────────────
@@ -1036,6 +1148,11 @@
       question = genModeQ(); showScreen('modeGame'); renderModeGame();
       setTimeout(playQuestion, 300);
     }
+    function startChordGame() {
+      gameType = 'chord'; round = 0; score = 0; answered = false; history = [];
+      question = genChordQ(); showScreen('chordGame'); renderChordGame();
+      setTimeout(playQuestion, 300);
+    }
     function startSingGame() {
       gameType = 'sing'; round = 0; score = 0; answered = false; history = [];
       question = genSingQ(); showScreen('singGame'); renderSingGame();
@@ -1045,6 +1162,7 @@
     function playAgain() {
       if (gameType === 'interval') startIntervalGame();
       else if (gameType === 'mode') startModeGame();
+      else if (gameType === 'chord') startChordGame();
       else startSingGame();
     }
 
@@ -1390,6 +1508,7 @@
     // ─── Init ────────────────────────────────────────────────
     buildIntervalSetup();
     buildModeSetup();
+    buildChordSetup();
     buildSingSetup();
 </script>
 <script>
