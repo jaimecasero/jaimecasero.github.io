@@ -48,8 +48,6 @@
     </tbody>
 </table>
 
-<BR><BR>
-
 <table id="buttonTable">
     <tr>
         <td><input type="button" id="NoteButton0" name="noteButton" class="natural-key"
@@ -101,69 +99,63 @@
                    onpointerup="keyNoteUp(event, 11)"></td>
     </tr>
 </table>
-<BR><BR><BR><BR>
-<select id="songSelect" class="gameConsoleText" onchange="changeSong();">
-    <option value="harry" selected="selected">Harry</option>
-    <option value="waka">waka waka</option>
-    <option value="thunder">Thunder</option>
-    <option value="potra">Potra Salvaje</option>
-    <option value="mario">Mario Bros</option>
-    <option value="perfect">Perfect</option>
-</select>
-<select id="trackSelect" class="gameConsoleText" onchange="changeTrack();">
-    <option value="0" selected="selected">Track0</option>
-</select>
-<BR>
-<select id="clefSelect" class="gameConsoleText" onchange="changeClef();">
-    <option value="0" selected>&#119070; Treble G</option>
-    <option value="1">&#119073; Alto C</option>
-    <option value="2">&#119073; Tenor C</option>
-    <option value="3">&#119074; Bass F</option>
-    <option value="4">&#119070; + &#119074; Grand</option>
-</select>
 
-<select id="signatureSelect" class="gameConsoleText" onchange="changeClef();">
-    <option value="0" selected>no &flat;/&sharp;</option>
-    <option value="1">&flat;</option>
-    <option value="2">&flat;&flat;</option>
-    <option value="3">&flat;&flat;&flat;</option>
-    <option value="4">&flat;&flat;&flat;&flat;</option>
-    <option value="5">&flat;&flat;&flat;&flat;&flat;</option>
-    <option value="6">&flat;&flat;&flat;&flat;&flat;&flat;</option>
-    <option value="7">&flat;&flat;&flat;&flat;&flat;&flat;&flat;</option>
-    <option value="8">&sharp;</option>
-    <option value="9">&sharp;&sharp;</option>
-    <option value="10">&sharp;&sharp;&sharp;</option>
-    <option value="11">&sharp;&sharp;&sharp;&sharp;</option>
-    <option value="12">&sharp;&sharp;&sharp;&sharp;&sharp;</option>
-    <option value="13">&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;</option>
-    <option value="14">&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;</option>
-</select>
-<BR>
-<label for="hintCheckbox">Sig Hint:</label>
-<input type="checkbox" id="hintCheckbox" onchange="changeClef();">
+<div class="controls">
+    <select id="songSelect" class="gameConsoleText" onchange="changeSong();">
+        <option value="harry" selected="selected">Harry</option>
+        <option value="waka">waka waka</option>
+        <option value="thunder">Thunder</option>
+        <option value="potra">Potra Salvaje</option>
+        <option value="mario">Mario Bros</option>
+        <option value="perfect">Perfect</option>
+    </select>
+    <select id="trackSelect" class="gameConsoleText" onchange="changeTrack();">
+        <option value="0" selected="selected">Track0</option>
+    </select>
+    <select id="clefSelect" class="gameConsoleText" onchange="changeClef();">
+        <option value="0" selected>&#119070; Treble G</option>
+        <option value="1">&#119073; Alto C</option>
+        <option value="2">&#119073; Tenor C</option>
+        <option value="3">&#119074; Bass F</option>
+        <option value="4">&#119070; + &#119074; Grand</option>
+    </select>
+    <select id="signatureSelect" class="gameConsoleText" onchange="changeClef();">
+        <option value="0" selected>no &flat;/&sharp;</option>
+        <option value="1">&flat;</option>
+        <option value="2">&flat;&flat;</option>
+        <option value="3">&flat;&flat;&flat;</option>
+        <option value="4">&flat;&flat;&flat;&flat;</option>
+        <option value="5">&flat;&flat;&flat;&flat;&flat;</option>
+        <option value="6">&flat;&flat;&flat;&flat;&flat;&flat;</option>
+        <option value="7">&flat;&flat;&flat;&flat;&flat;&flat;&flat;</option>
+        <option value="8">&sharp;</option>
+        <option value="9">&sharp;&sharp;</option>
+        <option value="10">&sharp;&sharp;&sharp;</option>
+        <option value="11">&sharp;&sharp;&sharp;&sharp;</option>
+        <option value="12">&sharp;&sharp;&sharp;&sharp;&sharp;</option>
+        <option value="13">&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;</option>
+        <option value="14">&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;&sharp;</option>
+    </select>
+    <select id="inputSelect" class="gameConsoleText" onchange="document.dispatchEvent(new Event(this.value));">
+        <option value="buttons_selected" selected>buttons</option>
+        <option value="keyboard_selected">keyboard</option>
+        <option value="midi_selected">midi keyboard</option>
+        <option value="microphone_selected">microphone</option>
+    </select>
+</div>
 
-<label for="playCheckbox">Ear Tr:</label>
-<input type="checkbox" id="playCheckbox">
-
-<select id="inputSelect" class="gameConsoleText" onchange="document.dispatchEvent(new Event(this.value));">
-    <option value="buttons_selected" selected>buttons</option>
-    <option value="keyboard_selected">keyboard</option>
-    <option value="midi_selected">midi keyboard</option>
-    <option value="microphone_selected">microphone</option>
-
-</select>
-
-<BR><BR>
-<label for="scoreText">Score:</label>
-<input type="text" class="gameConsoleText" readonly id="scoreText" value="0">
-<label for="mistakesText">Mistakes:</label>
-<input type="text" class="gameConsoleText" readonly id="mistakesText" value="0">
-<label for="detectedText">Mic Detection:</label>
-<input type="text" class="gameConsoleText" readonly id="detectedText" value="">
-
-<BR><BR><BR><BR>
-<a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
+<div class="controls">
+    <label for="hintCheckbox">Sig Hint:</label>
+    <input type="checkbox" id="hintCheckbox" onchange="changeClef();">
+    <label for="playCheckbox">Ear Tr:</label>
+    <input type="checkbox" id="playCheckbox">
+    <label for="scoreText">Score:</label>
+    <input type="text" class="gameConsoleText" readonly id="scoreText" value="0">
+    <label for="mistakesText">Mistakes:</label>
+    <input type="text" class="gameConsoleText" readonly id="mistakesText" value="0">
+    <label for="detectedText">Mic Detection:</label>
+    <input type="text" class="gameConsoleText" readonly id="detectedText" value="">
+</div>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

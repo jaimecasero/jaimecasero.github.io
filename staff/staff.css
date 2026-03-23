@@ -1,32 +1,74 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 4px;
+}
+
 table {
     border-collapse: collapse;
     position: relative;
     font-size: 24px;
 }
-body {
-    touch-action: manipulation;
+
+#clefTable {
+    flex: 1;
+    width: 100%;
 }
-td {
+
+#clefTable td {
     width: 25px;
-    height: 20px;
     position: relative;
 }
 
+#clefTable tr {
+    height: calc(100% / 21);
+}
+
+#buttonTable {
+    flex-shrink: 0;
+    height: 110px;
+    margin: 4px 0;
+}
+
+#buttonTable td {
+    width: 25px;
+    height: 110px;
+    position: relative;
+}
+
+.controls {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 2px 0;
+}
+
 .line-clef-row {
-    border-top: 2px solid black; /* Creates the staff lines */
+    border-top: 2px solid black;
 }
 
 .note-on-line {
     position: absolute;
     left: 20%;
-    top: 0; /* Align with the top border */
+    top: 0;
     transform: translate(-50%, -50%);
 }
 
 .note-on-line-striked {
     position: absolute;
     left: 20%;
-    top: 0; /* Align with the top border */
+    top: 0;
     transform: translate(-50%, -50%);
     text-decoration: line-through;
 }
@@ -34,34 +76,33 @@ td {
 .note-on-space {
     position: absolute;
     left: 20%;
-    top: 0; /* Align with the top border */
+    top: 0;
     transform: translate(-50%, -50%);
 }
 
-
 .natural-key {
-    background: white; /* Ensures readability */
+    background: white;
     width: 25px;
     height: 100px;
     position: absolute;
     left: 50%;
-    top: 30; /* Align with the top border */
+    top: 30;
     transform: translate(-50%, -50%);
 }
 
 .artificial-key {
-    background: black; /* Ensures readability */
+    background: black;
     width: 25px;
     height: 60px;
     position: absolute;
     left: 50%;
-    top: 0; /* Align with the top border */
+    top: 0;
     transform: translate(-50%, -50%);
 }
 
 .gameConsoleText {
     border-color: black;
-    width:45px;
+    width: 45px;
 }
 
 #songSelect, #trackSelect, #clefSelect, #signatureSelect, #inputSelect {
@@ -71,7 +112,3 @@ td {
 #scoreText, #mistakesText, #detectedText {
     width: 30px;
 }
-
-
-
-
