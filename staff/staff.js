@@ -23,6 +23,15 @@ const SIXTEENTH_CHAR = "&#119137;";
 const THIRTY_SECOND_CHAR = "&#119138;";
 
 const INITIAL_MISTAKES = 0;
+const SCORE_BASE_POINTS = 10;
+const SCORE_TIME_FAST_MS = 1000;    // under 1s = 3x multiplier
+const SCORE_TIME_MEDIUM_MS = 2000;  // under 2s = 2x multiplier
+const SCORE_TIME_SLOW_MS = 3000;    // under 3s = 1.5x multiplier
+const SCORE_HINT_MULTIPLIER = 1;
+const SCORE_NO_HINT_MULTIPLIER = 3;
+const SCORE_MISTAKE_PENALTY = 5;
+const MAX_HIGH_SCORES = 10;
+const LOCAL_STORAGE_PREFIX = 'staff_scores_';
 
 const MAJOR_TO_SIGNATURE_INDEX = [0, 5, 9, 3, 11, 1, 6, 8, 4, 10, 2, 7];
 const TREBLE_MIDI_CODE = [53, 55, 57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84, 86, 88]; //[F3-E6]
@@ -46,6 +55,9 @@ var resultingClefArtificials = []; //contains -1 for flatten notes or  1 for sha
 var midiData;//contains midi object after parsing midi file
 var signatureType = 0; //negative for flat sigs and positive for sharp signatures. defaults to no flat/sharp
 var signatureArtificials = 0; //number of artificials  in signature. defaults to no artificials
+var noteShownTime = 0; //timestamp when current note was displayed
+var totalScore = 0;
+var totalMistakes = 0;
 
 
 ////////DOM CACHING//////////////////
@@ -334,6 +346,8 @@ function setClefText(text, textClass, clefIndex, column) {
 
 function start() {
     currentNoteIndex = 0;
+    totalMistakes = 0;
+    totalScore = 0;
     mistakesText.value = INITIAL_MISTAKES;
     scoreText.value = 0;
     hintCheckbox.readOnly = true;
@@ -380,6 +394,8 @@ function renderCurrentNote() {
         currentTick = midiData.tracks[trackSelect.value].notes[currentNoteIndex + j].ticks;
     }
 
+
+    noteShownTime = Date.now();
 
     if (playCheckbox.checked) {
         setTimeout(() => {
@@ -460,6 +476,13 @@ function keyNoteDown(event, keyIndex) {
     }));
 }
 
+function calculateTimeMultiplier(responseMs) {
+    if (responseMs < SCORE_TIME_FAST_MS) return 3;
+    if (responseMs < SCORE_TIME_MEDIUM_MS) return 2;
+    if (responseMs < SCORE_TIME_SLOW_MS) return 1.5;
+    return 1;
+}
+
 function midiNoteDown(event) {
     let midiNote = event.detail.midiNote;
     const pressure = ((event.pressure == null) ? KEYBOARD_GAIN : event.pressure);
@@ -471,8 +494,13 @@ function midiNoteDown(event) {
             //dont play note on ear training mode
             playMidiNote(currentNote, pressure);
         }
-        let hintRatio = hintCheckbox.checked ? 1 : 3;
-        scoreText.value = parseInt(scoreText.value) + hintRatio;
+
+        let responseMs = Date.now() - noteShownTime;
+        let timeMultiplier = calculateTimeMultiplier(responseMs);
+        let hintMultiplier = hintCheckbox.checked ? SCORE_HINT_MULTIPLIER : SCORE_NO_HINT_MULTIPLIER;
+        let notePoints = Math.round(SCORE_BASE_POINTS * timeMultiplier * hintMultiplier);
+        totalScore += notePoints;
+        scoreText.value = totalScore;
         setTimeout(function () {
             changeTextColor(scoreText, "black")
         }, 500);
@@ -480,11 +508,15 @@ function midiNoteDown(event) {
 
         currentNoteIndex = currentNoteIndex + 1;
         if (currentNoteIndex >= midiData.tracks[trackSelect.value].notes.length) {
+            // Song completed
+            let finalScore = Math.max(0, totalScore - (totalMistakes * SCORE_MISTAKE_PENALTY));
+            saveHighScore(finalScore);
             currentNoteIndex = 0;
         }
 
         renderCurrentNote();
     } else {
+        totalMistakes++;
         document.dispatchEvent(new CustomEvent(USER_FAILED_EVENT, {
             detail: {
                 midiNote: midiNote,
@@ -505,6 +537,50 @@ function keyNoteUp(event, keyIndex) {
 
 function isSameNote(midiNote1, midiNote2) {
     return midiNote1 % NUM_NOTES === midiNote2 % NUM_NOTES;
+}
+
+//////////////////////////// HIGH SCORES ////////////////////////////
+
+function getScoreKey() {
+    return LOCAL_STORAGE_PREFIX + songSelect.value;
+}
+
+function loadHighScores() {
+    try {
+        let scores = JSON.parse(localStorage.getItem(getScoreKey()));
+        return Array.isArray(scores) ? scores : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveHighScore(finalScore) {
+    let scores = loadHighScores();
+    scores.push({
+        score: finalScore,
+        mistakes: totalMistakes,
+        date: new Date().toISOString().slice(0, 10),
+        track: trackSelect.options[trackSelect.selectedIndex].text,
+        clef: clefSelect.options[clefSelect.selectedIndex].text,
+        hint: hintCheckbox.checked
+    });
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, MAX_HIGH_SCORES);
+    localStorage.setItem(getScoreKey(), JSON.stringify(scores));
+    showHighScores(finalScore);
+}
+
+function showHighScores(finalScore) {
+    let scores = loadHighScores();
+    let msg = "Song complete! Final score: " + finalScore + "\n";
+    msg += "Mistakes: " + totalMistakes + " (-" + (totalMistakes * SCORE_MISTAKE_PENALTY) + ")\n\n";
+    msg += "Top 10 - " + songSelect.options[songSelect.selectedIndex].text + ":\n";
+    for (let i = 0; i < scores.length; i++) {
+        let s = scores[i];
+        let marker = (s.score === finalScore && s.date === new Date().toISOString().slice(0, 10)) ? " <--" : "";
+        msg += (i + 1) + ". " + s.score + " pts | " + s.mistakes + " miss | " + s.clef + " | " + s.date + marker + "\n";
+    }
+    alert(msg);
 }
 
 //////////////////////////// CONFIGURATION ////////////////////////////
