@@ -87,8 +87,8 @@ table {
     height: 100px;
     position: absolute;
     left: 50%;
-    top: 30;
-    transform: translate(-50%, -50%);
+    top: 5px;
+    transform: translateX(-50%);
 }
 
 .artificial-key {
@@ -98,7 +98,7 @@ table {
     position: absolute;
     left: 50%;
     top: 0;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
 }
 
 .gameConsoleText {
@@ -110,6 +110,10 @@ table {
     width: 150px;
 }
 
-#scoreText, #mistakesText, #detectedText {
-    width: 30px;
+#scoreText, #mistakesText {
+    width: 50px;
+}
+
+#detectedText {
+    width: 150px;
 }
