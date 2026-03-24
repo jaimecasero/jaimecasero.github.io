@@ -1,4 +1,4 @@
-const CACHE_NAME = 'earforge-v1.1.0';
+const CACHE_NAME = 'earforge-v1.2.0';
 const ASSETS_TO_CACHE = [
     './index.html',
     './earforge_manifest.json',
