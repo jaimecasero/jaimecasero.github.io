@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fretnot-v1.0.0';
+const CACHE_NAME = 'fretnot-v1.1.0';
 const ASSETS_TO_CACHE = [
     './guitar.html',
     './guitar.js',
@@ -8,15 +8,38 @@ const ASSETS_TO_CACHE = [
     './img/guitar_512.png',
 ];
 
-// Install: cache all assets
+// CDN scripts to pre-cache (cross-origin)
+const CDN_ASSETS = [
+    'https://cdn.jsdelivr.net/npm/midi.js',
+    'https://unpkg.com/@tonejs/midi',
+    'https://unpkg.com/meyda/dist/web/meyda.min.js',
+];
+
+// Domains whose responses we cache dynamically (e.g. soundfonts)
+const CACHEABLE_ORIGINS = [
+    'https://gleitz.github.io',
+];
+
+// Install: cache all assets (local + CDN)
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('[SW] Caching all assets');
-            return cache.addAll(ASSETS_TO_CACHE);
+        caches.open(CACHE_NAME).then(async (cache) => {
+            console.log('[SW] Caching local assets');
+            await cache.addAll(ASSETS_TO_CACHE);
+
+            console.log('[SW] Caching CDN assets');
+            for (const url of CDN_ASSETS) {
+                try {
+                    const response = await fetch(url, { mode: 'cors' });
+                    if (response.ok) {
+                        await cache.put(url, response);
+                    }
+                } catch (err) {
+                    console.warn('[SW] Failed to cache CDN asset:', url, err);
+                }
+            }
         })
     );
-    // Activate immediately without waiting for old SW to finish
     self.skipWaiting();
 });
 
@@ -34,27 +57,31 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    // Take control of all pages immediately
     self.clients.claim();
 });
 
 // Fetch: serve from cache first, fall back to network
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Not in cache — fetch from network and cache for next time
             return fetch(event.request).then((response) => {
-                // Only cache successful same-origin responses
-                if (!response || response.status !== 200 || response.type !== 'basic') {
+                if (!response || response.status !== 200) {
                     return response;
                 }
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
+                // Cache same-origin responses and responses from cacheable origins (soundfonts)
+                const shouldCache = response.type === 'basic'
+                    || CACHEABLE_ORIGINS.some((origin) => url.href.startsWith(origin));
+                if (shouldCache) {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
                 return response;
             });
         })
