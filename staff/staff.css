@@ -34,10 +34,41 @@ table {
     height: calc(100% / 21);
 }
 
+#pianoContainer {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    margin: 4px 0;
+}
+
+#octaveBar {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 2px;
+}
+
+.octave-btn {
+    flex: 1;
+    height: 28px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #999;
+    background: #eee;
+    border-radius: 3px;
+    touch-action: manipulation;
+}
+
+.octave-btn:active, .octave-btn.active {
+    background: #4a90d9;
+    color: white;
+    border-color: #357abd;
+}
+
 #buttonTable {
     flex-shrink: 0;
+    flex-grow: 1;
     height: 110px;
-    margin: 4px 0;
 }
 
 #buttonTable td {

@@ -405,9 +405,27 @@ function renderCurrentNote() {
 }
 
 ///////////////INPUT HANDLING/////////////////////////////////////////
+var currentOctave = 4;
+var octaveHeld = false;
 var shiftPressed = false;
 var altPressed = false;
 var pressedKeys = [];
+
+function octaveDown(octave) {
+    currentOctave = octave;
+    octaveHeld = true;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[octave].classList.add('active');
+}
+
+function octaveUp() {
+    currentOctave = 4;
+    octaveHeld = false;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[4].classList.add('active');
+}
 
 function keyDownHandler(event) {
     console.log("keyDownHandler:" + event.keyCode);
@@ -468,9 +486,10 @@ function keyUpHandler(event) {
 }
 
 function keyNoteDown(event, keyIndex) {
+    let midiNote = (currentOctave + 1) * NUM_NOTES + keyIndex;
     document.dispatchEvent(new CustomEvent(USER_NOTE_ON_HIT_EVENT, {
         detail: {
-            midiNote: NOTE_MIDI_CODE[keyIndex],
+            midiNote: midiNote,
             pressure: event.pressure,
         }
     }));

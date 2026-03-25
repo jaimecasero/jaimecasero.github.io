@@ -1,4 +1,4 @@
-const CACHE_NAME = 'staff-v1.0.5';
+const CACHE_NAME = 'staff-v1.0.8';
 const ASSETS_TO_CACHE = [
     './staff.html',
     './staff.js',
@@ -6,6 +6,9 @@ const ASSETS_TO_CACHE = [
     './staff_manifest.json',
     './img/staff_192.svg',
     './img/staff_512.svg',
+    './lib/midi.min.js',
+    './lib/tonejs-midi.min.js',
+    './lib/meyda.min.js',
     './soundfont/acoustic_grand_piano-ogg.js',
     './midi/harry.mid',
     './midi/mario.mid',
