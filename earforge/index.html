@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Ear Forge">
+    <meta name="theme-color" content="#e8c547">
+    <link rel="manifest" href="earforge_manifest.json">
+    <link rel="apple-touch-icon" href="img/earforge_192.svg">
     <title>Ear Forge</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif&display=swap" rel="stylesheet">
     <style>
@@ -301,9 +306,10 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          height: 100dvh;
-          padding: 20px;
+          justify-content: flex-start;
+          min-height: 100dvh;
+          padding: 40px 20px 20px;
+          overflow-y: auto;
         }
         .score-ring { position: relative; width: 140px; height: 140px; margin-bottom: 32px; }
         .score-ring-text {
@@ -471,6 +477,29 @@
           align-items: center;
           gap: 6px;
         }
+
+        .highscores { width: 280px; margin-bottom: 24px; }
+        .highscores-title {
+          font-size: 12px;
+          color: var(--text-dim);
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+          text-align: center;
+        }
+        .hs-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 6px 12px;
+          font-size: 13px;
+          border-radius: 6px;
+        }
+        .hs-row:nth-child(even) { background: var(--surface); }
+        .hs-row .hs-rank { color: var(--text-dim); width: 24px; }
+        .hs-row .hs-score { color: var(--accent); font-weight: 600; }
+        .hs-row .hs-date { color: var(--text-dim); font-size: 11px; }
+        .hs-row.hs-current { background: rgba(232, 197, 71, 0.08); border: 1px solid rgba(232, 197, 71, 0.2); }
+        .hs-new-badge { color: var(--correct); font-size: 11px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -497,6 +526,16 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
             </div>
             <div><div>Keys & Modes</div><div class="menu-label">Recognize scales & modes</div></div>
+        </button>
+        <button class="menu-btn" onclick="showScreen('chordSetup')">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="6" y="3" width="3" height="18" rx="1.5" fill="var(--accent)"/>
+                    <rect x="11" y="7" width="3" height="14" rx="1.5" fill="var(--accent)" opacity="0.7"/>
+                    <rect x="16" y="5" width="3" height="16" rx="1.5" fill="var(--accent)" opacity="0.5"/>
+                </svg>
+            </div>
+            <div><div>Chords</div><div class="menu-label">Identify chord qualities by ear</div></div>
         </button>
         <button class="menu-btn" onclick="showScreen('singSetup')">
             <div class="menu-icon" style="background:rgba(167,139,250,0.08);color:var(--mic);">
@@ -562,13 +601,46 @@
     </div>
 </div>
 
+<!-- ═══════════════ CHORD SETUP ═══════════════ -->
+<div id="chordSetup" class="screen">
+    <div class="top-bar">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <h2 class="serif" style="font-size:22px;">Chords</h2>
+    </div>
+    <div class="scrollable">
+        <p class="label">Select chord qualities (min 2)</p>
+        <div id="chordChips" class="grid-2" style="margin-bottom:24px;"></div>
+    </div>
+    <div class="bottom-action">
+        <button id="startChordBtn" class="primary-btn" onclick="startChordGame()">Start Training</button>
+    </div>
+</div>
+
+<!-- ═══════════════ CHORD GAME ═══════════════ -->
+<div id="chordGame" class="screen">
+    <div class="top-bar top-bar-spread">
+        <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
+        <div class="score-text">
+            <span style="color:var(--text-dim)">Round <span id="cgRound" style="color:var(--text);font-weight:600">1/10</span></span>
+            <span id="cgScore" style="color:var(--correct);font-weight:600">0 pts</span>
+        </div>
+    </div>
+    <div class="progress-bar"><div class="progress-track"><div id="cgProgress" class="progress-fill" style="width:0%"></div></div></div>
+    <div class="game-center">
+        <button class="play-btn" onclick="replayQuestion()"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--bg)"><polygon points="5,3 19,12 5,21"/></svg></button>
+        <span style="color:var(--text-dim);font-size:12px;">Tap to replay chord</span>
+        <div id="cgFeedback"></div>
+    </div>
+    <div class="answer-grid"><div id="cgAnswers" class="grid-2" style="gap:10px;"></div></div>
+</div>
+
 <!-- ═══════════════ INTERVAL GAME ═══════════════ -->
 <div id="intervalGame" class="screen">
     <div class="top-bar top-bar-spread">
         <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
         <div class="score-text">
             <span style="color:var(--text-dim)">Round <span id="igRound" style="color:var(--text);font-weight:600">1/10</span></span>
-            <span id="igScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+            <span id="igScore" style="color:var(--correct);font-weight:600">0 pts</span>
         </div>
     </div>
     <div class="progress-bar"><div class="progress-track"><div id="igProgress" class="progress-fill" style="width:0%"></div></div></div>
@@ -587,7 +659,7 @@
         <button class="back-btn" onclick="showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
         <div class="score-text">
             <span style="color:var(--text-dim)">Round <span id="mgRound" style="color:var(--text);font-weight:600">1/10</span></span>
-            <span id="mgScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+            <span id="mgScore" style="color:var(--correct);font-weight:600">0 pts</span>
         </div>
     </div>
     <div class="progress-bar"><div class="progress-track"><div id="mgProgress" class="progress-fill" style="width:0%"></div></div></div>
@@ -606,7 +678,7 @@
         <button class="back-btn" onclick="stopSingGame(); showScreen('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg></button>
         <div class="score-text">
             <span style="color:var(--text-dim)">Round <span id="sgRound" style="color:var(--text);font-weight:600">1/10</span></span>
-            <span id="sgScore" style="color:var(--correct);font-weight:600">0 ✓</span>
+            <span id="sgScore" style="color:var(--correct);font-weight:600">0 pts</span>
         </div>
     </div>
     <div class="progress-bar"><div class="progress-track"><div id="sgProgress" class="progress-fill" style="width:0%"></div></div></div>
@@ -657,6 +729,7 @@
             <div id="resPct" class="score-ring-text"></div>
         </div>
         <div id="resDots" class="history-dots"></div>
+        <div id="resHighscores" class="highscores" style="display:none;"></div>
         <div class="result-btns">
             <button class="secondary" onclick="stopSingGame(); showScreen('home')">Home</button>
             <button class="primary" onclick="playAgain()">Play Again</button>
@@ -703,6 +776,9 @@
           playNote(base, 0, 0.7, 0.5);
           playNote(n2, gap, 0.7, 0.5);
         },
+        playChord(baseMidi, intervals, duration = 1.2) {
+          intervals.forEach(iv => playNote(baseMidi + iv, 0, duration, 0.4));
+        },
         playMelody(notes, tempo = 0.28) {
           notes.forEach((n, i) => playNote(n, i * tempo, 0.32, 0.45));
         }
@@ -734,6 +810,26 @@
       { name: 'Aeolian',    iv: [0,2,3,5,7,8,10], char: [2,5,6] },
       { name: 'Locrian',    iv: [0,1,3,5,6,8,10], char: [1,4] },
     ];
+    const CHORDS = [
+      { name: 'Major',       short: 'Maj',   iv: [0, 4, 7] },
+      { name: 'Minor',       short: 'min',   iv: [0, 3, 7] },
+      { name: 'Diminished',  short: 'dim',   iv: [0, 3, 6] },
+      { name: 'Augmented',   short: 'aug',   iv: [0, 4, 8] },
+      { name: 'Sus2',        short: 'sus2',  iv: [0, 2, 7] },
+      { name: 'Sus4',        short: 'sus4',  iv: [0, 5, 7] },
+      { name: 'Major 7th',   short: 'Maj7',  iv: [0, 4, 7, 11] },
+      { name: 'Dominant 7th', short: '7',    iv: [0, 4, 7, 10] },
+      { name: 'Minor 7th',   short: 'min7',  iv: [0, 3, 7, 10] },
+      { name: '9th',         short: '9',     iv: [0, 4, 7, 10, 14] },
+      { name: 'Minor 9th',   short: 'min9',  iv: [0, 3, 7, 10, 14] },
+      { name: 'Major 9th',   short: 'Maj9',  iv: [0, 4, 7, 11, 14] },
+      { name: '11th',        short: '11',    iv: [0, 4, 7, 10, 14, 17] },
+      { name: 'Minor 11th',  short: 'min11', iv: [0, 3, 7, 10, 14, 17] },
+      { name: 'Major 11th',  short: 'Maj11', iv: [0, 4, 7, 11, 14, 17] },
+      { name: '13th',        short: '13',    iv: [0, 4, 7, 10, 14, 17, 21] },
+      { name: 'Minor 13th',  short: 'min13', iv: [0, 3, 7, 10, 14, 17, 21] },
+      { name: 'Major 13th',  short: 'Maj13', iv: [0, 4, 7, 11, 14, 17, 21] },
+    ];
     const TOTAL = 10;
 
     // ─── State ───────────────────────────────────────────────
@@ -743,12 +839,23 @@
     let selModes = new Set([0,1,5]);
     let singSelIntervals = new Set([0,1,2,3]);
     let singDirection = 'ascending';
+    let selChords = new Set([0,1]);
 
     let gameType = '';
     let round = 0, score = 0;
     let answered = false;
     let question = null;
     let history = [];
+    let roundStartTime = 0;
+    const MAX_POINTS = 100;
+    const MIN_POINTS = 10;
+    const DECAY_MS = 10000;
+
+    function calcPoints(elapsedMs) {
+      if (elapsedMs <= 0) return MAX_POINTS;
+      const factor = Math.max(0, 1 - elapsedMs / DECAY_MS);
+      return Math.round(MIN_POINTS + (MAX_POINTS - MIN_POINTS) * factor);
+    }
 
     // ─── Utility ─────────────────────────────────────────────
     const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
@@ -843,6 +950,23 @@
       $('startModeBtn').disabled = selModes.size < 2;
     }
 
+    function buildChordSetup() {
+      const container = $('chordChips');
+      container.innerHTML = '';
+      CHORDS.forEach((ch, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (selChords.has(i) ? ' active' : '');
+        btn.innerHTML = `<strong>${ch.short}</strong> ${ch.name}`;
+        btn.onclick = () => {
+          if (selChords.has(i)) { if (selChords.size <= 2) return; selChords.delete(i); }
+          else selChords.add(i);
+          buildChordSetup();
+        };
+        container.appendChild(btn);
+      });
+      $('startChordBtn').disabled = selChords.size < 2;
+    }
+
     // ─── Question Generation ─────────────────────────────────
     function genIntervalQ() {
       const arr = [...selIntervals];
@@ -908,11 +1032,19 @@
       return { type: 'sing', intervalIdx: idx, dir, baseMidi, note2, targetSemi };
     }
 
+    function genChordQ() {
+      const arr = [...selChords];
+      const idx = arr[randInt(0, arr.length - 1)];
+      const baseMidi = randInt(55, 67);
+      return { type: 'chord', chordIdx: idx, baseMidi };
+    }
+
     // ─── Play / Replay ───────────────────────────────────────
     function playQuestion() {
       if (!question) return;
       if (question.type === 'interval') AudioEng.playInterval(question.baseMidi, INTERVALS[question.intervalIdx].semi, question.dir);
       else if (question.type === 'mode') AudioEng.playMelody(question.melody);
+      else if (question.type === 'chord') AudioEng.playChord(question.baseMidi, CHORDS[question.chordIdx].iv);
     }
     function replayQuestion() { playQuestion(); }
     function replayRefNote() {
@@ -922,7 +1054,7 @@
     // ─── Render Game UIs ─────────────────────────────────────
     function renderIntervalGame() {
       $('igRound').textContent = `${round + 1}/${TOTAL}`;
-      $('igScore').textContent = `${score} ✓`;
+      $('igScore').textContent = `${score} pts`;
       $('igProgress').style.width = `${(round / TOTAL) * 100}%`;
       $('igDirection').textContent = question.dir === 'ascending' ? '↑ Ascending' : '↓ Descending';
       $('igFeedback').innerHTML = '';
@@ -938,7 +1070,7 @@
 
     function renderModeGame() {
       $('mgRound').textContent = `${round + 1}/${TOTAL}`;
-      $('mgScore').textContent = `${score} ✓`;
+      $('mgScore').textContent = `${score} pts`;
       $('mgProgress').style.width = `${(round / TOTAL) * 100}%`;
       $('mgKeyLabel').textContent = `Key of ${NOTES[selKey]}`;
       $('mgFeedback').innerHTML = '';
@@ -952,9 +1084,24 @@
       });
     }
 
+    function renderChordGame() {
+      $('cgRound').textContent = `${round + 1}/${TOTAL}`;
+      $('cgScore').textContent = `${score} pts`;
+      $('cgProgress').style.width = `${(round / TOTAL) * 100}%`;
+      $('cgFeedback').innerHTML = '';
+      const cont = $('cgAnswers'); cont.innerHTML = '';
+      [...selChords].forEach(idx => {
+        const ch = CHORDS[idx], btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="short">${ch.short}</span><span class="long">${ch.name}</span>`;
+        btn.onclick = () => handleAnswer(idx); btn.dataset.idx = idx;
+        cont.appendChild(btn);
+      });
+    }
+
     function renderSingGame() {
       $('sgRound').textContent = `${round + 1}/${TOTAL}`;
-      $('sgScore').textContent = `${score} ✓`;
+      $('sgScore').textContent = `${score} pts`;
       $('sgProgress').style.width = `${(round / TOTAL) * 100}%`;
       const iv = INTERVALS[question.intervalIdx];
       $('sgIntervalLabel').textContent = `${iv.short} — ${iv.name}`;
@@ -976,12 +1123,14 @@
     function handleAnswer(chosenIdx) {
       if (answered) return;
       answered = true;
-      const correctIdx = question.type === 'interval' ? question.intervalIdx : question.modeIdx;
+      const elapsed = performance.now() - roundStartTime;
+      const correctIdx = question.type === 'interval' ? question.intervalIdx : question.type === 'chord' ? question.chordIdx : question.modeIdx;
       const correct = chosenIdx === correctIdx;
-      if (correct) score++;
-      history.push({ correct });
+      const pts = correct ? calcPoints(elapsed) : 0;
+      if (correct) score += pts;
+      history.push({ correct, points: pts });
 
-      const sid = question.type === 'interval' ? 'ig' : 'mg';
+      const sid = question.type === 'interval' ? 'ig' : question.type === 'chord' ? 'cg' : 'mg';
       $(sid + 'Answers').querySelectorAll('.answer-btn').forEach(btn => {
         const idx = parseInt(btn.dataset.idx);
         if (idx === correctIdx) btn.classList.add('correct-answer');
@@ -989,10 +1138,13 @@
         else btn.classList.add('dimmed');
       });
 
-      const label = question.type === 'interval' ? INTERVALS[correctIdx].name : MODES[correctIdx].name;
+      const label = question.type === 'interval' ? INTERVALS[correctIdx].name : question.type === 'chord' ? CHORDS[correctIdx].name : MODES[correctIdx].name;
       let notesHtml = '';
       if (question.type === 'interval') {
         notesHtml = question.playedNotes.map(m => `<span class="note-char">${midiToNoteName(m)}</span>`).join('  →  ');
+      } else if (question.type === 'chord') {
+        const ch = CHORDS[question.chordIdx];
+        notesHtml = ch.iv.map(iv => `<span class="note-char">${midiToNoteName(question.baseMidi + iv)}</span>`).join('  ');
       } else {
         const mode = MODES[question.modeIdx];
         const cs = new Set(mode.char.map(ci => mode.iv[ci]));
@@ -1003,43 +1155,51 @@
       }
 
       $(sid + 'Feedback').innerHTML =
-        `<div class="feedback-pill ${correct ? 'correct' : 'wrong'}">${correct ? 'Correct!' : 'Wrong — it was ' + label}</div>
+        `<div class="feedback-pill ${correct ? 'correct' : 'wrong'}">${correct ? 'Correct! +' + pts + ' pts' : 'Wrong — it was ' + label}</div>
         <div class="notes-reveal">
-          <div class="notes-reveal-label">Notes played${question.type === 'mode' ? ' (characteristic tones highlighted)' : ''}</div>
+          <div class="notes-reveal-label">${question.type === 'chord' ? 'Chord notes' : 'Notes played'}${question.type === 'mode' ? ' (characteristic tones highlighted)' : ''}</div>
           <div class="notes-reveal-notes">${notesHtml}</div>
         </div>`;
-      $(sid + 'Score').textContent = `${score} ✓`;
+      $(sid + 'Score').textContent = `${score} pts`;
 
       setTimeout(() => {
         round++;
         if (round >= TOTAL) { showResults(); return; }
         answered = false;
-        question = question.type === 'interval' ? genIntervalQ() : genModeQ();
-        if (question.type === 'interval') renderIntervalGame(); else renderModeGame();
-        setTimeout(playQuestion, 200);
-      }, question.type === 'interval' ? 2500 : 3500);
+        question = question.type === 'interval' ? genIntervalQ() : question.type === 'chord' ? genChordQ() : genModeQ();
+        if (question.type === 'interval') renderIntervalGame();
+        else if (question.type === 'chord') renderChordGame();
+        else renderModeGame();
+        setTimeout(() => { playQuestion(); roundStartTime = performance.now(); }, 200);
+      }, question.type === 'mode' ? 3500 : 2500);
     }
 
     // ─── Start Games ─────────────────────────────────────────
     function startIntervalGame() {
       gameType = 'interval'; round = 0; score = 0; answered = false; history = [];
       question = genIntervalQ(); showScreen('intervalGame'); renderIntervalGame();
-      setTimeout(playQuestion, 300);
+      setTimeout(() => { playQuestion(); roundStartTime = performance.now(); }, 300);
     }
     function startModeGame() {
       gameType = 'mode'; round = 0; score = 0; answered = false; history = [];
       question = genModeQ(); showScreen('modeGame'); renderModeGame();
-      setTimeout(playQuestion, 300);
+      setTimeout(() => { playQuestion(); roundStartTime = performance.now(); }, 300);
+    }
+    function startChordGame() {
+      gameType = 'chord'; round = 0; score = 0; answered = false; history = [];
+      question = genChordQ(); showScreen('chordGame'); renderChordGame();
+      setTimeout(() => { playQuestion(); roundStartTime = performance.now(); }, 300);
     }
     function startSingGame() {
       gameType = 'sing'; round = 0; score = 0; answered = false; history = [];
       question = genSingQ(); showScreen('singGame'); renderSingGame();
-      setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 300);
+      setTimeout(() => { AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5); roundStartTime = performance.now(); }, 300);
       startMicListening();
     }
     function playAgain() {
       if (gameType === 'interval') startIntervalGame();
       else if (gameType === 'mode') startModeGame();
+      else if (gameType === 'chord') startChordGame();
       else startSingGame();
     }
 
@@ -1264,13 +1424,15 @@
       const semiOk = sungSemi === question.targetSemi;
       const correct = semiOk && dirOk;
 
+      const singElapsed = performance.now() - roundStartTime;
+      const singPts = correct ? calcPoints(singElapsed) : 0;
       if (correct) {
-        score++;
+        score += singPts;
         $('sgSlot1').className = 'sing-slot correct-slot';
         $('sgSlot2').className = 'sing-slot correct-slot';
         $('sgMicRing').className = 'mic-ring success';
         $('sgMicRing').style.background = '';
-        $('sgFeedback').innerHTML = `<div class="feedback-pill correct">Correct!</div>`;
+        $('sgFeedback').innerHTML = `<div class="feedback-pill correct">Correct! +${singPts} pts</div>`;
       } else {
         $('sgSlot2').className = 'sing-slot wrong-slot';
         $('sgMicRing').className = 'mic-ring fail';
@@ -1292,22 +1454,22 @@
         </div>
       </div>`;
 
-      history.push({ correct });
-      $('sgScore').textContent = `${score} ✓`;
+      history.push({ correct, points: singPts });
+      $('sgScore').textContent = `${score} pts`;
 
       setTimeout(() => {
         round++;
         if (round >= TOTAL) { stopMicListening(); showResults(); return; }
         answered = false;
         question = genSingQ(); renderSingGame();
-        setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 200);
+        setTimeout(() => { AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5); roundStartTime = performance.now(); }, 200);
       }, 2500);
     }
 
     function skipSingRound() {
       if (answered) return;
       answered = true;
-      history.push({ correct: false });
+      history.push({ correct: false, points: 0 });
       $('sgMicRing').className = 'mic-ring fail';
       $('sgMicRing').style.background = '';
       $('sgFeedback').innerHTML = `<div class="feedback-pill wrong">Skipped</div>
@@ -1317,13 +1479,13 @@
             <span class="note-char">${midiToNoteName(question.baseMidi)}</span> → <span class="note-char">${midiToNoteName(question.note2)}</span>
           </div>
         </div>`;
-      $('sgScore').textContent = `${score} ✓`;
+      $('sgScore').textContent = `${score} pts`;
       setTimeout(() => {
         round++;
         if (round >= TOTAL) { stopMicListening(); showResults(); return; }
         answered = false;
         question = genSingQ(); renderSingGame();
-        setTimeout(() => AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5), 200);
+        setTimeout(() => { AudioEng.playNote(question.baseMidi, 0, 1.0, 0.5); roundStartTime = performance.now(); }, 200);
       }, 2000);
     }
 
@@ -1360,18 +1522,33 @@
     }
 
     // ─── Results ─────────────────────────────────────────────
+    function getHighscores(mode) {
+      try { return JSON.parse(localStorage.getItem('earforge-hs-' + mode)) || []; }
+      catch { return []; }
+    }
+    function saveHighscore(mode, pts) {
+      const hs = getHighscores(mode);
+      const entry = { score: pts, date: new Date().toLocaleDateString() };
+      hs.push(entry);
+      hs.sort((a, b) => b.score - a.score);
+      if (hs.length > 10) hs.length = 10;
+      localStorage.setItem('earforge-hs-' + mode, JSON.stringify(hs));
+      return hs.indexOf(entry);
+    }
+
     function showResults() {
       showScreen('results');
-      const pct = Math.round((score / TOTAL) * 100);
+      const maxScore = TOTAL * MAX_POINTS;
+      const pct = Math.round((score / maxScore) * 100);
       const emoji = pct >= 80 ? '🔥' : pct >= 60 ? '👏' : pct >= 40 ? '🎯' : '💪';
       const msg = pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Good job!' : pct >= 40 ? 'Getting there!' : 'Keep practicing!';
       const ringColor = pct >= 60 ? 'var(--correct)' : 'var(--accent)';
       $('resEmoji').textContent = emoji;
       $('resMessage').textContent = msg;
-      $('resSubtext').textContent = `You scored ${score} out of ${TOTAL}`;
+      $('resSubtext').textContent = `${score} pts (max ${maxScore})`;
       $('resArc').setAttribute('stroke', ringColor);
       $('resArc').setAttribute('stroke-dasharray', `${(pct / 100) * 377} 377`);
-      $('resPct').textContent = pct + '%';
+      $('resPct').textContent = score;
       $('resPct').style.color = ringColor;
       const dots = $('resDots'); dots.innerHTML = '';
       history.forEach(h => {
@@ -1380,12 +1557,42 @@
         d.textContent = h.correct ? '✓' : '✗';
         dots.appendChild(d);
       });
+
+      // High scores
+      const rank = saveHighscore(gameType, score);
+      const hs = getHighscores(gameType);
+      const container = $('resHighscores');
+      if (hs.length > 0) {
+        container.style.display = '';
+        let html = '<div class="highscores-title">High Scores</div>';
+        hs.forEach((entry, i) => {
+          const isCurrent = i === rank;
+          html += `<div class="hs-row${isCurrent ? ' hs-current' : ''}">
+            <span class="hs-rank">#${i + 1}</span>
+            <span class="hs-score">${entry.score} pts</span>
+            <span class="hs-date">${entry.date}${isCurrent ? ' <span class="hs-new-badge">NEW</span>' : ''}</span>
+          </div>`;
+        });
+        container.innerHTML = html;
+      } else {
+        container.style.display = 'none';
+      }
     }
 
     // ─── Init ────────────────────────────────────────────────
     buildIntervalSetup();
     buildModeSetup();
+    buildChordSetup();
     buildSingSetup();
+</script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./earforge_sw.js')
+                .then((reg) => console.log('[PWA] Service Worker registered, scope:', reg.scope))
+                .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
+        });
+    }
 </script>
 </body>
 </html>

@@ -412,14 +412,14 @@ const scoringEngine = (function () {
     function groupByDrumType(notes) {
         const groups = {};
         const typeMap = {
-            35: 'kick', 36: 'kick',
-            37: 'snare', 38: 'snare', 40: 'snare',
-            42: 'hihat', 44: 'hihat', 46: 'hihat_open',
-            41: 'tom_low', 43: 'tom_low', 45: 'tom_low',
-            47: 'tom_mid', 48: 'tom_mid',
-            50: 'tom_hi',
-            49: 'crash', 57: 'crash',
-            51: 'ride',
+            [ACOUSTIC_BASS_DRUM_MIDI]: 'kick', [BASS_DRUM_MIDI]: 'kick',
+            [SIDE_STICK_MIDI]: 'snare', [ACOUSTIC_SNARE_MIDI]: 'snare', [HAND_CLAP_MIDI]: 'snare', [ELECTRIC_SNARE_MIDI]: 'snare',
+            [CLOSED_HIHAT_MIDI]: 'hihat', [PEDAL_HIHAT_MIDI]: 'hihat', [OPEN_HI_HAT_MIDI]: 'hihat_open',
+            [LOW_FLOOR_TOM_MIDI]: 'tom_low', [HIGH_FLOOR_TOM_MIDI]: 'tom_low', [LOW_TOM_MIDI]: 'tom_low',
+            [LOW_MID_TOM]: 'tom_mid', [HI_MID_TOM]: 'tom_mid',
+            [HIGH_TOM]: 'tom_hi',
+            [CRASH_CYMBAL_1]: 'crash', [CHINESE_CYMBAL]: 'crash', [SPLASH_CYMBAL]: 'crash', [CRASH_CYMBAL_2]: 'crash',
+            [RIDE_CYMBAL_1]: 'ride', [RIDE_BELL]: 'ride',
         };
 
         for (const note of notes) {
@@ -481,8 +481,8 @@ const scoringEngine = (function () {
         }
 
         // Also try aligning prominent hits (kicks/snares) with their target
-        const userKicks = userBeats.filter(h => [35, 36].includes(h.midi));
-        const targetKicks = targetPattern.filter(n => [35, 36].includes(n.midi));
+        const userKicks = userBeats.filter(h => [ACOUSTIC_BASS_DRUM_MIDI, BASS_DRUM_MIDI].includes(h.midi));
+        const targetKicks = targetPattern.filter(n => [ACOUSTIC_BASS_DRUM_MIDI, BASS_DRUM_MIDI].includes(n.midi));
         if (userKicks.length > 0 && targetKicks.length > 0) {
             for (let k = 0; k < Math.min(userKicks.length, 3); k++) {
                 const offset = targetKicks[0].beatPos - userKicks[k].beatPos;
@@ -555,15 +555,15 @@ const scoringEngine = (function () {
      */
     function isSameDrumType(midi1, midi2) {
         const typeMap = {
-            35: 1, 36: 1,           // kick
-            37: 2, 38: 2, 40: 2,   // snare
-            42: 3, 44: 3,           // closed hihat
-            46: 4,                   // open hihat
-            41: 5, 43: 5, 45: 5,   // floor tom
-            47: 6, 48: 6,           // mid tom
-            50: 7,                   // hi tom
-            49: 8, 57: 8,           // crash
-            51: 9,                   // ride
+            [ACOUSTIC_BASS_DRUM_MIDI]: 1, [BASS_DRUM_MIDI]: 1,           // kick
+            [SIDE_STICK_MIDI]: 2, [ACOUSTIC_SNARE_MIDI]: 2, [HAND_CLAP_MIDI]: 2, [ELECTRIC_SNARE_MIDI]: 2, // snare/clap
+            [CLOSED_HIHAT_MIDI]: 3, [PEDAL_HIHAT_MIDI]: 3,           // closed hihat
+            [OPEN_HI_HAT_MIDI]: 4,                   // open hihat
+            [LOW_FLOOR_TOM_MIDI]: 5, [HIGH_FLOOR_TOM_MIDI]: 5, [LOW_TOM_MIDI]: 5,   // floor tom
+            [LOW_MID_TOM]: 6, [HI_MID_TOM]: 6,           // mid tom
+            [HIGH_TOM]: 7,                   // hi tom
+            [CRASH_CYMBAL_1]: 8, [CHINESE_CYMBAL]: 8, [SPLASH_CYMBAL]: 8, [CRASH_CYMBAL_2]: 8, // crash/china/splash
+            [RIDE_CYMBAL_1]: 9, [RIDE_BELL]: 9,           // ride/ride bell
         };
         return (typeMap[midi1] || midi1) === (typeMap[midi2] || midi2);
     }
@@ -604,18 +604,22 @@ const scoringEngine = (function () {
     }
 
     function computeNoteLevelLocal(midiNote, absTick, ppq) {
-        const KICK = [35, 36], SNARE = [37, 38, 40], HH = [42, 44];
-        const isMainBeat = (absTick % ppq) === 0;
+        const KICK = [ACOUSTIC_BASS_DRUM_MIDI, BASS_DRUM_MIDI],
+              SNARE = [SIDE_STICK_MIDI, ACOUSTIC_SNARE_MIDI, HAND_CLAP_MIDI, ELECTRIC_SNARE_MIDI],
+              HH = [CLOSED_HIHAT_MIDI, PEDAL_HIHAT_MIDI, OPEN_HI_HAT_MIDI];
+        const CYMBALS = [CRASH_CYMBAL_1, RIDE_CYMBAL_1, CHINESE_CYMBAL, RIDE_BELL, SPLASH_CYMBAL, CRASH_CYMBAL_2];
+        const TOMS = [LOW_FLOOR_TOM_MIDI, HIGH_FLOOR_TOM_MIDI, LOW_TOM_MIDI, LOW_MID_TOM, HI_MID_TOM, HIGH_TOM];
+        const isQuarter = (absTick % ppq) === 0;
         const isEighth = (absTick % (ppq / 2)) === 0;
-        const beat = Math.floor(absTick / ppq) % 4;
+        const isSixteenth = (absTick % (ppq / 4)) === 0;
 
-        if (KICK.includes(midiNote) && isMainBeat && (beat === 0 || beat === 2)) return 1;
-        if (SNARE.includes(midiNote) && isMainBeat && (beat === 1 || beat === 3)) return 1;
-        if (HH.includes(midiNote) && isEighth) return 2;
-        if (KICK.includes(midiNote)) return 2;
-        if (SNARE.includes(midiNote)) return 2;
-        if ([46].includes(midiNote) || [41, 43, 45, 47, 48, 50].includes(midiNote)) return 3;
-        if (HH.includes(midiNote)) return 3;
+        // Level 1: kick/snare/hihat on quarter note positions only
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote)) && isQuarter) return 1;
+        // Level 2: adds cymbals and 8th note positions
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote) || CYMBALS.includes(midiNote)) && isEighth) return 2;
+        // Level 3: adds toms and 16th note positions
+        if ((KICK.includes(midiNote) || SNARE.includes(midiNote) || HH.includes(midiNote) || CYMBALS.includes(midiNote) || TOMS.includes(midiNote)) && isSixteenth) return 3;
+        // Level 4: everything else (unfiltered)
         return 4;
     }
 

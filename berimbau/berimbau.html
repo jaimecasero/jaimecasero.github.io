@@ -1,25 +1,31 @@
-<html>
+<html lang="en">
 <head>
 	<script src="berimbau.js"></script>
 	<link rel="stylesheet" href="berimbau.css">
+	<link rel="manifest" href="berimbau_manifest.json">
 	<meta name="viewport" content="width=device-width,user-scalable=no">
 	<meta charset="UTF-8">
+	<meta name="theme-color" content="#FF4500">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Berimbau">
+	<link rel="apple-touch-icon" href="img/berimbau_192.svg">
 </head>
 <body>
 	<audio id="audio0" >
-		<source id="source0" src="./audio/medio-chi.mp3"/>
+		<source id="source0" src="./audio/medio-chi.wav"/>
 	</audio>
 	<audio id="audio1">
-		<source id="source1" src="./audio/medio-don.mp3"/>
+		<source id="source1" src="./audio/medio-don.wav"/>
 	</audio>
 	<audio id="audio2">
-		<source id="source2" src="./audio/medio-din.mp3"/>
+		<source id="source2" src="./audio/medio-din.wav"/>
 	</audio>
 	<audio id="audio3">
-		<source id="source3" src="./audio/doinch.mp3"/>
+		<source id="source3" src="./audio/doinch.wav"/>
 	</audio>
 	<audio id="audio4">
-		<source id="source4" src="./audio/caxixi.mp3"/>
+		<source id="source4" src="./audio/caxixi.wav"/>
 	</audio>
 
   <form id="settingsForm" class="berimbauForm">
@@ -105,5 +111,14 @@
 	<br><br><br>
 	<a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
 
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./berimbau_sw.js')
+                .then((reg) => console.log('[PWA] Service Worker registered, scope:', reg.scope))
+                .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
+        });
+    }
+</script>
 </body>
 </html>

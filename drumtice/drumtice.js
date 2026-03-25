@@ -28,15 +28,44 @@ const HIGH_FLOOR_TOM_MIDI=43;
 const PEDAL_HIHAT_MIDI=44;
 const LOW_TOM_MIDI=45;
 const OPEN_HI_HAT_MIDI=46;
+const LOW_MID_TOM=47;
 const HI_MID_TOM=48;
 const CRASH_CYMBAL_1=49;
 const HIGH_TOM=50;
 const RIDE_CYMBAL_1=51;
+const CHINESE_CYMBAL=52;
+const RIDE_BELL=53;
+const SPLASH_CYMBAL=55;
 const CRASH_CYMBAL_2=57;
 const INITIAL_MISTAKES = 0;
 
+// Velocity thresholds (MIDI 0-127)
+const GHOST_VELOCITY_MAX = 40;
+const ACCENT_VELOCITY_MIN = 100;
+
 //https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
-const DRUM_MIDI_CODE = [[49],[42, 46],[51],[50],[47,48],[37,38,40],[],[41,45],[],[35,36],[],[44],[],[]]; //[accent,Cymbal,hh,ride,ht,mt,s,lt,k,ph]
+// Staff positions (top to bottom):
+// 0: Crash/China/Splash (above staff)    1: Hi-hat closed/open
+// 2: Ride/Ride bell (top line)           3: High Tom (Tom 1)
+// 4: Hi-Mid Tom (Tom 2)                 5: Snare/Side stick/Rimshot
+// 6: Low-Mid Tom (Tom 3, middle line)   7: Floor Tom (Tom 4 — Low Floor/High Floor/Low Tom)
+// 8: (empty)                            9: Kick/Bass drum
+// 10: (empty)                           11: Pedal Hi-hat
+const DRUM_MIDI_CODE = [
+    [CRASH_CYMBAL_1,CHINESE_CYMBAL,SPLASH_CYMBAL,CRASH_CYMBAL_2],
+    [CLOSED_HIHAT_MIDI,OPEN_HI_HAT_MIDI],
+    [RIDE_CYMBAL_1,RIDE_BELL],
+    [HIGH_TOM],
+    [LOW_MID_TOM,HI_MID_TOM],
+    [SIDE_STICK_MIDI,ACOUSTIC_SNARE_MIDI,HAND_CLAP_MIDI,ELECTRIC_SNARE_MIDI],
+    [],
+    [LOW_FLOOR_TOM_MIDI,HIGH_FLOOR_TOM_MIDI,LOW_TOM_MIDI],
+    [],
+    [ACOUSTIC_BASS_DRUM_MIDI,BASS_DRUM_MIDI],
+    [],
+    [PEDAL_HIHAT_MIDI],
+    [],[]
+];
 
 
 const CLEF_COLUMNS = 16;
@@ -47,6 +76,23 @@ var drumTrack=0; //track in midi with channel 10
 var midiData;//contains midi object after parsing midi file
 let audioBuffers = [];
 var selectedLevel = 4; // default: show all notes
+
+// Level 1: kick, snare, hi-hat only
+const LEVEL1_INSTRUMENTS = [
+    ACOUSTIC_BASS_DRUM_MIDI, BASS_DRUM_MIDI,
+    ACOUSTIC_SNARE_MIDI, ELECTRIC_SNARE_MIDI, SIDE_STICK_MIDI, HAND_CLAP_MIDI,
+    CLOSED_HIHAT_MIDI, OPEN_HI_HAT_MIDI, PEDAL_HIHAT_MIDI
+];
+// Level 2: + cymbals
+const LEVEL2_INSTRUMENTS = LEVEL1_INSTRUMENTS.concat([
+    CRASH_CYMBAL_1, CRASH_CYMBAL_2, CHINESE_CYMBAL, SPLASH_CYMBAL,
+    RIDE_CYMBAL_1, RIDE_BELL
+]);
+// Level 3: + toms
+const LEVEL3_INSTRUMENTS = LEVEL2_INSTRUMENTS.concat([
+    HIGH_TOM, HI_MID_TOM, LOW_MID_TOM, LOW_TOM_MIDI,
+    LOW_FLOOR_TOM_MIDI, HIGH_FLOOR_TOM_MIDI
+]);
 let timerID; // global or scoped outside functions
 let isPlaying = false;
 
@@ -324,9 +370,18 @@ function renderBeat() {
     let ppq=midiData.header.ppq/2;
     for (let i = 0; i < 16 ; i++) {
         let matchTick =  i * ppq;
+        // Level-based timing filter: L1=quarters, L2=+8ths, L3=+16ths, L4=all
+        if (selectedLevel === 1 && (matchTick % (midiData.header.ppq)) !== 0) continue;
+        if (selectedLevel === 2 && (matchTick % (midiData.header.ppq / 2)) !== 0) continue;
+        if (selectedLevel === 3 && (matchTick % (midiData.header.ppq / 4)) !== 0) continue;
         for (let j = 0; j < midiData.tracks[drumTrack].notes.length; j++) {
             if (midiData.tracks[drumTrack].notes[j].ticks === matchTick) {
-                let clefIndex = midiToClefIndex(midiData.tracks[drumTrack].notes[j].midi);
+                const midiNote = midiData.tracks[drumTrack].notes[j].midi;
+                // Level-based instrument filter
+                if (selectedLevel === 1 && !LEVEL1_INSTRUMENTS.includes(midiNote)) continue;
+                if (selectedLevel === 2 && !LEVEL2_INSTRUMENTS.includes(midiNote)) continue;
+                if (selectedLevel === 3 && !LEVEL3_INSTRUMENTS.includes(midiNote)) continue;
+                let clefIndex = midiToClefIndex(midiNote);
                 if (clefIndex > -1) {
 
                     let noteClass = "note-on-line";
@@ -336,17 +391,36 @@ function renderBeat() {
 
                     console.log("clefRowIndex:" + clefIndex + " class:" + " noteClass: " + noteClass);
                     let noteSymbol = noteDurationToSymbol(midiData.tracks[drumTrack].notes[j].durationTicks, midiData.header.ppq);
-                    switch (midiData.tracks[drumTrack].notes[j].midi) {
+                    // X noteheads for cymbals and hi-hats (standard drum notation)
+                    switch (midiNote) {
                         case CLOSED_HIHAT_MIDI:
-                            noteSymbol = "&#119107;";
-                            break;
-                        case CRASH_CYMBAL_1:
-                            noteSymbol = "&#119109;";
+                        case PEDAL_HIHAT_MIDI:
+                            noteSymbol = "&#119107;"; // closed X notehead
                             break;
                         case OPEN_HI_HAT_MIDI:
-                            noteSymbol = "&#119109;";
+                        case CRASH_CYMBAL_1:
+                        case CRASH_CYMBAL_2:
+                        case CHINESE_CYMBAL:
+                        case SPLASH_CYMBAL:
+                        case RIDE_CYMBAL_1:
+                        case RIDE_BELL:
+                            noteSymbol = "&#119109;"; // open X notehead
+                            break;
+                        case SIDE_STICK_MIDI:
+                            noteSymbol = "&#119107;"; // X notehead for side stick/cross stick
                             break;
                     }
+                    // Ghost & accent based on velocity
+                    const velocity = Math.round(midiData.tracks[drumTrack].notes[j].velocity * 127);
+                    if (velocity < GHOST_VELOCITY_MAX) {
+                        // Ghost note: wrap in parentheses
+                        noteSymbol = "(" + noteSymbol + ")";
+                        noteClass += " ghost-note";
+                    } else if (velocity >= ACCENT_VELOCITY_MIN) {
+                        // Accent note: add > mark above
+                        noteClass += " accent-note";
+                    }
+
                     setClefText(noteSymbol, noteClass, clefIndex, i);
                 }
             }

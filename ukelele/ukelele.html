@@ -11,7 +11,13 @@
     <script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
     <script src="ukelele.js"></script>
     <link rel="stylesheet" href="ukelele.css">
+    <link rel="manifest" href="ukelele_manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF4500">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Ukelele">
+    <link rel="apple-touch-icon" href="img/ukelele_192.svg">
 </head>
 <body>
 
@@ -99,5 +105,21 @@
 </select>
 <input id="calculatedChordInput" readonly/>
 <BR>
+
+
+
+
+
+<BR><BR><BR><BR>
+<a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./ukelele_sw.js')
+                .then((reg) => console.log('[PWA] Service Worker registered, scope:', reg.scope))
+                .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
+        });
+    }
+</script>
 </body>
 </html>

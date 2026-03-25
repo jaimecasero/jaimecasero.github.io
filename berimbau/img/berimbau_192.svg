@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="24" fill="#000"/>
+  <path d="M96 30 C60 30, 50 96, 50 140 C50 155, 60 162, 70 162 L122 162 C132 162, 142 155, 142 140 C142 96, 132 30, 96 30Z" fill="none" stroke="#FF4500" stroke-width="4"/>
+  <line x1="96" y1="30" x2="96" y2="162" stroke="#FF4500" stroke-width="3"/>
+  <circle cx="96" cy="155" r="12" fill="#FF4500" opacity="0.8"/>
+  <text x="96" y="185" text-anchor="middle" fill="#FF4500" font-family="sans-serif" font-size="14" font-weight="bold">BERIMBAU</text>
+</svg>
