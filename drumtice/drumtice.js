@@ -76,6 +76,23 @@ var drumTrack=0; //track in midi with channel 10
 var midiData;//contains midi object after parsing midi file
 let audioBuffers = [];
 var selectedLevel = 4; // default: show all notes
+
+// Level 1: kick, snare, hi-hat only
+const LEVEL1_INSTRUMENTS = [
+    ACOUSTIC_BASS_DRUM_MIDI, BASS_DRUM_MIDI,
+    ACOUSTIC_SNARE_MIDI, ELECTRIC_SNARE_MIDI, SIDE_STICK_MIDI, HAND_CLAP_MIDI,
+    CLOSED_HIHAT_MIDI, OPEN_HI_HAT_MIDI, PEDAL_HIHAT_MIDI
+];
+// Level 2: + cymbals
+const LEVEL2_INSTRUMENTS = LEVEL1_INSTRUMENTS.concat([
+    CRASH_CYMBAL_1, CRASH_CYMBAL_2, CHINESE_CYMBAL, SPLASH_CYMBAL,
+    RIDE_CYMBAL_1, RIDE_BELL
+]);
+// Level 3: + toms
+const LEVEL3_INSTRUMENTS = LEVEL2_INSTRUMENTS.concat([
+    HIGH_TOM, HI_MID_TOM, LOW_MID_TOM, LOW_TOM_MIDI,
+    LOW_FLOOR_TOM_MIDI, HIGH_FLOOR_TOM_MIDI
+]);
 let timerID; // global or scoped outside functions
 let isPlaying = false;
 
@@ -353,9 +370,18 @@ function renderBeat() {
     let ppq=midiData.header.ppq/2;
     for (let i = 0; i < 16 ; i++) {
         let matchTick =  i * ppq;
+        // Level-based timing filter: L1=quarters, L2=+8ths, L3=+16ths, L4=all
+        if (selectedLevel === 1 && (matchTick % (midiData.header.ppq)) !== 0) continue;
+        if (selectedLevel === 2 && (matchTick % (midiData.header.ppq / 2)) !== 0) continue;
+        if (selectedLevel === 3 && (matchTick % (midiData.header.ppq / 4)) !== 0) continue;
         for (let j = 0; j < midiData.tracks[drumTrack].notes.length; j++) {
             if (midiData.tracks[drumTrack].notes[j].ticks === matchTick) {
-                let clefIndex = midiToClefIndex(midiData.tracks[drumTrack].notes[j].midi);
+                const midiNote = midiData.tracks[drumTrack].notes[j].midi;
+                // Level-based instrument filter
+                if (selectedLevel === 1 && !LEVEL1_INSTRUMENTS.includes(midiNote)) continue;
+                if (selectedLevel === 2 && !LEVEL2_INSTRUMENTS.includes(midiNote)) continue;
+                if (selectedLevel === 3 && !LEVEL3_INSTRUMENTS.includes(midiNote)) continue;
+                let clefIndex = midiToClefIndex(midiNote);
                 if (clefIndex > -1) {
 
                     let noteClass = "note-on-line";
@@ -366,7 +392,6 @@ function renderBeat() {
                     console.log("clefRowIndex:" + clefIndex + " class:" + " noteClass: " + noteClass);
                     let noteSymbol = noteDurationToSymbol(midiData.tracks[drumTrack].notes[j].durationTicks, midiData.header.ppq);
                     // X noteheads for cymbals and hi-hats (standard drum notation)
-                    const midiNote = midiData.tracks[drumTrack].notes[j].midi;
                     switch (midiNote) {
                         case CLOSED_HIHAT_MIDI:
                         case PEDAL_HIHAT_MIDI:
