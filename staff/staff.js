@@ -406,13 +406,25 @@ function renderCurrentNote() {
 
 ///////////////INPUT HANDLING/////////////////////////////////////////
 var currentOctave = 4;
+var octaveHeld = false;
 var shiftPressed = false;
 var altPressed = false;
 var pressedKeys = [];
 
-function changeOctave(delta) {
-    currentOctave = Math.max(0, Math.min(8, currentOctave + delta));
-    document.getElementById('octaveLabel').textContent = 'C' + currentOctave;
+function octaveDown(octave) {
+    currentOctave = octave;
+    octaveHeld = true;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[octave].classList.add('active');
+}
+
+function octaveUp() {
+    currentOctave = 4;
+    octaveHeld = false;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[4].classList.add('active');
 }
 
 function keyDownHandler(event) {
