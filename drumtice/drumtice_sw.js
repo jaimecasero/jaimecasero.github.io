@@ -1,4 +1,4 @@
-const CACHE_NAME = 'drumtice-v1.0.5';
+const CACHE_NAME = 'drumtice-v1.0.6';
 const ASSETS_TO_CACHE = [
     './drumtice.html',
     './drumtice.js',
@@ -10,6 +10,11 @@ const ASSETS_TO_CACHE = [
     './midi/in_the_end_pre_chorus.mid',
     './midi/in_the_end_verse.mid',
     './midi/pop_rock.mid',
+    './midi/soul_glo.mid',
+    './midi/drum_sheet_showcase.mid',
+    './audio/metro-1.wav',
+    './audio/metro-n.wav',
+    './soundfont/drum-ogg.js',
 ];
 
 // Install: cache all assets
