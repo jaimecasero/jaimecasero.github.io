@@ -6,6 +6,10 @@ const NOTE_CHAR = "&sung;";
 const FRET_NUM = 13;
 const NUM_NOTES = 12;
 const NOTE_LABEL = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const NATURAL_LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const NATURAL_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
+// Maps each semitone to its letter index when spelled as flat (used for root note from key selector)
+const SEMITONE_TO_LETTER = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6];
 const NOTE_MIDI_CODE = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 const STRING_OCTAVE = [2,2,3,3,3,4];
 const NOTE_FIFTHS_COLOR = ['#FF3333', '#33FF8D', '#FF8A33', '#3358FF', '#FFFC33', '#FF33C1', '#33FF33', '#FF6133', '#33FCFF', '#FFB233', '#A833FF', '#93FF33'];
@@ -51,6 +55,16 @@ const MAJOR_PENTATONIC_INTERVAL = [0, 2, 4, 7, 9];
 const MINOR_PENTATONIC_INTERVAL = [0, 3, 5, 7, 10];
 const KEY_MODE_INTERVAL = [LYDIAN_INTERVAL, IONIAN_INTERVAL, MIXOLYDIAN_INTERVAL, DORIAN_INTERVAL, AEOLIAN_INTERVAL, PRHYGIAN_INTERVAL, LOCRIAN_INTERVAL, ACOUSTIC_INTERVAL, HARMONIC_MINOR_INTERVAL, MELODIC_MINOR_INTERVAL, PHRYGIAN_DOM_INTERVAL, DOUBLE_HARMONIC, MAJOR_PENTATONIC_INTERVAL, MINOR_PENTATONIC_INTERVAL];
 
+// Letter offsets for each scale degree (which letter name to assign relative to root)
+const SEVEN_NOTE_LETTERS = [0,1,2,3,4,5,6];
+const MAJOR_PENTA_LETTERS = [0,1,2,4,5]; // degrees 1,2,3,5,6
+const MINOR_PENTA_LETTERS = [0,2,3,4,6]; // degrees 1,b3,4,5,b7
+const KEY_MODE_LETTERS = [
+    SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS,
+    SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS,
+    SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS, SEVEN_NOTE_LETTERS,
+    MAJOR_PENTA_LETTERS, MINOR_PENTA_LETTERS
+];
 
 const MAJOR_FORMULA = [0, 4, 7, 0];
 const MINOR_FORMULA = [0, 3, 7, 0];
@@ -76,6 +90,7 @@ const CHORD_MOD_ARR = [MAJOR_FORMULA, MINOR_FORMULA, SUS2_FORMULA, SUS4_FORMULA,
 
 ///// Data Model /////
 let CALCULATED_KEY = [];
+let CALCULATED_KEY_LABELS = {};
 let CALCULATED_CHORD = [];
 
 ////////DOM CACHING//////////////////
@@ -203,12 +218,32 @@ function canvasUpXY(x, y) {
 ///////////////////////// music utils /////////////////////////
 function calculateKey() {
     CALCULATED_KEY = [];
+    CALCULATED_KEY_LABELS = {};
     let keyNoteOffset = parseInt(keySelect.value, 10);
-    for (let i = 0; i < KEY_MODE_INTERVAL[modeSelect.value].length; i++) {
-        let keyDegreeIndex = (keyNoteOffset + KEY_MODE_INTERVAL[modeSelect.value][i]) % NOTE_LABEL.length;
+    let rootLetterIndex = SEMITONE_TO_LETTER[keyNoteOffset];
+    let intervals = KEY_MODE_INTERVAL[modeSelect.value];
+    let letterOffsets = KEY_MODE_LETTERS[modeSelect.value];
+
+    for (let i = 0; i < intervals.length; i++) {
+        let keyDegreeIndex = (keyNoteOffset + intervals[i]) % NUM_NOTES;
         CALCULATED_KEY.push(keyDegreeIndex);
+
+        let expectedLetterIndex = (rootLetterIndex + letterOffsets[i]) % 7;
+        let expectedSemitone = NATURAL_SEMITONES[expectedLetterIndex];
+        let letter = NATURAL_LETTERS[expectedLetterIndex];
+        let diff = ((keyDegreeIndex - expectedSemitone) + 12) % 12;
+
+        if (diff === 0) {
+            CALCULATED_KEY_LABELS[keyDegreeIndex] = letter;
+        } else if (diff === 1) {
+            CALCULATED_KEY_LABELS[keyDegreeIndex] = letter + '#';
+        } else if (diff === 11) {
+            CALCULATED_KEY_LABELS[keyDegreeIndex] = letter + 'b';
+        } else {
+            CALCULATED_KEY_LABELS[keyDegreeIndex] = NOTE_LABEL[keyDegreeIndex];
+        }
     }
-    calculatedKeyInput.value = CALCULATED_KEY.map(index => NOTE_LABEL[index]).join(",");
+    calculatedKeyInput.value = CALCULATED_KEY.map(index => CALCULATED_KEY_LABELS[index]).join(",");
 }
 
 function calculateChord() {
@@ -217,7 +252,7 @@ function calculateChord() {
     console.log("chordSelect:" + CHORD_MOD_ARR[chordSelect.value]);
     if (rootNote > -1) {
         CALCULATED_CHORD = calculateChordByIndex(rootNote, chordSelect.value);
-        calculatedChordInput.value = CALCULATED_CHORD.map(index => NOTE_LABEL[index]).join(",");
+        calculatedChordInput.value = CALCULATED_CHORD.map(index => CALCULATED_KEY_LABELS[index] || NOTE_LABEL[index]).join(",");
     }
 }
 function calculateChordByIndex(rootNote, chordType) {
@@ -243,7 +278,7 @@ function calculateFretNoteIndex(stringIndex, fretIndex) {
 
 function calculateFretNote(stringIndex, fretIndex) {
     let noteIndex = calculateFretNoteIndex(stringIndex, fretIndex);
-    return NOTE_LABEL[noteIndex];
+    return CALCULATED_KEY_LABELS[noteIndex] || NOTE_LABEL[noteIndex];
 }
 function isFretOnKey(stringIndex, fretIndex) {
     let fretNoteIndex = calculateFretNoteIndex(stringIndex, fretIndex);
@@ -354,7 +389,7 @@ function renderFretboard() {
 
 function drawNoteIndex(fret, string) {
     let noteIndex = calculateFretNoteIndex(string, fret);
-    let note = NOTE_LABEL[noteIndex];
+    let note = CALCULATED_KEY_LABELS[noteIndex] || NOTE_LABEL[noteIndex];
     let chordIndex = isFretOnChord(string,fret);
     let noteDegree =CALCULATED_KEY.indexOf(noteIndex);
     let keyIndex = isFretOnKey(string,fret);
@@ -467,7 +502,7 @@ function drawNoteIndex(fret, string) {
         }
         switch (visualizationSelect.value) {
             case "Natural":
-                if (note.endsWith("b")) {
+                if (note.length > 1 && (note.endsWith("b") || note.endsWith("#"))) {
                     ctx.fillStyle = "grey";
                 } else {
                     ctx.fillStyle = "white";
