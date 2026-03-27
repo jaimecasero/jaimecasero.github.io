@@ -1,49 +1,177 @@
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-
-.diatonicClass{
-	border-color: blue;
+html, body {
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
 }
 
-.nonDiatonicClass {
-    border-color: black;
-}
-
-.disabledNoteClass {
-   color:grey;
+/* ── Canvas area ── */
+#canvasWrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #fff;
 }
 
 #circleCanvas {
-	  touch-action: manipulation;
+    display: block;
+    touch-action: manipulation;
 }
 
-#keyFormulaInput {
-	width: 90px;
+/* ── Controls panel ── */
+#controls {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px 8px max(10px, env(safe-area-inset-bottom));
+    background: #f5f5f5;
+    border-top: 1px solid #ddd;
 }
 
-#keyMajorRelativeInput {
-	width: 120px;
+.ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
 }
 
-#keySignatureInput {
-	width: 90px;
+.ctrl-label {
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-input[name="octaveSelect"] {
-	height:35px; width:65px; vertical-align: middle;
-	  touch-action: manipulation;
+select {
+    padding: 4px 2px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    flex-shrink: 0;
 }
 
-input[name="chordModeSelect"] {
-	height:35px; width:65px; vertical-align: middle;
+/* ── Info display ── */
+.info-pair {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+}
+
+.info-input {
+    width: 52px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 3px;
+    background: #fff;
+    color: #333;
+}
+
+/* ── Button rows ── */
+.btn-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.section-label {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    width: 38px;
+    flex-shrink: 0;
+}
+
+.btn-row7 {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.btn-row-ext {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 3px;
 }
 
 input[name="scaleButton"] {
-	height:65px; width:70px; vertical-align: middle;
-	  touch-action: manipulation;
+    width: 100%;
+    height: 42px;
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+    touch-action: manipulation;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
 }
 
 input[name="chordModifierRadio"] {
-	height:65px; width:55px; vertical-align: middle;
-	  touch-action: manipulation;
+    width: 100%;
+    height: 34px;
+    font-size: 11px;
+    vertical-align: middle;
+    touch-action: manipulation;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    padding: 0 1px;
 }
 
+/* ── Octave row ── */
+.oct-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 11px;
+    color: #444;
+    gap: 1px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.oct-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    touch-action: manipulation;
+    accent-color: #FF4500;
+}
+
+.ctrl-divider {
+    flex: 1;
+}
+
+.chord-info {
+    width: 70px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 3px 4px;
+    background: #fff;
+    color: #222;
+    flex-shrink: 0;
+}
+
+/* ── Button state classes (used by JS) ── */
+.diatonicClass   { border-color: blue; }
+.nonDiatonicClass { border-color: #aaa; }
+.disabledNoteClass { color: grey; }

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="eng">
 <head>
     <title>Circle Of Fifths Player</title>
@@ -7,7 +8,7 @@
     <script src="fifths.js"></script>
     <link rel="stylesheet" href="fifths.css">
     <link rel="manifest" href="fifths_manifest.json">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
     <meta name="theme-color" content="#FF4500">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -16,199 +17,143 @@
 
 </head>
 <body>
-<form id="settingsForm">
 
-    <label for="outputSelect">Output:</label>
-    <select id="outputSelect" onchange="changeOutput(this.value);">
-        <option value="0" selected="selected">midi</option>
-        <option value="1">ext midi</option>
-    </select>
+<!-- Canvas fills the top area -->
+<div id="canvasWrap">
+    <canvas id="circleCanvas" width="600" height="600"
+            onmousedown="canvasDown(event)" onmouseup="canvasUp(event)"></canvas>
+</div>
 
-    <label for="midiOutputSelect">Midi Device:</label>
-    <select id="midiOutputSelect" onchange="changeMidiOutput();">
-    </select>
+<!-- All controls pinned to bottom for thumb reach -->
+<div id="controls">
 
-    <label for="midiChannelSelect">Midi Channel:</label>
-    <select id="midiChannelSelect" onchange="changeMidiChannel(this.value);">
-        <option selected="selected">0</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-        <option>6</option>
-        <option>7</option>
-        <option>8</option>
-        <option>9</option>
-        <option>10</option>
-        <option>11</option>
-        <option>12</option>
-        <option>13</option>
-        <option>14</option>
-        <option>15</option>
-        <option>16</option>
-    </select>
+    <!-- Row 1: Key / Mode / Gain -->
+    <div class="ctrl-row">
+        <label class="ctrl-label">Key</label>
+        <select id="keySelect" onchange="changeKey();">
+            <option selected>C</option>
+            <option>C#</option><option>D</option><option>D#</option>
+            <option>E</option><option>F</option><option>F#</option>
+            <option>G</option><option>G#</option><option>A</option>
+            <option>A#</option><option>B</option>
+        </select>
+        <label class="ctrl-label">Mode</label>
+        <select id="modeSelect" onchange="changeKey();">
+            <option value="0" selected>Ionian</option>
+            <option value="1">Dorian</option>
+            <option value="2">Phrygian</option>
+            <option value="3">Lydian</option>
+            <option value="4">Mixolydian</option>
+            <option value="5">Aeolian</option>
+            <option value="6">Locrian</option>
+        </select>
+        <label class="ctrl-label">Gain</label>
+        <select id="gainSelect">
+            <option value="0.2">0.2</option>
+            <option value="0.4">0.4</option>
+            <option value="0.6">0.6</option>
+            <option value="0.8" selected>0.8</option>
+            <option value="1.0">1.0</option>
+        </select>
+        <!-- Secondary settings hidden from UI but kept for JS -->
+        <select id="outputSelect" onchange="changeOutput(this.value);" style="display:none">
+            <option value="0" selected>midi</option>
+            <option value="1">ext midi</option>
+        </select>
+        <select id="midiOutputSelect" onchange="changeMidiOutput();" style="display:none"></select>
+        <select id="midiChannelSelect" onchange="changeMidiChannel(this.value);" style="display:none">
+            <option selected>0</option><option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6</option><option>7</option>
+            <option>8</option><option>9</option><option>10</option><option>11</option>
+            <option>12</option><option>13</option><option>14</option><option>15</option>
+            <option>16</option>
+        </select>
+        <input type="text" id="keySignatureInput" value="" readonly class="info-input" placeholder="sig">
+        <input type="text" id="keyFormulaInput" value="" readonly class="info-input" placeholder="form">
+        <input type="text" id="keyMajorRelativeInput" value="" readonly class="info-input" placeholder="rel">
+    </div>
 
-    <label for="gainSelect">Gain:</label>
-    <select id="gainSelect">
-        <option value="0.2">0.2</option>
-        <option value="0.4">0.4</option>
-        <option value="0.6">0.6</option>
-        <option value="0.8" selected>0.8</option>
-        <option value="1.0">1.0</option>
-    </select>
+    <!-- Row 2: Key Notes -->
+    <div class="btn-section">
+        <span class="section-label">Notes</span>
+        <div class="btn-row7">
+            <input type="button" id="NoteButton0" name="scaleButton" value="I"
+                   onpointerdown="keyNoteDown(event, 0)" onpointerup="keyNoteUp(event, 0)">
+            <input type="button" id="NoteButton1" name="scaleButton" value="II"
+                   onpointerdown="keyNoteDown(event, 1)" onpointerup="keyNoteUp(event, 1)">
+            <input type="button" id="NoteButton2" name="scaleButton" value="III"
+                   onpointerdown="keyNoteDown(event, 2)" onpointerup="keyNoteUp(event, 2)">
+            <input type="button" id="NoteButton3" name="scaleButton" value="IV"
+                   onpointerdown="keyNoteDown(event, 3)" onpointerup="keyNoteUp(event, 3)">
+            <input type="button" id="NoteButton4" name="scaleButton" value="V"
+                   onpointerdown="keyNoteDown(event, 4)" onpointerup="keyNoteUp(event, 4)">
+            <input type="button" id="NoteButton5" name="scaleButton" value="VI"
+                   onpointerdown="keyNoteDown(event, 5)" onpointerup="keyNoteUp(event, 5)">
+            <input type="button" id="NoteButton6" name="scaleButton" value="VII"
+                   onpointerdown="keyNoteDown(event, 6)" onpointerup="keyNoteUp(event, 6)">
+        </div>
+    </div>
 
-    <BR><BR>
-    <label for="keySelect">Key:</label>
-    <select id="keySelect" onchange="changeKey();">
-        <option selected="selected">C</option>
-        <option>C#</option>
-        <option>D</option>
-        <option>D#</option>
-        <option>E</option>
-        <option>F</option>
-        <option>F#</option>
-        <option>G</option>
-        <option>G#</option>
-        <option>A</option>
-        <option>A#</option>
-        <option>B</option>
-    </select>
+    <!-- Row 3: Key Chord Grades -->
+    <div class="btn-section">
+        <span class="section-label">Chords</span>
+        <div class="btn-row7">
+            <input type="button" id="GradeButton0" name="scaleButton" value="I"
+                   onpointerdown="chordDown(event, 0)" onpointerup="chordUp(event, 0)">
+            <input type="button" id="GradeButton1" name="scaleButton" value="II"
+                   onpointerdown="chordDown(event, 1)" onpointerup="chordUp(event, 1)">
+            <input type="button" id="GradeButton2" name="scaleButton" value="III"
+                   onpointerdown="chordDown(event, 2)" onpointerup="chordUp(event, 2)">
+            <input type="button" id="GradeButton3" name="scaleButton" value="IV"
+                   onpointerdown="chordDown(event, 3)" onpointerup="chordUp(event, 3)">
+            <input type="button" id="GradeButton4" name="scaleButton" value="V"
+                   onpointerdown="chordDown(event, 4)" onpointerup="chordUp(event, 4)">
+            <input type="button" id="GradeButton5" name="scaleButton" value="VI"
+                   onpointerdown="chordDown(event, 5)" onpointerup="chordUp(event, 5)">
+            <input type="button" id="GradeButton6" name="scaleButton" value="VII"
+                   onpointerdown="chordDown(event, 6)" onpointerup="chordUp(event, 6)">
+        </div>
+    </div>
 
-    <label for="modeSelect">Mode:</label>
-    <select id="modeSelect" onchange="changeKey();">
-        <option value="0" selected="selected">Ionian</option>
-        <option value="1">Dorian</option>
-        <option value="2">Phrygian</option>
-        <option value="3">Lydian</option>
-        <option value="4">Mixolydian</option>
-        <option value="5">Aeolian</option>
-        <option value="6">Locrian</option>
-    </select>
+    <!-- Row 4: Chord Extensions -->
+    <div class="btn-section">
+        <span class="section-label">Ext</span>
+        <div class="btn-row-ext">
+            <input type="button" id="chordMod13" name="chordModifierRadio" value="6"
+                   onpointerdown="changeChordModifier(EXT_6_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod5"  name="chordModifierRadio" value="7"
+                   onpointerdown="changeChordModifier(EXT_7_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod6"  name="chordModifierRadio" value="Maj7"
+                   onpointerdown="changeChordModifier(EXT_MAJ7_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod7"  name="chordModifierRadio" value="b9"
+                   onpointerdown="changeChordModifier(EXT_B9_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod8"  name="chordModifierRadio" value="9"
+                   onpointerdown="changeChordModifier(EXT_9_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod9"  name="chordModifierRadio" value="11"
+                   onpointerdown="changeChordModifier(EXT_11_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod10" name="chordModifierRadio" value="#11"
+                   onpointerdown="changeChordModifier(EXT_MAJ11_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod11" name="chordModifierRadio" value="b13"
+                   onpointerdown="changeChordModifier(EXT_B13_FORMULA)" onpointerup="resetChordModifier()">
+            <input type="button" id="chordMod12" name="chordModifierRadio" value="13"
+                   onpointerdown="changeChordModifier(EXT_13_FORMULA)" onpointerup="resetChordModifier()">
+        </div>
+    </div>
 
-    <label for="keySignatureInput">Signature:</label>
-    <input type="text" id="keySignatureInput" value="0" readonly>
+    <!-- Row 5: Chord info -->
+    <div class="ctrl-row">
+        <span class="section-label">Info</span>
+        <input type="text" id="chordText" readonly class="chord-info" placeholder="chord">
+        <input type="text" id="noteText" readonly class="chord-info" placeholder="notes">
+        <input type="text" id="intervalNotationText" readonly class="chord-info" placeholder="intervals">
+        <input type="text" id="integerNotationText" readonly class="chord-info" placeholder="integers">
+        <!-- Hidden but kept for JS -->
+        <input type="checkbox" id="diatonicCheck" disabled style="display:none">
+        <input type="radio" id="octave3" name="octaveSelect" value="3" checked style="display:none">
+    </div>
 
-    <label for="keyFormulaInput">Formula:</label>
-    <input type="text" id="keyFormulaInput" value="0" readonly>
+</div>
 
-    <label for="keyMajorRelativeInput">Major Relative:</label>
-    <input type="text" id="keyMajorRelativeInput" value="0" readonly>
-
-
-</form>
-
-<canvas id="circleCanvas" width="600" height="600" onmousedown="canvasDown(event)" onmouseup="canvasUp(event)"></canvas>
-
-
-<form id="displayForm">
-    <label>Key Notes:</label>
-    <BR>
-    <input type="button" id="NoteButton0" name="scaleButton" value="I" onpointerdown="keyNoteDown(event, 0)"
-           onpointerup="keyNoteUp(event, 0)">
-    <input type="button" id="NoteButton1" name="scaleButton" value="II" onpointerdown="keyNoteDown(event, 1)"
-           onpointerup="keyNoteUp(event, 1)">
-    <input type="button" id="NoteButton2" name="scaleButton" value="III" onpointerdown="keyNoteDown(event, 2)"
-           onpointerup="keyNoteUp(event, 2)">
-    <input type="button" id="NoteButton3" name="scaleButton" value="IV" onpointerdown="keyNoteDown(event, 3)"
-           onpointerup="keyNoteUp(event, 3)">
-    <input type="button" id="NoteButton4" name="scaleButton" value="V" onpointerdown="keyNoteDown(event, 4)"
-           onpointerup="keyNoteUp(event, 4)">
-    <input type="button" id="NoteButton5" name="scaleButton" value="VI" onpointerdown="keyNoteDown(event, 5)"
-           onpointerup="keyNoteUp(event, 5)">
-    <input type="button" id="NoteButton6" name="scaleButton" value="VII" onpointerdown="keyNoteDown(event, 6)"
-           onpointerup="keyNoteUp(event, 6)">
-
-    <BR>
-
-    <label>Key Chord Grades:</label>
-    <BR>
-    <input type="button" id="GradeButton0" name="scaleButton" value="I" onpointerdown="chordDown(event, 0)"
-           onpointerup="chordUp(event, 0)">
-    <input type="button" id="GradeButton1" name="scaleButton" value="II" onpointerdown="chordDown(event, 1)"
-           onpointerup="chordUp(event, 1)">
-    <input type="button" id="GradeButton2" name="scaleButton" value="III" onpointerdown="chordDown(event, 2)"
-           onpointerup="chordUp(event, 2)">
-    <input type="button" id="GradeButton3" name="scaleButton" value="IV" onpointerdown="chordDown(event, 3)"
-           onpointerup="chordUp(event, 3)">
-    <input type="button" id="GradeButton4" name="scaleButton" value="V" onpointerdown="chordDown(event, 4)"
-           onpointerup="chordUp(event, 4)">
-    <input type="button" id="GradeButton5" name="scaleButton" value="VI" onpointerdown="chordDown(event, 5)"
-           onpointerup="chordUp(event, 5)">
-    <input type="button" id="GradeButton6" name="scaleButton" value="VII" onpointerdown="chordDown(event, 6)"
-           onpointerup="chordUp(event, 6)">
-
-    <BR> <BR>
-
-
-    <BR>
-
-    <BR>
-    <label>Chord Extensions:</label>
-    <BR>
-    <input type="button" id="chordMod13" name="chordModifierRadio" value="6"
-           onmousedown="changeChordModifier(EXT_6_FORMULA)">
-
-    <input type="button" id="chordMod5" name="chordModifierRadio" value="7"
-           onpointerdown="changeChordModifier(EXT_7_FORMULA)" onpointerup="resetChordModifier()">
-    <input type="button" id="chordMod6" name="chordModifierRadio" value="Maj7"
-           onpointerdown="changeChordModifier(EXT_MAJ7_FORMULA)" onpointerup="resetChordModifier()">
-
-    <input type="button" id="chordMod7" name="chordModifierRadio" value="b9"
-           onmousedown="changeChordModifier(EXT_B9_FORMULA)" onpointerup="resetChordModifier()">
-    <input type="button" id="chordMod8" name="chordModifierRadio" value="9"
-           onpointerdown="changeChordModifier(EXT_9_FORMULA)" onpointerup="resetChordModifier()">
-    <BR>
-    <input type="button" id="chordMod9" name="chordModifierRadio" value="11"
-           onpointerdown="changeChordModifier(EXT_11_FORMULA)" onpointerup="resetChordModifier()">
-    <input type="button" id="chordMod10" name="chordModifierRadio" value="#11"
-           onpointerdown="changeChordModifier(EXT_MAJ11_FORMULA)" onpointerup="resetChordModifier()">
-    <input type="button" id="chordMod11" name="chordModifierRadio" value="b13"
-           onpointerdown="changeChordModifier(EXT_B13_FORMULA)" onpointerup="resetChordModifier()">
-    <input type="button" id="chordMod12" name="chordModifierRadio" value="13"
-           onpointerdown="changeChordModifier(EXT_13_FORMULA)" onpointerup="resetChordModifier()">
-
-    <BR>
-
-    <label>Octave:</label>
-    <BR>
-    <input type="radio" id="octave1" name="octaveSelect" value="1" onchange="changeOctave(this.value);"><label
-        for="octave1">1</label>
-    <input type="radio" id="octave2" name="octaveSelect" value="2" onchange="changeOctave(this.value);"><label
-        for="octave2">2</label>
-    <input type="radio" id="octave3" name="octaveSelect" value="3" onchange="changeOctave(this.value);" checked><label
-        for="octave3">3</label>
-    <input type="radio" id="octave4" name="octaveSelect" value="4" onchange="changeOctave(this.value);"><label
-        for="octave4">4</label>
-    <input type="radio" id="octave5" name="octaveSelect" value="5" onchange="changeOctave(this.value);"><label
-        for="octave5">5</label>
-    <input type="radio" id="octave6" name="octaveSelect" value="6" onchange="changeOctave(this.value);"><label
-        for="octave6">6</label>
-    <input type="radio" id="octave7" name="octaveSelect" value="7" onchange="changeOctave(this.value);"><label
-        for="octave7">7</label>
-
-    <BR> <BR> <BR>
-
-
-    <BR>
-    <label for="diatonicCheck">Diatonic:</label>
-    <input type="checkbox" id="diatonicCheck" disabled>
-    <BR>
-    <label for="chordText">Chord:</label>
-    <input type="text" id="chordText" readonly>
-    <BR>
-    <label for="noteText">Notes:</label>
-    <input type="text" id="noteText" readonly>
-    <BR>
-    <label for="intervalNotationText">Interval Formula:</label>
-    <input type="text" id="intervalNotationText" readonly>
-    <BR>
-    <label for="integerNotationText">Integer Formula:</label>
-    <input type="text" id="integerNotationText" readonly>
-
-</form>
-
-<a href="https://paypal.me/jaimecasero?country.x=ES&locale.x=es_ES">Donate</a>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -217,6 +162,19 @@
                 .catch((err) => console.log('[PWA] Service Worker registration failed:', err));
         });
     }
+
+    // Resize canvas to fill canvasWrap, keeping it square
+    function resizeCanvas() {
+        const wrap = document.getElementById('canvasWrap');
+        const size = Math.min(wrap.clientWidth, wrap.clientHeight);
+        if (size > 0 && (canvas.width !== size || canvas.height !== size)) {
+            canvas.width = size;
+            canvas.height = size;
+            if (typeof renderCircle === 'function') renderCircle();
+        }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', () => setTimeout(resizeCanvas, 150));
 </script>
 </body>
 </html>
