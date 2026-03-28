@@ -367,7 +367,7 @@ function renderBeat() {
         }
     }
 
-    let ppq=midiData.header.ppq/2;
+    let ppq=midiData.header.ppq/4;
     for (let i = 0; i < 16 ; i++) {
         let matchTick =  i * ppq;
         // Level-based timing filter: L1=quarters, L2=+8ths, L3=+16ths, L4=all
