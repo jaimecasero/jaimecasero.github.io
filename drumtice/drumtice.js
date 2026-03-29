@@ -328,7 +328,6 @@ function scheduleNote(index, when) {
                     const delaySeconds = when - audioCtx.currentTime;
                     let midiNote = note.midi;
                     const force = note.velocity;
-                    console.log("midinote:" + midiNote);
                     setTimeout(() => {
                         playOscillatorNote(midiNote, force);
                     }, delaySeconds * 1000);
