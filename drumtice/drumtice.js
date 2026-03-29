@@ -436,7 +436,7 @@ function renderBeat() {
                         // Ghost note: wrap in parentheses
                         noteSymbol = "(" + noteSymbol + ")";
                         noteClass += " ghost-note";
-                    } else if (velocity >= ACCENT_VELOCITY_MIN) {
+                    } else if (velocity > ACCENT_VELOCITY_MIN) {
                         // Accent note: add > mark above
                         noteClass += " accent-note";
                     }
