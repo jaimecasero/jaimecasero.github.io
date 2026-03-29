@@ -529,13 +529,13 @@ function midiNoteDown(event) {
 
         currentNoteIndex = currentNoteIndex + 1;
         if (currentNoteIndex >= midiData.tracks[trackSelect.value].notes.length) {
-            // Song completed
+            // Song completed - save score then reset
             let finalScore = Math.max(0, totalScore - (totalMistakes * SCORE_MISTAKE_PENALTY));
             saveHighScore(finalScore);
-            currentNoteIndex = 0;
+            start();
+        } else {
+            renderCurrentNote();
         }
-
-        renderCurrentNote();
     } else {
         totalMistakes++;
         document.dispatchEvent(new CustomEvent(USER_FAILED_EVENT, {
