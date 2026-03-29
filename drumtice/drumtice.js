@@ -328,7 +328,6 @@ function scheduleNote(index, when) {
                     const delaySeconds = when - audioCtx.currentTime;
                     let midiNote = note.midi;
                     const force = note.velocity;
-                    console.log("midinote:" + midiNote);
                     setTimeout(() => {
                         playOscillatorNote(midiNote, force);
                     }, delaySeconds * 1000);
@@ -437,7 +436,7 @@ function renderBeat() {
                         // Ghost note: wrap in parentheses
                         noteSymbol = "(" + noteSymbol + ")";
                         noteClass += " ghost-note";
-                    } else if (velocity >= ACCENT_VELOCITY_MIN) {
+                    } else if (velocity > ACCENT_VELOCITY_MIN) {
                         // Accent note: add > mark above
                         noteClass += " accent-note";
                     }
