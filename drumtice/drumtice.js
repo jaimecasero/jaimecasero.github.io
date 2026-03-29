@@ -41,7 +41,7 @@ const INITIAL_MISTAKES = 0;
 
 // Velocity thresholds (MIDI 0-127)
 const GHOST_VELOCITY_MAX = 40;
-const ACCENT_VELOCITY_MIN = 100;
+const ACCENT_VELOCITY_MIN = 101;
 
 //https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
 // Staff positions (top to bottom):

@@ -1,5 +1,13 @@
 <html lang="eng">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NP7KCZGF61"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NP7KCZGF61');
+    </script>
     <title>Fretboard Explorer</title>
     <link rel="manifest" href="guitar_manifest.json">
     <!-- midi.js package -->
@@ -61,7 +69,7 @@
 
 <select id="modeSelect"  onchange="renderFretboard();">
     <option value="0">Lydian</option>
-    <option value="1" selected>Ionian</option>
+    <option value="1">Ionian</option>
     <option value="2">Myxolydian</option>
     <option value="3">Dorian</option>
     <option value="4">Aeolian</option>
@@ -72,6 +80,8 @@
     <option value="9">Melodic minor</option>
     <option value="10">Phyygian Dominant</option>
     <option value="11">Double harmonic</option>
+    <option value="12" selected>Major Pentatonic</option>
+    <option value="13">Minor Pentatonic</option>
 
 </select>
 <input id="calculatedKeyInput" readonly/>
@@ -116,6 +126,7 @@
     <option value="19">maj13</option>
 </select>
 <input id="calculatedChordInput" readonly/>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSe_VC4vAb5XjP9-BIXoqyZf85Kpb2_b-ymC9mmkr9RQkTmzYA/viewform" target="_blank" id="feedbackLink">Feedback</a>
 <BR>
 
 

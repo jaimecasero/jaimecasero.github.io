@@ -1,14 +1,19 @@
 <html lang="eng">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NP7KCZGF61"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NP7KCZGF61');
+    </script>
     <title>Staff Reader</title>
 
-    <!-- midi.js package -->
-    <script src="https://cdn.jsdelivr.net/npm/midi.js"></script>
-    <script
-            type="text/javascript"
-            src="https://unpkg.com/@tonejs/midi"
-    ></script>
-    <script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
+    <!-- midi.js package (local copies for offline support) -->
+    <script src="lib/midi.min.js"></script>
+    <script type="text/javascript" src="lib/tonejs-midi.min.js"></script>
+    <script src="lib/meyda.min.js"></script>
     <script src="staff.js"></script>
     <link rel="stylesheet" href="staff.css">
     <link rel="manifest" href="staff_manifest.json">
@@ -48,57 +53,59 @@
     </tbody>
 </table>
 
-<table id="buttonTable">
-    <tr>
-        <td><input type="button" id="NoteButton0" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 0)"
-                   onpointerup="keyNoteUp(event, 0)"></td>
-
-        <td class="">
-            <button class="artificial-key" onpointerdown="keyNoteDown(event, 1)" onpointerup="keyNoteUp(event, 1)">
-
-            </button>
-        </td>
-        <td><input type="button" id="NoteButton2" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 2)"
-                   onpointerup="keyNoteUp(event, 2)"></td>
-        <td>
-            <button class="artificial-key" onpointerdown="keyNoteDown(event, 3)" onpointerup="keyNoteUp(event, 3)">
-
-            </button>
-        </td>
-        <td><input type="button" id="NoteButton4" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 4)"
-                   onpointerup="keyNoteUp(event, 4)"></td>
-        <td><input type="button" id="NoteButton5" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 5)"
-                   onpointerup="keyNoteUp(event, 5)"></td>
-        <td>
-            <button class="artificial-key" onpointerdown="keyNoteDown(event, 6)" onpointerup="keyNoteUp(event, 6)">
-
-            </button>
-        </td>
-        <td><input type="button" id="NoteButton7" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 7)"
-                   onpointerup="keyNoteUp(event, 7)"></td>
-        <td>
-            <button class="artificial-key" onpointerdown="keyNoteDown(event, 8)" onpointerup="keyNoteUp(event, 8)">
-
-            </button>
-        </td>
-        <td><input type="button" id="NoteButton9" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 9)"
-                   onpointerup="keyNoteUp(event, 9)"></td>
-        <td>
-            <button class="artificial-key" onpointerdown="keyNoteDown(event, 10)" onpointerup="keyNoteUp(event, 10)">
-
-            </button>
-        </td>
-        <td><input type="button" id="NoteButton11" name="noteButton" class="natural-key"
-                   onpointerdown="keyNoteDown(event, 11)"
-                   onpointerup="keyNoteUp(event, 11)"></td>
-    </tr>
-</table>
+<div id="pianoContainer">
+    <div id="octaveBar">
+        <button class="octave-btn" onpointerdown="octaveDown(0)" onpointerup="octaveUp()">0</button>
+        <button class="octave-btn" onpointerdown="octaveDown(1)" onpointerup="octaveUp()">1</button>
+        <button class="octave-btn" onpointerdown="octaveDown(2)" onpointerup="octaveUp()">2</button>
+        <button class="octave-btn" onpointerdown="octaveDown(3)" onpointerup="octaveUp()">3</button>
+        <button class="octave-btn active" onpointerdown="octaveDown(4)" onpointerup="octaveUp()">4</button>
+        <button class="octave-btn" onpointerdown="octaveDown(5)" onpointerup="octaveUp()">5</button>
+        <button class="octave-btn" onpointerdown="octaveDown(6)" onpointerup="octaveUp()">6</button>
+        <button class="octave-btn" onpointerdown="octaveDown(7)" onpointerup="octaveUp()">7</button>
+        <button class="octave-btn" onpointerdown="octaveDown(8)" onpointerup="octaveUp()">8</button>
+    </div>
+    <table id="buttonTable">
+        <tr>
+            <td><input type="button" id="NoteButton0" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 0)"
+                       onpointerup="keyNoteUp(event, 0)"></td>
+            <td>
+                <button class="artificial-key" onpointerdown="keyNoteDown(event, 1)" onpointerup="keyNoteUp(event, 1)"></button>
+            </td>
+            <td><input type="button" id="NoteButton2" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 2)"
+                       onpointerup="keyNoteUp(event, 2)"></td>
+            <td>
+                <button class="artificial-key" onpointerdown="keyNoteDown(event, 3)" onpointerup="keyNoteUp(event, 3)"></button>
+            </td>
+            <td><input type="button" id="NoteButton4" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 4)"
+                       onpointerup="keyNoteUp(event, 4)"></td>
+            <td><input type="button" id="NoteButton5" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 5)"
+                       onpointerup="keyNoteUp(event, 5)"></td>
+            <td>
+                <button class="artificial-key" onpointerdown="keyNoteDown(event, 6)" onpointerup="keyNoteUp(event, 6)"></button>
+            </td>
+            <td><input type="button" id="NoteButton7" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 7)"
+                       onpointerup="keyNoteUp(event, 7)"></td>
+            <td>
+                <button class="artificial-key" onpointerdown="keyNoteDown(event, 8)" onpointerup="keyNoteUp(event, 8)"></button>
+            </td>
+            <td><input type="button" id="NoteButton9" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 9)"
+                       onpointerup="keyNoteUp(event, 9)"></td>
+            <td>
+                <button class="artificial-key" onpointerdown="keyNoteDown(event, 10)" onpointerup="keyNoteUp(event, 10)"></button>
+            </td>
+            <td><input type="button" id="NoteButton11" name="noteButton" class="natural-key"
+                       onpointerdown="keyNoteDown(event, 11)"
+                       onpointerup="keyNoteUp(event, 11)"></td>
+        </tr>
+    </table>
+</div>
 
 <div class="controls">
     <select id="songSelect" class="gameConsoleText" onchange="changeSong();">

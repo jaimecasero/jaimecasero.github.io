@@ -61,15 +61,15 @@ const KEY_MODE_RELATIVE_MAJOR = [0, -2, -4, -5, -7, -9, -11];
 const NOTE_MAJOR_LABEL = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F'];
 const NOTE_FIFTHS_LABEL = ['C/B#', 'G', 'D', 'A', 'E/Fb', 'B/Cb', 'Gb/F#', 'Db/C#', 'Ab/G#', 'Eb/D#', 'Bb/A#', 'F/E#'];
 const NOTE_MAJOR_CODE = [12, 19, 14, 21, 16, 23, 18, 13, 20, 15, 22, 17];
-const NOTE_MAJOR_CIRCLE_RADIUS = 25;
+const NOTE_MAJOR_CIRCLE_RADIUS = 18;
 
 
 const NOTE_MINOR_CODE = [21, 16, 23, 18, 13, 20, 15, 22, 17, 12, 19, 14];
-const NOTE_MINOR_CIRCLE_RADIUS = 25;
+const NOTE_MINOR_CIRCLE_RADIUS = 18;
 const NOTE_MINOR_POSITION_DELTA = 30;
 
 const NOTE_DIM_CODE = [23, 18, 13, 20, 15, 22, 17, 12, 19, 14, 21, 16];
-const NOTE_DIM_CIRCLE_RADIUS = 20;
+const NOTE_DIM_CIRCLE_RADIUS = 14;
 const NOTE_DIM_POSITION_DELTA = 30;
 
 const NOTE_CIRCLE_CODE = [NOTE_MAJOR_CODE, NOTE_MINOR_CODE, NOTE_DIM_CODE];
@@ -838,7 +838,7 @@ function drawNoteIndex(noteObject) {
 
     ctx.beginPath();
     ctx.fillStyle = noteObject.outerCircleStyle;
-    ctx.arc(noteCenterPoint.x, noteCenterPoint.y, NOTE_CIRCLE_RADIUS[noteObject.ring] + 5, 0, 2 * Math.PI);
+    ctx.arc(noteCenterPoint.x, noteCenterPoint.y, NOTE_CIRCLE_RADIUS[noteObject.ring] + 4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
 
@@ -851,9 +851,10 @@ function drawNoteIndex(noteObject) {
 
 
     ctx.fillStyle = 'black';
-    ctx.font = "25px Arial";
-    //make coordinate correction so text is centered in the circle
-    ctx.fillText(noteObject.text, noteCenterPoint.x - 20, noteCenterPoint.y + 10);
+    ctx.font = "18px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(noteObject.text, noteCenterPoint.x, noteCenterPoint.y);
 
 
 }

@@ -29,6 +29,7 @@ const SCORE_TIME_MEDIUM_MS = 2000;  // under 2s = 2x multiplier
 const SCORE_TIME_SLOW_MS = 3000;    // under 3s = 1.5x multiplier
 const SCORE_HINT_MULTIPLIER = 1;
 const SCORE_NO_HINT_MULTIPLIER = 3;
+const SCORE_PITCH_MULTIPLIER = 2;   // exact pitch (correct octave) bonus
 const SCORE_MISTAKE_PENALTY = 5;
 const MAX_HIGH_SCORES = 10;
 const LOCAL_STORAGE_PREFIX = 'staff_scores_';
@@ -405,9 +406,27 @@ function renderCurrentNote() {
 }
 
 ///////////////INPUT HANDLING/////////////////////////////////////////
+var currentOctave = 4;
+var octaveHeld = false;
 var shiftPressed = false;
 var altPressed = false;
 var pressedKeys = [];
+
+function octaveDown(octave) {
+    currentOctave = octave;
+    octaveHeld = true;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[octave].classList.add('active');
+}
+
+function octaveUp() {
+    currentOctave = 4;
+    octaveHeld = false;
+    let buttons = document.querySelectorAll('.octave-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[4].classList.add('active');
+}
 
 function keyDownHandler(event) {
     console.log("keyDownHandler:" + event.keyCode);
@@ -468,9 +487,10 @@ function keyUpHandler(event) {
 }
 
 function keyNoteDown(event, keyIndex) {
+    let midiNote = (currentOctave + 1) * NUM_NOTES + keyIndex;
     document.dispatchEvent(new CustomEvent(USER_NOTE_ON_HIT_EVENT, {
         detail: {
-            midiNote: NOTE_MIDI_CODE[keyIndex],
+            midiNote: midiNote,
             pressure: event.pressure,
         }
     }));
@@ -498,7 +518,8 @@ function midiNoteDown(event) {
         let responseMs = Date.now() - noteShownTime;
         let timeMultiplier = calculateTimeMultiplier(responseMs);
         let hintMultiplier = hintCheckbox.checked ? SCORE_HINT_MULTIPLIER : SCORE_NO_HINT_MULTIPLIER;
-        let notePoints = Math.round(SCORE_BASE_POINTS * timeMultiplier * hintMultiplier);
+        let pitchMultiplier = (midiNote === currentNote) ? SCORE_PITCH_MULTIPLIER : 1;
+        let notePoints = Math.round(SCORE_BASE_POINTS * timeMultiplier * hintMultiplier * pitchMultiplier);
         totalScore += notePoints;
         scoreText.value = totalScore;
         setTimeout(function () {
@@ -508,13 +529,13 @@ function midiNoteDown(event) {
 
         currentNoteIndex = currentNoteIndex + 1;
         if (currentNoteIndex >= midiData.tracks[trackSelect.value].notes.length) {
-            // Song completed
+            // Song completed - save score then reset
             let finalScore = Math.max(0, totalScore - (totalMistakes * SCORE_MISTAKE_PENALTY));
             saveHighScore(finalScore);
-            currentNoteIndex = 0;
+            start();
+        } else {
+            renderCurrentNote();
         }
-
-        renderCurrentNote();
     } else {
         totalMistakes++;
         document.dispatchEvent(new CustomEvent(USER_FAILED_EVENT, {
