@@ -299,25 +299,46 @@ function scheduler() {
 }
 
 function scheduleNote(index, when) {
+    // Play metronome click on quarter-note beats (every 4th column)
     const source = audioCtx.createBufferSource();
-    if (index === 0) {
-        source.buffer = audioBuffers[0];
+    if (index % 4 === 0) {
+        source.buffer = audioBuffers[index === 0 ? 0 : 1];
         source.connect(audioCtx.destination);
         source.start(when);
-    } else {
-        if (index % 4 === 0)
-        {
-            source.buffer = audioBuffers[0];
-            source.connect(audioCtx.destination);
-            source.start(when);
+    }
+
+    // Play drum notes from MIDI at this grid position
+    if (midiData && midiData.tracks[drumTrack]) {
+        const ppq = midiData.header.ppq / 4;
+        const matchTick = index * ppq;
+        // Apply same level-based timing filter as renderBeat
+        let passesTimingFilter = true;
+        if (selectedLevel === 1 && (matchTick % (midiData.header.ppq)) !== 0) passesTimingFilter = false;
+        if (selectedLevel === 2 && (matchTick % (midiData.header.ppq / 2)) !== 0) passesTimingFilter = false;
+        if (selectedLevel === 3 && (matchTick % (midiData.header.ppq / 4)) !== 0) passesTimingFilter = false;
+
+        if (passesTimingFilter) {
+            for (let j = 0; j < midiData.tracks[drumTrack].notes.length; j++) {
+                const note = midiData.tracks[drumTrack].notes[j];
+                if (note.ticks === matchTick) {
+                    // Apply same level-based instrument filter
+                    if (selectedLevel === 1 && !LEVEL1_INSTRUMENTS.includes(note.midi)) continue;
+                    if (selectedLevel === 2 && !LEVEL2_INSTRUMENTS.includes(note.midi)) continue;
+                    if (selectedLevel === 3 && !LEVEL3_INSTRUMENTS.includes(note.midi)) continue;
+                    const delaySeconds = when - audioCtx.currentTime;
+                    let midiNote = note.midi;
+                    const force = note.velocity;
+                    console.log("midinote:" + midiNote);
+                    setTimeout(() => {
+                        playOscillatorNote(midiNote, force);
+                    }, delaySeconds * 1000);
+                }
+            }
         }
     }
 
-
-
     // Delay UI update slightly to match audio
     setTimeout(() => renderNextColumn(index), (when - audioCtx.currentTime) * 1000);
-
 }
 
 function stop() {
@@ -553,7 +574,7 @@ function playMidiNote(event,adjustedMidiNote) {
     }
     if (adjustedMidiNote === ACOUSTIC_BASS_DRUM_MIDI) {
         //make bass louder for mobile speakers
-        pressure = pressure + 0.3;
+        pressure = 1;
     }
     playOscillatorNote(adjustedMidiNote, pressure);
 }
