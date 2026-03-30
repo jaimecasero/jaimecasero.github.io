@@ -86,6 +86,10 @@
         <div class="controls-actions">
             <input type="button" id="playButton" value="Play" onmousedown="playPause()" title="will play current Toque">
             <input type="button" id="togglePadButton" value="Hide Pads" onclick="togglePads()">
+            <label for="metronomeVolume">Met</label>
+            <input type="range" id="metronomeVolume" min="0" max="100" value="80" oninput="changeMetronomeVolume(this.value)" title="Metronome volume">
+            <label for="drumsVolume">Drums</label>
+            <input type="range" id="drumsVolume" min="0" max="100" value="80" oninput="changeDrumsVolume(this.value)" title="Drum playback volume">
         </div>
         <div class="controls-selects">
             <select id="beatSelect" onchange="loadSong();">

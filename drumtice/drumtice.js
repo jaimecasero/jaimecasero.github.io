@@ -268,6 +268,11 @@ let lookahead = 25; // ms
 let nextNoteTime;
 let sound_delay = 138;
 let currentTime = 0;
+let metronomeVolume = 0.8;
+let drumsVolume = 0.8;
+
+function changeMetronomeVolume(val) { metronomeVolume = val / 100; }
+function changeDrumsVolume(val) { drumsVolume = val / 100; }
 
 function startPlayback() {
     nextNoteTime = audioCtx.currentTime;
@@ -300,10 +305,12 @@ function scheduler() {
 
 function scheduleNote(index, when) {
     // Play metronome click on quarter-note beats (every 4th column)
-    const source = audioCtx.createBufferSource();
-    if (index % 4 === 0) {
+    if (index % 4 === 0 && metronomeVolume > 0) {
+        const source = audioCtx.createBufferSource();
         source.buffer = audioBuffers[index === 0 ? 0 : 1];
-        source.connect(audioCtx.destination);
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = metronomeVolume;
+        source.connect(gainNode).connect(audioCtx.destination);
         source.start(when);
     }
 
@@ -326,8 +333,8 @@ function scheduleNote(index, when) {
                     if (selectedLevel === 2 && !LEVEL2_INSTRUMENTS.includes(note.midi)) continue;
                     if (selectedLevel === 3 && !LEVEL3_INSTRUMENTS.includes(note.midi)) continue;
                     const delaySeconds = when - audioCtx.currentTime;
-                    let midiNote = note.midi;
-                    const force = note.velocity;
+                    const midiNote = note.midi;
+                    const force = note.velocity * drumsVolume;
                     setTimeout(() => {
                         playOscillatorNote(midiNote, force);
                     }, delaySeconds * 1000);

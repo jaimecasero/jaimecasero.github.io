@@ -390,6 +390,20 @@ select option {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
+/* Volume sliders */
+.controls-actions input[type="range"] {
+    width: clamp(40px, 8vw, 80px);
+    height: 4px;
+    accent-color: var(--accent-red);
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.controls-actions label[for="metronomeVolume"],
+.controls-actions label[for="drumsVolume"] {
+    font-size: clamp(7px, 0.9vw, 10px);
+    margin-left: 4px;
+}
 
 /* ==========================================================
    SCORE DISPLAYS
