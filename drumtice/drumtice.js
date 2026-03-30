@@ -250,15 +250,31 @@ function setClefText(text, textClass, clefIndex, column) {
     }
 }
 
+// Returns the number of quarter-note beats per bar from MIDI time signature
+function getBarBeats() {
+    if (midiData && midiData.header.timeSignatures && midiData.header.timeSignatures.length > 0) {
+        const ts = midiData.header.timeSignatures[0].timeSignature;
+        // ts = [numerator, denominator] e.g. [6, 8] for 6/8
+        return ts[0] * (4 / ts[1]);
+    }
+    return 4; // default 4/4
+}
+
+// Grid step: divides one bar into 16 equal columns
+function getGridStep() {
+    return getBarBeats() * midiData.header.ppq / CLEF_COLUMNS;
+}
+
 function start() {
     currentNoteIndex = 0;
     mistakesText.value = INITIAL_MISTAKES;
     scoreText.value = 0;
+    changeBpm();
     renderBeat();
 }
 
 function changeBpm() {
-    sound_delay = (60000 / bpmSelect.value) / 4;
+    sound_delay = (60000 / bpmSelect.value) * (midiData ? getBarBeats() : 4) / CLEF_COLUMNS;
     console.log("delay" + sound_delay);
 }
 
@@ -316,8 +332,8 @@ function scheduleNote(index, when) {
 
     // Play drum notes from MIDI at this grid position
     if (midiData && midiData.tracks[drumTrack]) {
-        const ppq = midiData.header.ppq / 4;
-        const matchTick = index * ppq;
+        const gridStep = getGridStep();
+        const matchTick = index * gridStep;
         // Apply same level-based timing filter as renderBeat
         let passesTimingFilter = true;
         if (selectedLevel === 1 && (matchTick % (midiData.header.ppq)) !== 0) passesTimingFilter = false;
@@ -394,9 +410,9 @@ function renderBeat() {
         }
     }
 
-    let ppq=midiData.header.ppq/4;
-    for (let i = 0; i < 16 ; i++) {
-        let matchTick =  i * ppq;
+    const gridStep = getGridStep();
+    for (let i = 0; i < CLEF_COLUMNS ; i++) {
+        let matchTick =  i * gridStep;
         // Level-based timing filter: L1=quarters, L2=+8ths, L3=+16ths, L4=all
         if (selectedLevel === 1 && (matchTick % (midiData.header.ppq)) !== 0) continue;
         if (selectedLevel === 2 && (matchTick % (midiData.header.ppq / 2)) !== 0) continue;
