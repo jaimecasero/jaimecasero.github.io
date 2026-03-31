@@ -260,9 +260,13 @@ function getBarBeats() {
     return 4; // default 4/4
 }
 
-// Grid step: divides one bar into 16 equal columns
+// Grid step: bar fits in 16 cols at 16th-note resolution if barBeats<=4,
+// otherwise use 8th-note resolution so longer bars still fit
 function getGridStep() {
-    return getBarBeats() * midiData.header.ppq / CLEF_COLUMNS;
+    if (getBarBeats() <= 4) {
+        return midiData.header.ppq / 4; // 16th-note columns
+    }
+    return midiData.header.ppq / 2; // 8th-note columns
 }
 
 function start() {
@@ -274,7 +278,10 @@ function start() {
 }
 
 function changeBpm() {
-    sound_delay = (60000 / bpmSelect.value) * (midiData ? getBarBeats() : 4) / CLEF_COLUMNS;
+    const gridStep = midiData ? getGridStep() : 240;
+    const ppq = midiData ? midiData.header.ppq : 960;
+    // Each column = gridStep/ppq quarter notes → delay in ms
+    sound_delay = (60000 / bpmSelect.value) * (gridStep / ppq);
     console.log("delay" + sound_delay);
 }
 
@@ -320,8 +327,9 @@ function scheduler() {
 }
 
 function scheduleNote(index, when) {
-    // Play metronome click on quarter-note beats (every 4th column)
-    if (index % 4 === 0 && metronomeVolume > 0) {
+    // Play metronome click on quarter-note beats
+    const metronomeInterval = midiData && getBarBeats() > 4 ? 2 : 4;
+    if (index % metronomeInterval === 0 && metronomeVolume > 0) {
         const source = audioCtx.createBufferSource();
         source.buffer = audioBuffers[index === 0 ? 0 : 1];
         const gainNode = audioCtx.createGain();
