@@ -1,4 +1,4 @@
-const CACHE_NAME = 'drumtice-v1.1.3';
+const CACHE_NAME = 'drumtice-v1.1.4';
 
 const ASSETS_TO_CACHE = [
     './drumtice.html',
@@ -21,6 +21,9 @@ const ASSETS_TO_CACHE = [
     './midi/groove_12_8.mid',
     './audio/metro-1.wav',
     './audio/metro-n.wav',
+    './img/quarter-down.svg',
+    './img/eighth-down.svg',
+    './img/sixteenth-down.svg',
     './soundfont/drum-ogg.js',
 ];
 
