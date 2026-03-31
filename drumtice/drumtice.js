@@ -16,6 +16,11 @@ const EIGHTH_CHAR = "&#119136;";
 const SIXTEENTH_CHAR = "&#119137;";
 const THIRTY_SECOND_CHAR = "&#119138;";
 
+// Stem-down SVG note images for kick drum
+const QUARTER_DOWN_SVG = "<img src='img/quarter-down.svg' class='stem-down-note'>";
+const EIGHTH_DOWN_SVG = "<img src='img/eighth-down.svg' class='stem-down-note'>";
+const SIXTEENTH_DOWN_SVG = "<img src='img/sixteenth-down.svg' class='stem-down-note'>";
+
 const ACOUSTIC_BASS_DRUM_MIDI=35;
 const BASS_DRUM_MIDI=36;
 const SIDE_STICK_MIDI=37;
@@ -441,25 +446,36 @@ function renderBeat() {
                     }
 
                     console.log("clefRowIndex:" + clefIndex + " class:" + " noteClass: " + noteClass);
-                    let noteSymbol = noteDurationToSymbol(midiData.tracks[drumTrack].notes[j].durationTicks, midiData.header.ppq);
-                    // X noteheads for cymbals and hi-hats (standard drum notation)
-                    switch (midiNote) {
-                        case CLOSED_HIHAT_MIDI:
-                        case PEDAL_HIHAT_MIDI:
-                            noteSymbol = "&#119107;"; // closed X notehead
-                            break;
-                        case OPEN_HI_HAT_MIDI:
-                        case CRASH_CYMBAL_1:
-                        case CRASH_CYMBAL_2:
-                        case CHINESE_CYMBAL:
-                        case SPLASH_CYMBAL:
-                        case RIDE_CYMBAL_1:
-                        case RIDE_BELL:
-                            noteSymbol = "&#119109;"; // open X notehead
-                            break;
-                        case SIDE_STICK_MIDI:
-                            noteSymbol = "&#119107;"; // X notehead for side stick/cross stick
-                            break;
+                    let noteSymbol;
+                    const noteDuration = midiData.tracks[drumTrack].notes[j].durationTicks;
+                    // Kick drum: stem-down SVG notes
+                    if (midiNote === ACOUSTIC_BASS_DRUM_MIDI || midiNote === BASS_DRUM_MIDI) {
+                        noteClass += " stem-down";
+                        const beats = noteDuration / midiData.header.ppq;
+                        if (beats >= 0.5) noteSymbol = QUARTER_DOWN_SVG;
+                        else if (beats >= 0.25) noteSymbol = EIGHTH_DOWN_SVG;
+                        else noteSymbol = SIXTEENTH_DOWN_SVG;
+                    } else {
+                        noteSymbol = noteDurationToSymbol(noteDuration, midiData.header.ppq);
+                        // X noteheads for cymbals and hi-hats (standard drum notation)
+                        switch (midiNote) {
+                            case CLOSED_HIHAT_MIDI:
+                            case PEDAL_HIHAT_MIDI:
+                                noteSymbol = "&#119107;"; // closed X notehead
+                                break;
+                            case OPEN_HI_HAT_MIDI:
+                            case CRASH_CYMBAL_1:
+                            case CRASH_CYMBAL_2:
+                            case CHINESE_CYMBAL:
+                            case SPLASH_CYMBAL:
+                            case RIDE_CYMBAL_1:
+                            case RIDE_BELL:
+                                noteSymbol = "&#119109;"; // open X notehead
+                                break;
+                            case SIDE_STICK_MIDI:
+                                noteSymbol = "&#119107;"; // X notehead for side stick/cross stick
+                                break;
+                        }
                     }
                     // Ghost & accent based on velocity
                     const velocity = Math.round(midiData.tracks[drumTrack].notes[j].velocity * 127);

@@ -160,6 +160,18 @@ br { display: none; }
     line-height: 1;
 }
 
+/* Stem-down SVG notes for kick drum */
+.stem-down {
+    transform: translate(-50%, -12%);
+}
+.stem-down-note {
+    height: clamp(26px, 2.8vw, 30px);
+    filter: invert(1);
+}
+.ghost-note .stem-down-note {
+    height: clamp(22px, 2.2vw, 24px);
+}
+
 .note-on-line-striked {
     position: absolute;
     left: 20%;
