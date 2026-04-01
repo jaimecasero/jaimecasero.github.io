@@ -1,0 +1,176 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: #0a0a14;
+    color: #a78bfa;
+    font-family: monospace;
+}
+
+table.instrument_table td {
+    background-color: #1a1730;
+    text-align: center;
+    vertical-align: middle;
+}
+
+table.instrument_table td.downbeat {
+    background-color: #14122a;
+}
+
+table.instrument_table th {
+    color: #6d6a8a;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+table.instrument_table th.downbeat {
+    color: #06b6d4;
+    font-weight: bold;
+}
+
+table.instrument_table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+td {
+    height: 30px;
+}
+
+/* Group separator lines */
+table.instrument_table tr:nth-child(2) td {
+    border-bottom: 2px solid #2d2b4e;
+}
+table.instrument_table tr:nth-child(4) td {
+    border-bottom: 2px solid #2d2b4e;
+}
+table.instrument_table tr:nth-child(7) td {
+    border-bottom: 2px solid #2d2b4e;
+}
+table.instrument_table tr:nth-child(8) td {
+    border-bottom: 2px solid #2d2b4e;
+}
+
+table.instrument_table td:nth-child(1) {
+    width: 40px;
+}
+
+#instrumentTable td:first-child {
+    white-space: nowrap;
+    width: 40px;
+    height: 30px;
+    font-size: 11px;
+    color: #6d6a8a;
+}
+
+.noteButton {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #2d2b3e;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    background: #1a1730;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.noteButton:active {
+    opacity: 0.7;
+}
+
+.groupLabel {
+    font-size: 9px;
+    color: #4d4b6a;
+    text-align: center;
+}
+
+.volumeSlider,
+.panSlider {
+    width: 35px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.modeButton {
+    padding: 3px 5px;
+    cursor: pointer;
+    background: #1e1b2e;
+    color: #6d6a8a;
+    border: 1px solid #3d3b5e;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.modeButton:active {
+    opacity: 0.7;
+}
+
+#playButton {
+    padding: 8px 20px;
+    cursor: pointer;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 8px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#playButton:active {
+    opacity: 0.8;
+}
+
+#shareButton {
+    padding: 8px 16px;
+    cursor: pointer;
+    background: #0891b2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 8px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#shareButton:active {
+    opacity: 0.8;
+}
+
+#shareButton.share-success {
+    background: #059669;
+}
+
+select {
+    background: #1e1b2e;
+    color: #a78bfa;
+    border: 1px solid #3d3b5e;
+    border-radius: 4px;
+    padding: 6px 4px;
+    font-size: 13px;
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+.shared-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #0891b2;
+    color: white;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1000;
+    transition: opacity 0.5s;
+    font-family: sans-serif;
+}
+
+.shared-banner.banner-fade {
+    opacity: 0;
+}

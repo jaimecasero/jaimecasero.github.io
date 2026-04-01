@@ -1,0 +1,560 @@
+'use strict';
+
+// ============================================================
+// INSTRUMENTS  — mapped to drum-ogg.js soundfont keys
+// drum-ogg.js exposes MIDI.Soundfont.acoustic_grand_piano
+// Key mapping: MIDI note = key_number - 50  (e.g. D6=86 → drum 36 = kick)
+// ============================================================
+const INSTRUMENTS = [
+    { name: "Crash",   abbr: "CR",  key: "Eb7" }, // MIDI 49 – Crash Cymbal 1
+    { name: "Ride",    abbr: "RD",  key: "F7"  }, // MIDI 51 – Ride Cymbal 1
+    { name: "HH Open", abbr: "HHo", key: "C7"  }, // MIDI 46 – Open Hi-Hat
+    { name: "HH Cls",  abbr: "HH",  key: "Ab6" }, // MIDI 42 – Closed Hi-Hat
+    { name: "Hi Tom",  abbr: "T1",  key: "E7"  }, // MIDI 50 – High Tom
+    { name: "Mid Tom", abbr: "T2",  key: "D7"  }, // MIDI 48 – Hi-Mid Tom
+    { name: "Flr Tom", abbr: "FT",  key: "B6"  }, // MIDI 45 – Low Tom
+    { name: "Snare",   abbr: "SN",  key: "E6"  }, // MIDI 38 – Acoustic Snare
+    { name: "Kick",    abbr: "KK",  key: "D6"  }, // MIDI 36 – Bass Drum 1
+];
+const N_INST  = INSTRUMENTS.length; // 9
+const N_STEPS = 16;
+const MAX_BEATS = N_STEPS;
+
+const instrumentGroups = [
+    { name: "Cymbal", rows: [0, 1] },
+    { name: "Hi-Hat", rows: [2, 3] },
+    { name: "Toms",   rows: [4, 5, 6] },
+    { name: "Snare",  rows: [7] },
+    { name: "Kick",   rows: [8] },
+];
+const groupVolumeArray = [70, 80, 75, 90, 100];
+const groupPanArray    = [0, 0, 0, 0, 0];
+
+function getGroupForRow(row) {
+    for (let g = 0; g < instrumentGroups.length; g++) {
+        if (instrumentGroups[g].rows.includes(row)) return g;
+    }
+    return 0;
+}
+
+// ============================================================
+// VELOCITY
+// ============================================================
+// 0=off, 1=ghost, 2=normal, 3=accent
+const velocityColors = [
+    "#1a1730", // off   – very dark
+    "#4c1d95", // ghost – dark violet
+    "#7c3aed", // normal – violet
+    "#06b6d4", // accent – cyan
+];
+const velocityMultiplier = [0, 0.5, 1.0, 1.5];
+
+// ============================================================
+// PRESETS  (rows: CR, RD, HHo, HH, T1, T2, FT, SN, KK)
+// ============================================================
+const empty = Array.from({length: N_INST}, () => Array(N_STEPS).fill(0));
+
+const rockBeat = [
+    [3,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash – beat 1
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [2,0,2,0, 2,0,2,0, 2,0,2,0, 2,0,2,0], // hh closed – 8th notes
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0], // snare – beats 2,4
+    [2,0,0,0, 0,0,0,0, 2,0,0,0, 0,0,0,0], // kick  – beats 1,3
+];
+
+const funkBeat = [
+    [3,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,2, 0,0,0,0, 0,0,0,0], // hh open – 2e+
+    [3,1,3,1, 2,1,3,0, 2,1,2,1, 3,1,2,1], // hh closed – 16ths w/ accents
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,0,0, 3,0,1,0, 0,0,0,0, 3,0,1,0], // snare – accent + ghost
+    [3,0,0,1, 0,0,0,0, 2,0,0,1, 0,0,0,0], // funk kick – 1, 1a, 3, 3a
+];
+
+const hipHopBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [2,0,1,0, 2,0,1,0, 2,0,1,0, 2,0,1,0], // hh closed – 8ths + ghost 16ths
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0], // snare – 2,4
+    [2,0,0,0, 0,0,1,0, 0,0,2,0, 0,0,0,0], // boom bap kick
+];
+
+const jazzBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash
+    [3,0,2,0, 3,0,2,0, 3,0,2,0, 3,0,2,0], // ride – jazz ride 8ths
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh closed
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0], // snare – feather 2,4
+    [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0], // kick  – feather 1,3
+];
+
+const reggaeBeat = [
+    [3,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [0,0,2,0, 0,0,2,0, 0,0,2,0, 0,0,2,0], // hh closed – offbeats
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,0,0, 0,0,0,0, 2,0,0,0, 0,0,0,0], // one-drop snare – beat 3
+    [2,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // kick – beat 1
+];
+
+const bossaBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [2,0,0,2, 0,2,0,0, 2,0,0,2, 0,2,0,0], // bossa clave hi-hat
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [0,0,2,0, 0,0,0,0, 2,0,0,0, 2,0,0,0], // rim – bossa rimshot
+    [2,0,0,0, 0,0,2,0, 0,2,0,0, 0,0,2,0], // bossa kick
+];
+
+const beatArray   = [empty, rockBeat, funkBeat, hipHopBeat, jazzBeat, reggaeBeat, bossaBeat];
+const beatBpmArray = [120,  120,      96,        90,         140,       75,          110];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentBeat = beatArray[1].map(row => [...row]);
+let timerID;
+let isPlaying = false;
+let mode = 0;  // 0=labels, 1=volume, 2=pan
+const scheduleAheadTime = 0.1; // seconds
+const lookahead = 25;          // ms
+let nextNoteTime;
+let currentTime = 0;
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext);
+let sound_delay = (60000 / 120) / 4;
+const audioBuffers = [];
+const gainNodes    = [];
+const pannerNodes  = [];
+
+let beatSelect;
+let bpmSelect;
+let instrumentTable;
+let playButton;
+
+// ============================================================
+// INIT
+// ============================================================
+(function(window, document, undefined) {
+    window.onload = init;
+
+    function init() {
+        beatSelect      = document.getElementById('beatSelect');
+        bpmSelect       = document.getElementById('bpmSelect');
+        instrumentTable = document.getElementById('instrumentTable');
+        playButton      = document.getElementById('playButton');
+
+        initHeader();
+        initTable();
+        initAudio();
+
+        if (!loadSharedPattern()) {
+            changeBeat();
+        }
+        changeBpm();
+    }
+})(window, document, undefined);
+
+// ============================================================
+// TABLE BUILD
+// ============================================================
+function initHeader() {
+    const tfoot = instrumentTable.getElementsByTagName('tfoot')[0];
+    while (tfoot.firstChild) tfoot.removeChild(tfoot.firstChild);
+
+    const labels = ['1','e','&','a', '2','e','&','a', '3','e','&','a', '4','e','&','a'];
+    const tr = document.createElement('tr');
+    tfoot.appendChild(tr);
+
+    for (let i = 0; i <= N_STEPS; i++) {
+        const th = document.createElement('th');
+        if (i === 0) {
+            const btn = document.createElement('input');
+            btn.type = 'button';
+            btn.className = 'modeButton';
+            btn.value = 'V/P';
+            btn.addEventListener('click', () => {
+                mode = (mode + 1) % 3;
+                initTable();
+                renderBeat();
+            });
+            th.appendChild(btn);
+        } else {
+            const beatIdx = i - 1;
+            if (beatIdx % 4 === 0) th.classList.add('downbeat');
+            th.textContent = labels[beatIdx];
+        }
+        tr.appendChild(th);
+    }
+}
+
+function initTable() {
+    const tbody = instrumentTable.getElementsByTagName('tbody')[0];
+    while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+    for (let row = 0; row < N_INST; row++) {
+        const tr = document.createElement('tr');
+        tbody.appendChild(tr);
+
+        const gIdx = getGroupForRow(row);
+        const group = instrumentGroups[gIdx];
+        const isFirstRow = (group.rows[0] === row);
+
+        for (let col = 0; col <= N_STEPS; col++) {
+            const td = document.createElement('td');
+            tr.appendChild(td);
+
+            if (col === 0) {
+                if (mode === 0) {
+                    td.textContent = INSTRUMENTS[row].abbr;
+                    td.title = INSTRUMENTS[row].name;
+                } else if (isFirstRow) {
+                    const slider = document.createElement('input');
+                    slider.type  = 'range';
+                    slider.step  = mode === 1 ? '10' : '0.5';
+                    slider.className = mode === 1 ? 'volumeSlider' : 'panSlider';
+                    if (mode === 1) {
+                        slider.min = '0'; slider.max = '100';
+                        slider.value = groupVolumeArray[gIdx];
+                        const g = gIdx;
+                        slider.addEventListener('change', e => changeVolume(e.target.value, g));
+                    } else {
+                        slider.min = '-1'; slider.max = '1';
+                        slider.value = groupPanArray[gIdx];
+                        const g = gIdx;
+                        slider.addEventListener('change', e => changePanning(e.target.value, g));
+                    }
+                    td.appendChild(slider);
+                } else {
+                    td.textContent = group.name;
+                    td.className = 'groupLabel';
+                }
+            } else {
+                const beatCol = col - 1;
+                if (beatCol % 4 === 0) td.classList.add('downbeat');
+                const btn = document.createElement('input');
+                btn.type = 'button';
+                btn.className = 'noteButton';
+                btn.dataset.beatCol = beatCol;
+                btn.addEventListener('click', e => changeNote(e.target));
+                td.appendChild(btn);
+            }
+        }
+    }
+}
+
+function renderBeat() {
+    const tbody = instrumentTable.getElementsByTagName('tbody')[0];
+    const rows  = tbody.getElementsByTagName('tr');
+    for (let i = 0; i < rows.length; i++) {
+        const tds = rows[i].getElementsByTagName('td');
+        for (let j = 1; j <= N_STEPS; j++) {
+            const btn = tds[j] && tds[j].getElementsByTagName('input')[0];
+            if (btn) {
+                const vel = (currentBeat[i] && currentBeat[i][j - 1]) || 0;
+                btn.style.background = velocityColors[vel];
+            }
+        }
+    }
+}
+
+function changeNote(btn) {
+    const row     = btn.parentElement.parentElement.rowIndex;
+    const beatCol = parseInt(btn.dataset.beatCol);
+    const cur     = (currentBeat[row] && currentBeat[row][beatCol]) || 0;
+    currentBeat[row][beatCol] = (cur + 1) % 4;
+    btn.style.background = velocityColors[currentBeat[row][beatCol]];
+}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+function changeBeat() {
+    const idx = parseInt(beatSelect.value);
+    currentBeat = beatArray[idx].map(row => [...row]);
+    bpmSelect.value = beatBpmArray[idx];
+    changeBpm();
+    renderBeat();
+}
+
+function changeBpm() {
+    sound_delay = (60000 / parseInt(bpmSelect.value)) / 4;
+}
+
+function changeVolume(value, gIdx) {
+    groupVolumeArray[gIdx] = value;
+    const gain = value / 100;
+    instrumentGroups[gIdx].rows.forEach(row => {
+        if (gainNodes[row]) gainNodes[row].gain.value = gain;
+    });
+}
+
+function changePanning(value, gIdx) {
+    groupPanArray[gIdx] = parseFloat(value);
+    instrumentGroups[gIdx].rows.forEach(row => {
+        if (pannerNodes[row]) pannerNodes[row].pan.value = parseFloat(value);
+    });
+}
+
+// ============================================================
+// AUDIO
+// ============================================================
+async function initAudio() {
+    await loadSounds();
+    setupGains();
+}
+
+async function loadSounds() {
+    const sf = window.MIDI && window.MIDI.Soundfont && window.MIDI.Soundfont.acoustic_grand_piano;
+    if (!sf) {
+        console.error('GrooveLab: drum soundfont not available');
+        return;
+    }
+    const promises = INSTRUMENTS.map(async (inst, i) => {
+        const dataURI = sf[inst.key];
+        if (!dataURI) { console.warn('No sample for key', inst.key); return; }
+        const response    = await fetch(dataURI);
+        const arrayBuffer = await response.arrayBuffer();
+        audioBuffers[i]   = await audioCtx.decodeAudioData(arrayBuffer);
+    });
+    await Promise.all(promises);
+    console.log('GrooveLab: drum sounds loaded');
+}
+
+function setupGains() {
+    for (let i = 0; i < N_INST; i++) {
+        const gainNode = audioCtx.createGain();
+        gainNode.connect(audioCtx.destination);
+        gainNodes[i] = gainNode;
+
+        const pannerNode = audioCtx.createStereoPanner();
+        pannerNode.connect(gainNode);
+        pannerNodes[i] = pannerNode;
+
+        const g = getGroupForRow(i);
+        gainNode.gain.value  = groupVolumeArray[g] / 100;
+        pannerNode.pan.value = groupPanArray[g];
+    }
+}
+
+// ============================================================
+// SEQUENCER
+// ============================================================
+function scheduler() {
+    while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+        scheduleNote(currentTime, nextNoteTime);
+        nextNote();
+    }
+    timerID = setTimeout(scheduler, lookahead);
+}
+
+function scheduleNote(index, when) {
+    for (let i = 0; i < N_INST; i++) {
+        const vel = (currentBeat[i] && currentBeat[i][index]) || 0;
+        if (vel > 0 && audioBuffers[i] && pannerNodes[i]) {
+            const source  = audioCtx.createBufferSource();
+            source.buffer = audioBuffers[i];
+            const velGain = audioCtx.createGain();
+            velGain.gain.value = velocityMultiplier[vel];
+            source.connect(velGain);
+            velGain.connect(pannerNodes[i]);
+            source.start(when);
+        }
+    }
+    setTimeout(() => renderNextColumn(index), Math.max(0, (when - audioCtx.currentTime) * 1000));
+}
+
+function nextNote() {
+    nextNoteTime += sound_delay / 1000;
+    currentTime = (currentTime + 1) % MAX_BEATS;
+}
+
+function playPause() {
+    if (isPlaying) {
+        stop();
+        playButton.value = 'Play';
+    } else {
+        startPlayback();
+        playButton.value = 'Pause';
+    }
+    isPlaying = !isPlaying;
+}
+
+function startPlayback() {
+    audioCtx.resume().then(() => {
+        currentTime  = 0;
+        nextNoteTime = audioCtx.currentTime;
+        scheduler();
+    });
+}
+
+function stop() {
+    if (timerID) { clearTimeout(timerID); timerID = null; }
+}
+
+function renderNextColumn(beatIdx) {
+    const tfoot  = instrumentTable.getElementsByTagName('tfoot')[0];
+    const tr     = tfoot.getElementsByTagName('tr')[0];
+    const allTh  = tr.getElementsByTagName('th');
+    const prevIdx = (beatIdx === 0) ? MAX_BEATS - 1 : beatIdx - 1;
+
+    if (allTh[beatIdx + 1]) allTh[beatIdx + 1].style.background = '#1e3a5f';
+    if (allTh[prevIdx + 1]) allTh[prevIdx + 1].style.background = '';
+}
+
+// ============================================================
+// SHARE — URL-encoded pattern
+// ============================================================
+function encodePattern() {
+    // 3 header bytes + N_INST*4 data bytes
+    // byte 0: beat preset index
+    // byte 1: reserved
+    // byte 2: bpm value
+    // bytes 3+: 4 bytes per instrument row (2 bits per step × 16 steps)
+    const bytes = new Uint8Array(3 + N_INST * 4);
+    bytes[0] = parseInt(beatSelect.value);
+    bytes[1] = 0;
+    bytes[2] = parseInt(bpmSelect.value);
+
+    for (let row = 0; row < N_INST; row++) {
+        let bits = 0;
+        for (let col = 0; col < MAX_BEATS; col++) {
+            const vel = (currentBeat[row] && currentBeat[row][col]) || 0;
+            bits |= ((vel & 0x3) << (30 - col * 2));
+        }
+        const offset = 3 + row * 4;
+        bytes[offset]     = (bits >>> 24) & 0xFF;
+        bytes[offset + 1] = (bits >>> 16) & 0xFF;
+        bytes[offset + 2] = (bits >>> 8)  & 0xFF;
+        bytes[offset + 3] =  bits         & 0xFF;
+    }
+
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function decodePattern(encoded) {
+    try {
+        let b64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        const binary = atob(b64);
+        const bytes  = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+        const state = { beat: bytes[0], bpm: bytes[2], g: [] };
+        for (let row = 0; row < N_INST; row++) {
+            const offset = 3 + row * 4;
+            const bits   = (bytes[offset] << 24) | (bytes[offset+1] << 16) |
+                           (bytes[offset+2] << 8) |  bytes[offset+3];
+            const rowArr = [];
+            for (let col = 0; col < MAX_BEATS; col++) {
+                rowArr.push((bits >>> (30 - col * 2)) & 0x3);
+            }
+            state.g.push(rowArr);
+        }
+        return state;
+    } catch(e) {
+        console.error('GrooveLab: decode error', e);
+        return null;
+    }
+}
+
+function sharePattern() {
+    const encoded = encodePattern();
+    const url = window.location.origin + window.location.pathname + '?g=' + encoded;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+            .then(() => showShareFeedback('Link copied!'))
+            .catch(() => fallbackCopy(url));
+    } else {
+        fallbackCopy(url);
+    }
+}
+
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showShareFeedback('Link copied!'); }
+    catch(e) { console.log('Share URL:', text); }
+    document.body.removeChild(ta);
+}
+
+function showShareFeedback(msg) {
+    const btn  = document.getElementById('shareButton');
+    const orig = btn.value;
+    btn.value  = msg;
+    btn.classList.add('share-success');
+    setTimeout(() => { btn.value = orig; btn.classList.remove('share-success'); }, 2000);
+}
+
+function loadSharedPattern() {
+    const params  = new URLSearchParams(window.location.search);
+    const encoded = params.get('g');
+    if (!encoded) return false;
+
+    const state = decodePattern(encoded);
+    if (!state) return false;
+
+    if (state.beat >= 0 && state.beat < beatArray.length) beatSelect.value = state.beat;
+
+    let bpmFound = false;
+    for (const opt of bpmSelect.options) {
+        if (parseInt(opt.value) === state.bpm) { bpmSelect.value = state.bpm; bpmFound = true; break; }
+    }
+    if (!bpmFound) {
+        const opt = document.createElement('option');
+        opt.value = state.bpm; opt.text = state.bpm + ' BPM';
+        bpmSelect.appendChild(opt);
+        bpmSelect.value = state.bpm;
+    }
+
+    currentBeat = beatArray[parseInt(beatSelect.value)].map(r => [...r]);
+    if (state.g) {
+        for (let i = 0; i < state.g.length && i < N_INST; i++) {
+            if (Array.isArray(state.g[i])) currentBeat[i] = state.g[i];
+        }
+    }
+
+    changeBpm();
+    renderBeat();
+    showSharedBanner();
+    return true;
+}
+
+function showSharedBanner() {
+    const banner = document.createElement('div');
+    banner.className = 'shared-banner';
+    banner.innerHTML = 'Shared groove loaded! <span onclick="this.parentElement.remove()" style="cursor:pointer;margin-left:12px">&#x2715;</span>';
+    document.body.insertBefore(banner, document.body.firstChild);
+    setTimeout(() => {
+        if (banner.parentElement) {
+            banner.classList.add('banner-fade');
+            setTimeout(() => { if (banner.parentElement) banner.remove(); }, 500);
+        }
+    }, 4000);
+}

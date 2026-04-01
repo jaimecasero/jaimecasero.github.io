@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NP7KCZGF61"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NP7KCZGF61');
+    </script>
+    <title>GrooveLab</title>
+    <script src="../drumtice/soundfont/drum-ogg.js"></script>
+    <script src="groovelab.js"></script>
+    <link rel="stylesheet" href="groovelab.css">
+    <link rel="manifest" href="groovelab_manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="GrooveLab">
+    <link rel="apple-touch-icon" href="../drumtice/img/drumtice_192.png">
+    <meta property="og:title" content="GrooveLab">
+    <meta property="og:description" content="Create, compose and share drum grooves">
+    <meta property="og:type" content="website">
+</head>
+<body>
+<form id="settingsForm">
+
+    <table id="instrumentTable" class="instrument_table">
+        <thead></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+
+    <input type="button" id="playButton" value="Play" onmousedown="playPause()" title="Play / Pause groove">
+    <input type="button" id="shareButton" value="Share" onclick="sharePattern()" title="Copy shareable link to this groove">
+    <br>
+    <select id="beatSelect" onchange="changeBeat()">
+        <option value="0">Empty</option>
+        <option value="1" selected>Rock</option>
+        <option value="2">Funk</option>
+        <option value="3">Hip-Hop</option>
+        <option value="4">Jazz</option>
+        <option value="5">Reggae</option>
+        <option value="6">Bossa Nova</option>
+    </select>
+    <select id="bpmSelect" title="Tempo" onchange="changeBpm()">
+        <option value="60">Largo (60)</option>
+        <option value="75">Slow (75)</option>
+        <option value="90">Moderate (90)</option>
+        <option value="96">Funk (96)</option>
+        <option value="110">Bossa (110)</option>
+        <option value="120" selected>Allegro (120)</option>
+        <option value="130">Upbeat (130)</option>
+        <option value="140">Jazz (140)</option>
+        <option value="160">Fast (160)</option>
+        <option value="180">Very Fast (180)</option>
+        <option value="200">Prestissimo (200)</option>
+    </select>
+
+</form>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('[PWA] SW registered, scope:', reg.scope))
+                .catch(err => console.log('[PWA] SW registration failed:', err));
+        });
+    }
+</script>
+</body>
+</html>
