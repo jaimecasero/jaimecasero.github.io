@@ -12,8 +12,8 @@ const INSTRUMENTS = [
     { name: "HH Cls",  abbr: "HH",  key: "Ab6" }, // MIDI 42 – Closed Hi-Hat
     { name: "Hi Tom",  abbr: "T1",  key: "E7"  }, // MIDI 50 – High Tom
     { name: "Mid Tom", abbr: "T2",  key: "D7"  }, // MIDI 48 – Hi-Mid Tom
-    { name: "Flr Tom", abbr: "FT",  key: "B6"  }, // MIDI 45 – Low Tom
     { name: "Snare",   abbr: "SN",  key: "E6"  }, // MIDI 38 – Acoustic Snare
+    { name: "Flr Tom", abbr: "FT",  key: "B6"  }, // MIDI 45 – Low Tom
     { name: "Kick",    abbr: "KK",  key: "D6"  }, // MIDI 36 – Bass Drum 1
 ];
 const N_INST  = INSTRUMENTS.length; // 9
@@ -21,14 +21,15 @@ const N_STEPS = 16;
 const MAX_BEATS = N_STEPS;
 
 const instrumentGroups = [
-    { name: "Cymbal", rows: [0, 1] },
-    { name: "Hi-Hat", rows: [2, 3] },
-    { name: "Toms",   rows: [4, 5, 6] },
-    { name: "Snare",  rows: [7] },
-    { name: "Kick",   rows: [8] },
+    { name: "Cymbal",  rows: [0, 1] },
+    { name: "Hi-Hat",  rows: [2, 3] },
+    { name: "Toms",    rows: [4, 5] },
+    { name: "Snare",   rows: [6] },
+    { name: "Flr Tom", rows: [7] },
+    { name: "Kick",    rows: [8] },
 ];
-const groupVolumeArray = [70, 80, 75, 90, 100];
-const groupPanArray    = [0, 0, 0, 0, 0];
+const groupVolumeArray = [70, 80, 75, 90, 80, 100];
+const groupPanArray    = [0, 0, 0, 0, 0, 0];
 
 function getGroupForRow(row) {
     for (let g = 0; g < instrumentGroups.length; g++) {
@@ -54,6 +55,7 @@ const velocityMultiplier = [0, 0.5, 1.0, 1.5];
 // ============================================================
 const empty = Array.from({length: N_INST}, () => Array(N_STEPS).fill(0));
 
+// Preset rows: CR, RD, HHo, HH, T1, T2, SN, FT, KK
 const rockBeat = [
     [3,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash – beat 1
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
@@ -61,8 +63,8 @@ const rockBeat = [
     [2,0,2,0, 2,0,2,0, 2,0,2,0, 2,0,2,0], // hh closed – 8th notes
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0], // snare – beats 2,4
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [2,0,0,0, 0,0,0,0, 2,0,0,0, 0,0,0,0], // kick  – beats 1,3
 ];
 
@@ -73,8 +75,8 @@ const funkBeat = [
     [3,1,3,1, 2,1,3,0, 2,1,2,1, 3,1,2,1], // hh closed – 16ths w/ accents
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,0,0, 3,0,1,0, 0,0,0,0, 3,0,1,0], // snare – accent + ghost
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [3,0,0,1, 0,0,0,0, 2,0,0,1, 0,0,0,0], // funk kick – 1, 1a, 3, 3a
 ];
 
@@ -85,8 +87,8 @@ const hipHopBeat = [
     [2,0,1,0, 2,0,1,0, 2,0,1,0, 2,0,1,0], // hh closed – 8ths + ghost 16ths
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0], // snare – 2,4
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [2,0,0,0, 0,0,1,0, 0,0,2,0, 0,0,0,0], // boom bap kick
 ];
 
@@ -97,8 +99,8 @@ const jazzBeat = [
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh closed
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0], // snare – feather 2,4
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0], // kick  – feather 1,3
 ];
 
@@ -109,8 +111,8 @@ const reggaeBeat = [
     [0,0,2,0, 0,0,2,0, 0,0,2,0, 0,0,2,0], // hh closed – offbeats
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,0,0, 0,0,0,0, 2,0,0,0, 0,0,0,0], // one-drop snare – beat 3
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [2,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // kick – beat 1
 ];
 
@@ -121,8 +123,8 @@ const bossaBeat = [
     [2,0,0,2, 0,2,0,0, 2,0,0,2, 0,2,0,0], // bossa clave hi-hat
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
-    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [0,0,2,0, 0,0,0,0, 2,0,0,0, 2,0,0,0], // rim – bossa rimshot
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
     [2,0,0,0, 0,0,2,0, 0,2,0,0, 0,0,2,0], // bossa kick
 ];
 
@@ -167,6 +169,7 @@ let playButton;
         initHeader();
         initTable();
         initAudio();
+        initHitControls();
 
         if (!loadSharedPattern()) {
             changeBeat();
@@ -174,6 +177,40 @@ let playButton;
         changeBpm();
     }
 })(window, document, undefined);
+
+// ============================================================
+// HIT CONTROLS — alternate input for small-screen precision
+// ============================================================
+function initHitControls() {
+    const instSel = document.getElementById('instSelect');
+    INSTRUMENTS.forEach((inst, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = inst.abbr + ' – ' + inst.name;
+        instSel.appendChild(opt);
+    });
+
+    const stepLabels = ['1','1e','1&','1a', '2','2e','2&','2a', '3','3e','3&','3a', '4','4e','4&','4a'];
+    const stepSel = document.getElementById('stepSelect');
+    stepLabels.forEach((label, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = label;
+        stepSel.appendChild(opt);
+    });
+}
+
+function hitSelected() {
+    const instIdx = parseInt(document.getElementById('instSelect').value);
+    const stepIdx = parseInt(document.getElementById('stepSelect').value);
+
+    const tbody = instrumentTable.getElementsByTagName('tbody')[0];
+    const tr    = tbody.getElementsByTagName('tr')[instIdx];
+    if (!tr) return;
+    const btn = tr.getElementsByTagName('td')[stepIdx + 1].getElementsByTagName('input')[0];
+    if (!btn) return;
+    changeNote(btn);
+}
 
 // ============================================================
 // TABLE BUILD

@@ -44,6 +44,11 @@ table.instrument_table tr:nth-child(2) td {
 table.instrument_table tr:nth-child(4) td {
     border-bottom: 2px solid #2d2b4e;
 }
+
+table.instrument_table tr:nth-child(6) td {
+    border-bottom: 2px solid #2d2b4e;
+}
+
 table.instrument_table tr:nth-child(7) td {
     border-bottom: 2px solid #2d2b4e;
 }
@@ -142,6 +147,22 @@ table.instrument_table td:nth-child(1) {
 
 #shareButton.share-success {
     background: #059669;
+}
+
+#hitButton {
+    padding: 8px 20px;
+    cursor: pointer;
+    background: #4c1d95;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#hitButton:active {
+    background: #06b6d4;
 }
 
 select {
