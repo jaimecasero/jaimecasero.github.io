@@ -55,15 +55,15 @@
 
 <div id="pianoContainer">
     <div id="octaveBar">
-        <button class="octave-btn" onpointerdown="octaveDown(0)" onpointerup="octaveUp()">0</button>
-        <button class="octave-btn" onpointerdown="octaveDown(1)" onpointerup="octaveUp()">1</button>
-        <button class="octave-btn" onpointerdown="octaveDown(2)" onpointerup="octaveUp()">2</button>
-        <button class="octave-btn" onpointerdown="octaveDown(3)" onpointerup="octaveUp()">3</button>
-        <button class="octave-btn active" onpointerdown="octaveDown(4)" onpointerup="octaveUp()">4</button>
-        <button class="octave-btn" onpointerdown="octaveDown(5)" onpointerup="octaveUp()">5</button>
-        <button class="octave-btn" onpointerdown="octaveDown(6)" onpointerup="octaveUp()">6</button>
-        <button class="octave-btn" onpointerdown="octaveDown(7)" onpointerup="octaveUp()">7</button>
-        <button class="octave-btn" onpointerdown="octaveDown(8)" onpointerup="octaveUp()">8</button>
+        <label class="octave-label"><input type="radio" name="octave" value="0" onchange="octaveSelect(0)"><span>0</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="1" onchange="octaveSelect(1)"><span>1</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="2" onchange="octaveSelect(2)"><span>2</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="3" onchange="octaveSelect(3)"><span>3</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="4" onchange="octaveSelect(4)" checked><span>4</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="5" onchange="octaveSelect(5)"><span>5</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="6" onchange="octaveSelect(6)"><span>6</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="7" onchange="octaveSelect(7)"><span>7</span></label>
+        <label class="octave-label"><input type="radio" name="octave" value="8" onchange="octaveSelect(8)"><span>8</span></label>
     </div>
     <table id="buttonTable">
         <tr>
