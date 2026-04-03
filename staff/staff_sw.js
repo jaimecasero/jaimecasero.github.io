@@ -1,4 +1,4 @@
-const CACHE_NAME = 'staff-v1.0.11';
+const CACHE_NAME = 'staff-v1.0.12';
 const ASSETS_TO_CACHE = [
     './staff.html',
     './staff.js',

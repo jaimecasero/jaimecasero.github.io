@@ -106,7 +106,7 @@ table {
     left: 20%;
     top: 0;
     transform: translate(-50%, -75%);
-    font-size: 40px;
+    font-size: 60px;
 }
 
 .note-on-line-striked {
@@ -115,7 +115,7 @@ table {
     top: 0;
     transform: translate(-50%, -75%);
     text-decoration: line-through;
-    font-size: 40px;
+    font-size: 60px;
 }
 
 .note-on-space {
@@ -123,7 +123,7 @@ table {
     left: 20%;
     top: 0;
     transform: translate(-50%, -75%);
-    font-size: 40px;
+    font-size: 60px;
 }
 
 .natural-key {
