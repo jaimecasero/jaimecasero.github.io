@@ -1,25 +1,243 @@
-<html lang="end">
+<html lang="en">
 <head>
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-NP7KCZGF61"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', 'G-NP7KCZGF61');
-	</script>
-	<meta charset="UTF-8">
-	<title>App Index</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NP7KCZGF61"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NP7KCZGF61');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Music Apps</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a12;
+            color: #e0e0ff;
+            font-family: monospace;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 32px 16px 20px;
+            border-bottom: 1px solid #1e1b3a;
+        }
+
+        header h1 {
+            font-size: 2em;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #f59e0b;
+            text-shadow: 0 0 20px rgba(245,158,11,0.4);
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #6d6a8a;
+            letter-spacing: 1px;
+        }
+
+        .staff-decoration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin: 16px auto 0;
+            width: min(320px, 90vw);
+            position: relative;
+            height: 28px;
+        }
+
+        .staff-decoration::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            top: 4px; bottom: 4px;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 4px,
+                #2a2748 4px,
+                #2a2748 5px,
+                transparent 5px,
+                transparent 9px
+            );
+        }
+
+        .staff-note {
+            font-size: 1.8em;
+            position: relative;
+            z-index: 1;
+            line-height: 1;
+            padding: 0 4px;
+            background: #0a0a12;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            padding: 24px 16px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #16142a;
+            border: 1px solid #2a2748;
+            border-radius: 10px;
+            padding: 18px 12px 14px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
+
+        .card:hover, .card:active {
+            border-color: var(--accent);
+            box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 30%, transparent);
+            transform: translateY(-2px);
+        }
+
+        .card:active {
+            transform: translateY(0);
+        }
+
+        .card-icon {
+            font-size: 2.2em;
+            line-height: 1;
+        }
+
+        .card-name {
+            font-size: 0.95em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .card-desc {
+            font-size: 0.72em;
+            color: #6d6a8a;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .tag {
+            font-size: 0.62em;
+            padding: 2px 7px;
+            border-radius: 10px;
+            border: 1px solid;
+            border-color: var(--accent);
+            color: var(--accent);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px 16px;
+            font-size: 0.75em;
+            color: #3a3860;
+            border-top: 1px solid #1e1b3a;
+        }
+    </style>
 </head>
 <body>
-	<a href="berimbau/berimbau.html">berimbau</a>
-	<a href="drumtice/drumtice.html">Drumtice</a>
-	<a href="berimbot/capoeira.html">BerimBot</a>
-	<a href="earforge/index.html">EAR Forge</a>
-	<a href="fifths/fifths.html">Fifths</a>
-	<a href="fretnot/guitar.html">FretNot</a>
-	<a href="staff/staff.html">Staff</a>
-	<a href="ukelele/ukelele.html">Ukelele</a>
+
+<header>
+    <div class="staff-decoration">
+        <span class="staff-note">&#9833;</span>
+        <span class="staff-note">&#9834;</span>
+        <span class="staff-note">&#9835;</span>
+        <span class="staff-note">&#9836;</span>
+        <span class="staff-note">&#9833;</span>
+    </div>
+    <h1>Music Apps</h1>
+    <p>Mobile music tools &mdash; play, practice, create</p>
+</header>
+
+<main class="grid">
+
+    <a class="card" href="berimbot/capoeira.html" style="--accent:#ff6b2b">
+        <span class="card-icon">🤖</span>
+        <span class="card-name">BerimBot</span>
+        <span class="card-desc">Capoeira beat generator with full bateria</span>
+        <span class="tag">rhythm</span>
+    </a>
+
+    <a class="card" href="groovelab/groovelab.html" style="--accent:#8b5cf6">
+        <span class="card-icon">🧪</span>
+        <span class="card-name">GrooveLab</span>
+        <span class="card-desc">Create &amp; share drum kit grooves</span>
+        <span class="tag">rhythm</span>
+    </a>
+
+    <a class="card" href="drumtice/drumtice.html" style="--accent:#06b6d4">
+        <span class="card-icon">🥁</span>
+        <span class="card-name">Drumtice</span>
+        <span class="card-desc">Drum sheet reader &amp; play-along trainer</span>
+        <span class="tag">practice</span>
+    </a>
+
+    <a class="card" href="berimbau/berimbau.html" style="--accent:#f59e0b">
+        <span class="card-icon">🏹</span>
+        <span class="card-name">Berimbau</span>
+        <span class="card-desc">Virtual berimbau instrument</span>
+        <span class="tag">instrument</span>
+    </a>
+
+    <a class="card" href="earforge/index.html" style="--accent:#10b981">
+        <span class="card-icon">👂</span>
+        <span class="card-name">EarForge</span>
+        <span class="card-desc">Ear training — intervals, chords &amp; melodies</span>
+        <span class="tag">training</span>
+    </a>
+
+    <a class="card" href="fifths/fifths.html" style="--accent:#a78bfa">
+        <span class="card-icon">⭕</span>
+        <span class="card-name">Fifths</span>
+        <span class="card-desc">Circle of fifths — keys, modes &amp; chords</span>
+        <span class="tag">theory</span>
+    </a>
+
+    <a class="card" href="fretnot/guitar.html" style="--accent:#f472b6">
+        <span class="card-icon">🎸</span>
+        <span class="card-name">FretNot</span>
+        <span class="card-desc">Guitar fretboard — scales &amp; chord patterns</span>
+        <span class="tag">theory</span>
+    </a>
+
+    <a class="card" href="staff/staff.html" style="--accent:#34d399">
+        <span class="card-icon">🎼</span>
+        <span class="card-name">Staff</span>
+        <span class="card-desc">MIDI to sheet music with voice &amp; MIDI input</span>
+        <span class="tag">notation</span>
+    </a>
+
+    <a class="card" href="ukelele/ukelele.html" style="--accent:#fb923c">
+        <span class="card-icon">🎵</span>
+        <span class="card-name">Ukelele</span>
+        <span class="card-desc">Ukulele chords &amp; fretboard explorer</span>
+        <span class="tag">instrument</span>
+    </a>
+
+</main>
+
+<footer>
+    jaimecasero &mdash; mobile music tools
+</footer>
 
 </body>
 </html>
