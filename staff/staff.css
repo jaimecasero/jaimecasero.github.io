@@ -105,22 +105,25 @@ table {
     position: absolute;
     left: 20%;
     top: 0;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -75%);
+    font-size: 40px;
 }
 
 .note-on-line-striked {
     position: absolute;
     left: 20%;
     top: 0;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -75%);
     text-decoration: line-through;
+    font-size: 40px;
 }
 
 .note-on-space {
     position: absolute;
     left: 20%;
     top: 0;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -75%);
+    font-size: 40px;
 }
 
 .natural-key {
