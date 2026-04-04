@@ -17,8 +17,22 @@ const INSTRUMENTS = [
     { name: "Kick",    abbr: "KK",  key: "D6"  }, // MIDI 36 – Bass Drum 1
 ];
 const N_INST  = INSTRUMENTS.length; // 9
-const N_STEPS = 16;
-const MAX_BEATS = N_STEPS;
+const N_STEPS = 16; // preset array size
+
+// ============================================================
+// TIME SIGNATURES
+// ============================================================
+// subdiv: steps per "felt beat" (4 for simple, 6 for compound)
+// steps: total grid columns per bar
+const TIME_SIGNATURES = [
+    { name: '2/4',  steps: 8,  subdiv: 4 }, // 2 beats × 4 sixteenths
+    { name: '3/4',  steps: 12, subdiv: 4 }, // 3 beats × 4 sixteenths
+    { name: '4/4',  steps: 16, subdiv: 4 }, // default
+    { name: '5/4',  steps: 20, subdiv: 4 }, // 5 beats × 4 sixteenths
+    { name: '7/4',  steps: 28, subdiv: 4 }, // 7 beats × 4 sixteenths
+    { name: '6/8',  steps: 12, subdiv: 6 }, // 2 dotted-quarter beats × 6 steps
+    { name: '12/8', steps: 24, subdiv: 6 }, // 4 dotted-quarter beats × 6 steps
+];
 
 const instrumentGroups = [
     { name: "Cymbal",  rows: [0, 1] },
@@ -161,8 +175,12 @@ const audioBuffers = [];
 const gainNodes    = [];
 const pannerNodes  = [];
 
+let nSteps = 16;          // active step count for current time sig
+let currentTimeSigIdx = 2; // index into TIME_SIGNATURES (4/4)
+
 let beatSelect;
 let bpmSelect;
+let timeSigSelect;
 let instrumentTable;
 let playButton;
 
@@ -175,6 +193,7 @@ let playButton;
     function init() {
         beatSelect      = document.getElementById('beatSelect');
         bpmSelect       = document.getElementById('bpmSelect');
+        timeSigSelect   = document.getElementById('timeSigSelect');
         instrumentTable = document.getElementById('instrumentTable');
         playButton      = document.getElementById('playButton');
 
@@ -191,6 +210,29 @@ let playButton;
 })(window, document, undefined);
 
 // ============================================================
+// TIME SIGNATURE HELPERS
+// ============================================================
+function getHeaderLabel(ts, stepIdx) {
+    if (ts.subdiv === 4) {
+        return ['1', 'e', '&', 'a'][stepIdx % 4];
+    } else { // compound (subdiv=6): 3 eighth notes per dotted quarter, each with a "+" subdivision
+        return ['1', '+', '2', '+', '3', '+'][stepIdx % 6];
+    }
+}
+
+function getStepSelectorLabel(ts, stepIdx) {
+    if (ts.subdiv === 4) {
+        const beat = Math.floor(stepIdx / 4) + 1;
+        const sub  = ['', 'e', '&', 'a'][stepIdx % 4];
+        return String(beat) + sub;
+    } else {
+        const beat = Math.floor(stepIdx / 6) + 1;
+        const sub  = ['1', '+', '2', '+', '3', '+'][stepIdx % 6];
+        return String(beat) + '.' + sub;
+    }
+}
+
+// ============================================================
 // HIT CONTROLS — alternate input for small-screen precision
 // ============================================================
 function initHitControls() {
@@ -201,15 +243,19 @@ function initHitControls() {
         opt.textContent = inst.abbr + ' – ' + inst.name;
         instSel.appendChild(opt);
     });
+    updateStepSelect();
+}
 
-    const stepLabels = ['1','1e','1&','1a', '2','2e','2&','2a', '3','3e','3&','3a', '4','4e','4&','4a'];
+function updateStepSelect() {
+    const ts = TIME_SIGNATURES[currentTimeSigIdx];
     const stepSel = document.getElementById('stepSelect');
-    stepLabels.forEach((label, i) => {
+    while (stepSel.firstChild) stepSel.removeChild(stepSel.firstChild);
+    for (let i = 0; i < ts.steps; i++) {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = label;
+        opt.textContent = getStepSelectorLabel(ts, i);
         stepSel.appendChild(opt);
-    });
+    }
 }
 
 function hitSelected() {
@@ -228,14 +274,14 @@ function hitSelected() {
 // TABLE BUILD
 // ============================================================
 function initHeader() {
+    const ts    = TIME_SIGNATURES[currentTimeSigIdx];
     const tfoot = instrumentTable.getElementsByTagName('tfoot')[0];
     while (tfoot.firstChild) tfoot.removeChild(tfoot.firstChild);
 
-    const labels = ['1','e','&','a', '2','e','&','a', '3','e','&','a', '4','e','&','a'];
     const tr = document.createElement('tr');
     tfoot.appendChild(tr);
 
-    for (let i = 0; i <= N_STEPS; i++) {
+    for (let i = 0; i <= nSteps; i++) {
         const th = document.createElement('th');
         if (i === 0) {
             const btn = document.createElement('input');
@@ -250,14 +296,15 @@ function initHeader() {
             th.appendChild(btn);
         } else {
             const beatIdx = i - 1;
-            if (beatIdx % 4 === 0) th.classList.add('downbeat');
-            th.textContent = labels[beatIdx];
+            if (beatIdx % ts.subdiv === 0) th.classList.add('downbeat');
+            th.textContent = getHeaderLabel(ts, beatIdx);
         }
         tr.appendChild(th);
     }
 }
 
 function initTable() {
+    const ts    = TIME_SIGNATURES[currentTimeSigIdx];
     const tbody = instrumentTable.getElementsByTagName('tbody')[0];
     while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
 
@@ -269,7 +316,7 @@ function initTable() {
         const group = instrumentGroups[gIdx];
         const isFirstRow = (group.rows[0] === row);
 
-        for (let col = 0; col <= N_STEPS; col++) {
+        for (let col = 0; col <= nSteps; col++) {
             const td = document.createElement('td');
             tr.appendChild(td);
 
@@ -300,7 +347,7 @@ function initTable() {
                 }
             } else {
                 const beatCol = col - 1;
-                if (beatCol % 4 === 0) td.classList.add('downbeat');
+                if (beatCol % ts.subdiv === 0) td.classList.add('downbeat');
                 const btn = document.createElement('input');
                 btn.type = 'button';
                 btn.className = 'noteButton';
@@ -317,7 +364,7 @@ function renderBeat() {
     const rows  = tbody.getElementsByTagName('tr');
     for (let i = 0; i < rows.length; i++) {
         const tds = rows[i].getElementsByTagName('td');
-        for (let j = 1; j <= N_STEPS; j++) {
+        for (let j = 1; j <= nSteps; j++) {
             const btn = tds[j] && tds[j].getElementsByTagName('input')[0];
             if (btn) {
                 const vel = (currentBeat[i] && currentBeat[i][j - 1]) || 0;
@@ -341,9 +388,26 @@ function changeNote(btn) {
 function changeBeat() {
     const idx = parseInt(beatSelect.value);
     currentBeat = beatArray[idx].map(row => [...row]);
+    // Extend rows if current time sig needs more steps than the preset provides
+    for (let r = 0; r < N_INST; r++) {
+        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
+    }
     bpmSelect.value = beatBpmArray[idx];
     changeBpm();
     renderBeat();
+}
+
+function changeTimeSig() {
+    currentTimeSigIdx = parseInt(timeSigSelect.value);
+    nSteps = TIME_SIGNATURES[currentTimeSigIdx].steps;
+    // Extend currentBeat rows if the new time sig has more steps
+    for (let r = 0; r < N_INST; r++) {
+        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
+    }
+    initHeader();
+    initTable();
+    renderBeat();
+    updateStepSelect();
 }
 
 function changeBpm() {
@@ -435,7 +499,7 @@ function scheduleNote(index, when) {
 
 function nextNote() {
     nextNoteTime += sound_delay / 1000;
-    currentTime = (currentTime + 1) % MAX_BEATS;
+    currentTime = (currentTime + 1) % nSteps;
 }
 
 function playPause() {
@@ -465,7 +529,7 @@ function renderNextColumn(beatIdx) {
     const tfoot  = instrumentTable.getElementsByTagName('tfoot')[0];
     const tr     = tfoot.getElementsByTagName('tr')[0];
     const allTh  = tr.getElementsByTagName('th');
-    const prevIdx = (beatIdx === 0) ? MAX_BEATS - 1 : beatIdx - 1;
+    const prevIdx = (beatIdx === 0) ? nSteps - 1 : beatIdx - 1;
 
     if (allTh[beatIdx + 1]) allTh[beatIdx + 1].style.background = '#1e3a5f';
     if (allTh[prevIdx + 1]) allTh[prevIdx + 1].style.background = '';
@@ -475,27 +539,25 @@ function renderNextColumn(beatIdx) {
 // SHARE — URL-encoded pattern
 // ============================================================
 function encodePattern() {
-    // 3 header bytes + N_INST*4 data bytes
-    // byte 0: beat preset index
-    // byte 1: reserved
-    // byte 2: bpm value
-    // bytes 3+: 4 bytes per instrument row (2 bits per step × 16 steps)
-    const bytes = new Uint8Array(3 + N_INST * 4);
+    // Header: byte 0 = beat index, byte 1 = timeSigIdx+1 (0 = legacy 4/4), byte 2 = bpm
+    // Data: ceil(steps/4) bytes per row, 2 bits per step packed MSB-first
+    const bytesPerRow = Math.ceil(nSteps / 4);
+    const bytes = new Uint8Array(3 + N_INST * bytesPerRow);
     bytes[0] = parseInt(beatSelect.value);
-    bytes[1] = 0;
+    bytes[1] = currentTimeSigIdx + 1; // 1-indexed; 0 = legacy format
     bytes[2] = parseInt(bpmSelect.value);
 
     for (let row = 0; row < N_INST; row++) {
-        let bits = 0;
-        for (let col = 0; col < MAX_BEATS; col++) {
-            const vel = (currentBeat[row] && currentBeat[row][col]) || 0;
-            bits |= ((vel & 0x3) << (30 - col * 2));
+        const offset = 3 + row * bytesPerRow;
+        for (let b = 0; b < bytesPerRow; b++) {
+            let byteVal = 0;
+            for (let s = 0; s < 4; s++) {
+                const col = b * 4 + s;
+                const vel = col < nSteps ? ((currentBeat[row] && currentBeat[row][col]) || 0) : 0;
+                byteVal |= ((vel & 0x3) << (6 - s * 2));
+            }
+            bytes[offset + b] = byteVal;
         }
-        const offset = 3 + row * 4;
-        bytes[offset]     = (bits >>> 24) & 0xFF;
-        bytes[offset + 1] = (bits >>> 16) & 0xFF;
-        bytes[offset + 2] = (bits >>> 8)  & 0xFF;
-        bytes[offset + 3] =  bits         & 0xFF;
     }
 
     let binary = '';
@@ -511,14 +573,28 @@ function decodePattern(encoded) {
         const bytes  = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-        const state = { beat: bytes[0], bpm: bytes[2], g: [] };
+        // Detect format: byte 1 = 0 is legacy (4/4, 16 steps), else timeSigIdx+1
+        let timeSigIdx, stepsToRead, bytesPerRow;
+        if (bytes[1] > 0 && bytes[1] <= TIME_SIGNATURES.length) {
+            timeSigIdx  = bytes[1] - 1;
+            stepsToRead = TIME_SIGNATURES[timeSigIdx].steps;
+            bytesPerRow = Math.ceil(stepsToRead / 4);
+        } else {
+            timeSigIdx  = 2; // legacy = 4/4
+            stepsToRead = 16;
+            bytesPerRow = 4;
+        }
+
+        const state = { beat: bytes[0], bpm: bytes[2], timeSig: timeSigIdx, g: [] };
         for (let row = 0; row < N_INST; row++) {
-            const offset = 3 + row * 4;
-            const bits   = (bytes[offset] << 24) | (bytes[offset+1] << 16) |
-                           (bytes[offset+2] << 8) |  bytes[offset+3];
+            const offset = 3 + row * bytesPerRow;
             const rowArr = [];
-            for (let col = 0; col < MAX_BEATS; col++) {
-                rowArr.push((bits >>> (30 - col * 2)) & 0x3);
+            for (let b = 0; b < bytesPerRow; b++) {
+                const byteVal = bytes[offset + b] || 0;
+                for (let s = 0; s < 4; s++) {
+                    const col = b * 4 + s;
+                    if (col < stepsToRead) rowArr.push((byteVal >>> (6 - s * 2)) & 0x3);
+                }
             }
             state.g.push(rowArr);
         }
@@ -571,6 +647,15 @@ function loadSharedPattern() {
 
     if (state.beat >= 0 && state.beat < beatArray.length) beatSelect.value = state.beat;
 
+    if (state.timeSig !== undefined && state.timeSig >= 0 && state.timeSig < TIME_SIGNATURES.length) {
+        timeSigSelect.value = state.timeSig;
+        currentTimeSigIdx   = state.timeSig;
+        nSteps = TIME_SIGNATURES[currentTimeSigIdx].steps;
+        initHeader();
+        initTable();
+        updateStepSelect();
+    }
+
     let bpmFound = false;
     for (const opt of bpmSelect.options) {
         if (parseInt(opt.value) === state.bpm) { bpmSelect.value = state.bpm; bpmFound = true; break; }
@@ -587,6 +672,9 @@ function loadSharedPattern() {
         for (let i = 0; i < state.g.length && i < N_INST; i++) {
             if (Array.isArray(state.g[i])) currentBeat[i] = state.g[i];
         }
+    }
+    for (let r = 0; r < N_INST; r++) {
+        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
     }
 
     changeBpm();
