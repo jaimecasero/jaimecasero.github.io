@@ -13,7 +13,7 @@ const INSTRUMENTS = [
     { name: "Hi Tom",  abbr: "T1",  key: "E7"  }, // MIDI 50 – High Tom
     { name: "Mid Tom", abbr: "T2",  key: "D7"  }, // MIDI 48 – Hi-Mid Tom
     { name: "Snare",   abbr: "SN",  key: "E6"  }, // MIDI 38 – Acoustic Snare
-    { name: "Flr Tom", abbr: "FT",  key: "B6"  }, // MIDI 45 – Low Tom
+    { name: "Flr Tom", abbr: "FT",  key: "G6"  }, // MIDI 45 – Low Tom
     { name: "Kick",    abbr: "KK",  key: "D6"  }, // MIDI 36 – Bass Drum 1
 ];
 const N_INST  = INSTRUMENTS.length; // 9
