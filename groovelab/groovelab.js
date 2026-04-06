@@ -31,7 +31,7 @@ const TIME_SIGNATURES = [
     { name: '5/4',  steps: 20, subdiv: 4 }, // 5 beats × 4 sixteenths
     { name: '7/4',  steps: 28, subdiv: 4 }, // 7 beats × 4 sixteenths
     { name: '6/8',  steps: 12, subdiv: 6 }, // 2 dotted-quarter beats × 6 steps
-    { name: '12/8', steps: 24, subdiv: 6 }, // 4 dotted-quarter beats × 6 steps
+    { name: '12/8', steps: 12 , subdiv: 3 }, // 4 dotted-quarter beats × 6 steps
 ];
 
 const instrumentGroups = [
@@ -154,8 +154,44 @@ const eighthNoteSyncopBeat = [
     [2,0,0,2, 0,0,2,0, 0,0,2,0, 0,2,0,0], // kick – 1, +2, 3, +4
 ];
 
-const beatArray   = [empty, rockBeat, funkBeat, hipHopBeat, jazzBeat, reggaeBeat, bossaBeat, eighthNoteSyncopBeat];
-const beatBpmArray = [120,  120,      96,        90,         140,       160,          110,       90];
+const discoBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash – beat 1
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,2,0, 0,0,2,0, 0,0,2,0, 0,0,2,0], // hh open
+    [2,0,0,0, 2,0,0,0, 2,0,0,0, 2,0,0,0], // hh closed – 8th notes
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,0,0, 2,0,0,0, 0,0,0,0, 2,0,0,0], // snare – beats 2,4 accented
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [2,0,0,0, 2,0,0,0, 2,0,0,0, 2,0,0,0], // kick – 1, +2, 3, +4
+];
+
+const trainBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash – beat 1
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [0,0,2,0, 0,0,2,0, 0,0,0,0, 0,0,0,0], // hh closed – 8th notes
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [1,1,2,1, 1,1,2,1, 0,0,0,0, 0,0,0,0], // snare – beats 2,4 accented
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [2,0,0,0, 2,0,0,0, 0,0,0,0, 0,0,0,0], // kick – 1, +2, 3, +4
+];
+
+const halfTimeShuffleBeat = [
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // crash – beat 1
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // ride
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hh open
+    [2,0,0,0, 2,0,2,0, 0,0,2,0, 2,0,0,0], // hh closed – 8th notes
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // hi tom
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // mid tom
+    [0,0,1,0, 0,0,0,0, 1,0,0,0, 2,0,1,0], // snare – beats 2,4 accented
+    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], // floor tom
+    [2,0,0,0, 0,0,0,0, 0,0,2,0, 0,0,0,0], // kick – 1, +2, 3, +4
+];
+
+const beatArray   = [empty, rockBeat, funkBeat, hipHopBeat, jazzBeat, reggaeBeat, bossaBeat, eighthNoteSyncopBeat, discoBeat, trainBeat, halfTimeShuffleBeat];
+const beatBpmArray = [120,  120,      96,        90,         140,       160,          110,       90,           110,       90,        140];
 
 // ============================================================
 // STATE
