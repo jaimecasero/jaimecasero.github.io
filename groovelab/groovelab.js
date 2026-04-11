@@ -319,6 +319,8 @@ function initMeasures() {
     measures = Array.from({length: MAX_MEASURES}, () =>
         Array.from({length: N_INST}, () => Array(nSteps).fill(0))
     );
+    measuresVisited = Array(MAX_MEASURES).fill(false);
+    measuresVisited[0] = true;
     currentMeasureIdx = 0;
     currentBeat = measures[0];
 }
@@ -326,6 +328,13 @@ function initMeasures() {
 function changeMeasure() {
     const newIdx = parseInt(measureSelect.value);
     if (newIdx === currentMeasureIdx) return;
+    if (!measuresVisited[newIdx]) {
+        const prevIdx = newIdx - 1;
+        if (prevIdx >= 0) {
+            measures[newIdx] = measures[prevIdx].map(row => [...row]);
+        }
+        measuresVisited[newIdx] = true;
+    }
     currentMeasureIdx = newIdx;
     currentBeat = measures[currentMeasureIdx];
     renderBeat();
@@ -566,6 +575,8 @@ function changeBeat() {
     for (let m = 1; m < MAX_MEASURES; m++) {
         measures[m] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
     }
+    measuresVisited = Array(MAX_MEASURES).fill(false);
+    measuresVisited[0] = true;
     currentMeasureIdx = 0;
     measureSelect.value = 0;
     currentBeat = measures[0];
@@ -932,6 +943,7 @@ function loadSharedPattern() {
             for (let r = 0; r < N_INST; r++) {
                 while (measures[m][r].length < nSteps) measures[m][r].push(0);
             }
+            measuresVisited[m] = true;
         }
     }
     currentMeasureIdx = 0;
