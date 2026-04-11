@@ -283,6 +283,7 @@ const beatBpmArray = [120,  120,      96,        90,         140,       160,    
 // ============================================================
 const MAX_MEASURES = 4;
 let measures           = [];   // measures[0..3], each = [N_INST][nSteps]
+let measuresVisited    = [];   // measuresVisited[m] = true once user has opened bar m
 let currentMeasureIdx  = 0;
 let playbackMeasureIdx = 0;
 let currentBeat        = null; // always === measures[currentMeasureIdx]
@@ -586,6 +587,12 @@ function changeTimeSig() {
     initTable();
     renderBeat();
     updateStepSelect();
+}
+
+function clearMeasure() {
+    measures[currentMeasureIdx] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
+    currentBeat = measures[currentMeasureIdx];
+    renderBeat();
 }
 
 function changeBpm() {
