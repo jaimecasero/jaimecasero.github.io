@@ -461,6 +461,7 @@ function initHeader() {
         } else {
             const beatIdx = i - 1;
             if (beatIdx % ts.subdiv === 0) th.classList.add('downbeat');
+            if (Math.floor(beatIdx / ts.subdiv) % 2 === 1) th.classList.add('beatAlt');
             th.textContent = getHeaderLabel(ts, beatIdx);
         }
         tr.appendChild(th);
@@ -510,12 +511,15 @@ function initTable() {
                     td.className = 'groupLabel';
                 }
             } else {
-                const beatCol = col - 1;
+                const beatCol  = col - 1;
+                const beatGrp  = Math.floor(beatCol / ts.subdiv);
                 if (beatCol % ts.subdiv === 0) td.classList.add('downbeat');
+                if (beatGrp % 2 === 1) td.classList.add('beatAlt');
                 const btn = document.createElement('input');
                 btn.type = 'button';
                 btn.className = 'noteButton';
-                btn.dataset.beatCol = beatCol;
+                btn.dataset.beatCol  = beatCol;
+                btn.dataset.offColor = beatGrp % 2 === 1 ? '#252040' : '#1a1730';
                 btn.addEventListener('click', e => changeNote(e.target));
                 td.appendChild(btn);
             }
@@ -532,7 +536,7 @@ function renderBeat() {
             const btn = tds[j] && tds[j].getElementsByTagName('input')[0];
             if (btn) {
                 const vel = (currentBeat[i] && currentBeat[i][j - 1]) || 0;
-                btn.style.background = velocityColors[vel];
+                btn.style.background = vel === 0 ? (btn.dataset.offColor || velocityColors[0]) : velocityColors[vel];
             }
         }
     }
@@ -543,7 +547,8 @@ function changeNote(btn) {
     const beatCol = parseInt(btn.dataset.beatCol);
     const cur     = (currentBeat[row] && currentBeat[row][beatCol]) || 0;
     currentBeat[row][beatCol] = (cur + 1) % 4;
-    btn.style.background = velocityColors[currentBeat[row][beatCol]];
+    const newVel = currentBeat[row][beatCol];
+    btn.style.background = newVel === 0 ? (btn.dataset.offColor || velocityColors[0]) : velocityColors[newVel];
 }
 
 // ============================================================

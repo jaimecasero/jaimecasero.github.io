@@ -17,6 +17,14 @@ table.instrument_table td.downbeat {
     background-color: #14122a;
 }
 
+table.instrument_table td.beatAlt {
+    background-color: #252040;
+}
+
+table.instrument_table td.beatAlt.downbeat {
+    background-color: #1e1a3a;
+}
+
 table.instrument_table th {
     color: #6d6a8a;
     font-size: 11px;
@@ -26,6 +34,14 @@ table.instrument_table th {
 table.instrument_table th.downbeat {
     color: #06b6d4;
     font-weight: bold;
+}
+
+table.instrument_table th.beatAlt {
+    color: #a89bc0;
+}
+
+table.instrument_table th.beatAlt.downbeat {
+    color: #22d3ee;
 }
 
 table.instrument_table {
