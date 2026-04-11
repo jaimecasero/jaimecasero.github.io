@@ -250,9 +250,13 @@ let playButton;
 // ============================================================
 function getHeaderLabel(ts, stepIdx) {
     if (ts.subdiv === 4) {
-        return ['1', 'e', '&', 'a'][stepIdx % 4];
-    } else { // compound (subdiv=6): 3 eighth notes per dotted quarter, each with a "+" subdivision
-        return ['1', '+', '2', '+', '3', '+'][stepIdx % 6];
+        // Simple time: sequential beat numbers on downbeats, e/&/a for subdivisions
+        const pos = stepIdx % 4;
+        return pos === 0 ? String(Math.floor(stepIdx / 4) + 1) : ['e', '&', 'a'][pos - 1];
+    } else {
+        // Compound time (6/8, 12/8): triplet groups — 1,&,a,2,&,a,...
+        const pos = stepIdx % 3;
+        return pos === 0 ? String(Math.floor(stepIdx / 3) + 1) : ['&', 'a'][pos - 1];
     }
 }
 
