@@ -281,7 +281,13 @@ const beatBpmArray = [120,  120,      96,        90,         140,       160,    
 // ============================================================
 // STATE
 // ============================================================
-let currentBeat = beatArray[1].map(row => [...row]);
+const MAX_MEASURES = 4;
+let measures           = [];   // measures[0..3], each = [N_INST][nSteps]
+let currentMeasureIdx  = 0;
+let playbackMeasureIdx = 0;
+let currentBeat        = null; // always === measures[currentMeasureIdx]
+let measureSelect;
+
 let timerID;
 let isPlaying = false;
 let mode = 0;  // 0=labels, 1=volume, 2=pan
@@ -306,6 +312,37 @@ let instrumentTable;
 let playButton;
 
 // ============================================================
+// MEASURES
+// ============================================================
+function initMeasures() {
+    measures = Array.from({length: MAX_MEASURES}, () =>
+        Array.from({length: N_INST}, () => Array(nSteps).fill(0))
+    );
+    currentMeasureIdx = 0;
+    currentBeat = measures[0];
+}
+
+function changeMeasure() {
+    const newIdx = parseInt(measureSelect.value);
+    if (newIdx === currentMeasureIdx) return;
+    currentMeasureIdx = newIdx;
+    currentBeat = measures[currentMeasureIdx];
+    renderBeat();
+}
+
+function measureHasNotes(m) {
+    return measures[m].some(row => row.some(v => v > 0));
+}
+
+function getActiveMeasures() {
+    const active = [0];
+    for (let m = 1; m < MAX_MEASURES; m++) {
+        if (measureHasNotes(m)) active.push(m);
+    }
+    return active;
+}
+
+// ============================================================
 // INIT
 // ============================================================
 (function(window, document, undefined) {
@@ -317,7 +354,9 @@ let playButton;
         timeSigSelect   = document.getElementById('timeSigSelect');
         instrumentTable = document.getElementById('instrumentTable');
         playButton      = document.getElementById('playButton');
+        measureSelect   = document.getElementById('measureSelect');
 
+        initMeasures();
         initHeader();
         initTable();
         initAudio();
@@ -511,12 +550,19 @@ function changeNote(btn) {
 // CONTROLS
 // ============================================================
 function changeBeat() {
-    const idx = parseInt(beatSelect.value);
-    currentBeat = beatArray[idx].map(row => [...row]);
-    // Extend rows if current time sig needs more steps than the preset provides
+    const idx    = parseInt(beatSelect.value);
+    const preset = beatArray[idx].map(row => [...row]);
     for (let r = 0; r < N_INST; r++) {
-        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
+        while (preset[r].length < nSteps) preset[r].push(0);
     }
+    // Load preset into measure 0, clear other measures
+    measures[0] = preset;
+    for (let m = 1; m < MAX_MEASURES; m++) {
+        measures[m] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
+    }
+    currentMeasureIdx = 0;
+    measureSelect.value = 0;
+    currentBeat = measures[0];
     bpmSelect.value = beatBpmArray[idx];
     changeBpm();
     renderBeat();
@@ -525,9 +571,11 @@ function changeBeat() {
 function changeTimeSig() {
     currentTimeSigIdx = parseInt(timeSigSelect.value);
     nSteps = TIME_SIGNATURES[currentTimeSigIdx].steps;
-    // Extend currentBeat rows if the new time sig has more steps
-    for (let r = 0; r < N_INST; r++) {
-        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
+    // Extend all measures if the new time sig needs more steps
+    for (let m = 0; m < MAX_MEASURES; m++) {
+        for (let r = 0; r < N_INST; r++) {
+            while (measures[m][r].length < nSteps) measures[m][r].push(0);
+        }
     }
     initHeader();
     initTable();
@@ -607,8 +655,9 @@ function scheduler() {
 }
 
 function scheduleNote(index, when) {
+    const beat = measures[playbackMeasureIdx];
     for (let i = 0; i < N_INST; i++) {
-        const vel = (currentBeat[i] && currentBeat[i][index]) || 0;
+        const vel = (beat[i] && beat[i][index]) || 0;
         if (vel > 0 && audioBuffers[i] && pannerNodes[i]) {
             const source  = audioCtx.createBufferSource();
             source.buffer = audioBuffers[i];
@@ -619,12 +668,21 @@ function scheduleNote(index, when) {
             source.start(when);
         }
     }
-    setTimeout(() => renderNextColumn(index), Math.max(0, (when - audioCtx.currentTime) * 1000));
+    const mIdx = playbackMeasureIdx;
+    setTimeout(() => renderNextColumn(index, mIdx), Math.max(0, (when - audioCtx.currentTime) * 1000));
 }
 
 function nextNote() {
     nextNoteTime += sound_delay / 1000;
-    currentTime = (currentTime + 1) % nSteps;
+    currentTime++;
+    if (currentTime >= nSteps) {
+        currentTime = 0;
+        const active = getActiveMeasures();
+        if (active.length > 1) {
+            const pos = active.indexOf(playbackMeasureIdx);
+            playbackMeasureIdx = active[(pos + 1) % active.length];
+        }
+    }
 }
 
 function playPause() {
@@ -640,8 +698,9 @@ function playPause() {
 
 function startPlayback() {
     audioCtx.resume().then(() => {
-        currentTime  = 0;
-        nextNoteTime = audioCtx.currentTime;
+        currentTime        = 0;
+        playbackMeasureIdx = 0;
+        nextNoteTime       = audioCtx.currentTime;
         scheduler();
     });
 }
@@ -650,7 +709,14 @@ function stop() {
     if (timerID) { clearTimeout(timerID); timerID = null; }
 }
 
-function renderNextColumn(beatIdx) {
+function renderNextColumn(beatIdx, mIdx) {
+    // Switch displayed measure when playback advances to a new one
+    if (mIdx !== undefined && mIdx !== currentMeasureIdx) {
+        currentMeasureIdx = mIdx;
+        currentBeat = measures[currentMeasureIdx];
+        measureSelect.value = mIdx;
+        renderBeat();
+    }
     const tfoot  = instrumentTable.getElementsByTagName('tfoot')[0];
     const tr     = tfoot.getElementsByTagName('tr')[0];
     const allTh  = tr.getElementsByTagName('th');
@@ -664,29 +730,47 @@ function renderNextColumn(beatIdx) {
 // SHARE — URL-encoded pattern
 // ============================================================
 function encodePattern() {
-    // Header: byte 0 = beat index, byte 1 = timeSigIdx+1 (0 = legacy 4/4), byte 2 = bpm
-    // Data: ceil(steps/4) bytes per row, 2 bits per step packed MSB-first
-    const bytesPerRow = Math.ceil(nSteps / 4);
-    const bytes = new Uint8Array(3 + N_INST * bytesPerRow);
-    bytes[0] = parseInt(beatSelect.value);
-    bytes[1] = currentTimeSigIdx + 1; // 1-indexed; 0 = legacy format
-    bytes[2] = parseInt(bpmSelect.value);
+    // Find highest measure index that has notes (always encode at least measure 0)
+    let nActive = 1;
+    for (let m = MAX_MEASURES - 1; m >= 1; m--) {
+        if (measureHasNotes(m)) { nActive = m + 1; break; }
+    }
 
-    for (let row = 0; row < N_INST; row++) {
-        const offset = 3 + row * bytesPerRow;
-        for (let b = 0; b < bytesPerRow; b++) {
-            let byteVal = 0;
-            for (let s = 0; s < 4; s++) {
-                const col = b * 4 + s;
-                const vel = col < nSteps ? ((currentBeat[row] && currentBeat[row][col]) || 0) : 0;
-                byteVal |= ((vel & 0x3) << (6 - s * 2));
+    // Header: byte0=beat, byte1=(nActive<<4)|(timeSigIdx+1), byte2=bpm
+    // High nibble of byte1 is 1-4 → new multi-measure sparse format
+    // (old format had high nibble 0, values 0-7 — no collision)
+    const parts = [
+        parseInt(beatSelect.value),
+        (nActive << 4) | (currentTimeSigIdx + 1),
+        parseInt(bpmSelect.value)
+    ];
+
+    const bytesPerRow = Math.ceil(nSteps / 4);
+    for (let m = 0; m < nActive; m++) {
+        // 15-bit bitmask: bit r set if row r has at least one note
+        let bitmask = 0;
+        for (let r = 0; r < N_INST; r++) {
+            if (measures[m][r].some(v => v > 0)) bitmask |= (1 << r);
+        }
+        parts.push((bitmask >> 8) & 0xFF);
+        parts.push(bitmask & 0xFF);
+        // Encode only non-zero rows (2 bits per step, packed MSB-first)
+        for (let r = 0; r < N_INST; r++) {
+            if (!(bitmask & (1 << r))) continue;
+            for (let b = 0; b < bytesPerRow; b++) {
+                let byteVal = 0;
+                for (let s = 0; s < 4; s++) {
+                    const col = b * 4 + s;
+                    const vel = col < nSteps ? (measures[m][r][col] || 0) : 0;
+                    byteVal |= ((vel & 0x3) << (6 - s * 2));
+                }
+                parts.push(byteVal);
             }
-            bytes[offset + b] = byteVal;
         }
     }
 
     let binary = '';
-    bytes.forEach(b => binary += String.fromCharCode(b));
+    parts.forEach(b => binary += String.fromCharCode(b));
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
@@ -698,32 +782,66 @@ function decodePattern(encoded) {
         const bytes  = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-        // Detect format: byte 1 = 0 is legacy (4/4, 16 steps), else timeSigIdx+1
-        let timeSigIdx, stepsToRead, bytesPerRow;
-        if (bytes[1] > 0 && bytes[1] <= TIME_SIGNATURES.length) {
-            timeSigIdx  = bytes[1] - 1;
-            stepsToRead = TIME_SIGNATURES[timeSigIdx].steps;
-            bytesPerRow = Math.ceil(stepsToRead / 4);
-        } else {
-            timeSigIdx  = 2; // legacy = 4/4
-            stepsToRead = 16;
-            bytesPerRow = 4;
-        }
+        const byte1      = bytes[1];
+        const highNibble = (byte1 >> 4) & 0x0F;
+        const lowNibble  = byte1 & 0x0F;
 
-        const state = { beat: bytes[0], bpm: bytes[2], timeSig: timeSigIdx, g: [] };
-        for (let row = 0; row < N_INST; row++) {
-            const offset = 3 + row * bytesPerRow;
-            const rowArr = [];
-            for (let b = 0; b < bytesPerRow; b++) {
-                const byteVal = bytes[offset + b] || 0;
-                for (let s = 0; s < 4; s++) {
-                    const col = b * 4 + s;
-                    if (col < stepsToRead) rowArr.push((byteVal >>> (6 - s * 2)) & 0x3);
+        if (highNibble >= 1 && highNibble <= MAX_MEASURES) {
+            // ── New sparse multi-measure format ──
+            const nActive    = highNibble;
+            const timeSigIdx = (lowNibble >= 1 && lowNibble <= TIME_SIGNATURES.length)
+                               ? lowNibble - 1 : 2;
+            const stepsToRead = TIME_SIGNATURES[timeSigIdx].steps;
+            const bytesPerRow = Math.ceil(stepsToRead / 4);
+
+            const state = { beat: bytes[0], bpm: bytes[2], timeSig: timeSigIdx, measures: [] };
+            let pos = 3;
+            for (let m = 0; m < nActive; m++) {
+                const bitmask = ((bytes[pos] || 0) << 8) | (bytes[pos + 1] || 0);
+                pos += 2;
+                const grid = Array.from({length: N_INST}, () => Array(stepsToRead).fill(0));
+                for (let r = 0; r < N_INST; r++) {
+                    if (!(bitmask & (1 << r))) continue;
+                    for (let b = 0; b < bytesPerRow; b++) {
+                        const byteVal = bytes[pos++] || 0;
+                        for (let s = 0; s < 4; s++) {
+                            const col = b * 4 + s;
+                            if (col < stepsToRead) grid[r][col] = (byteVal >>> (6 - s * 2)) & 0x3;
+                        }
+                    }
                 }
+                state.measures.push(grid);
             }
-            state.g.push(rowArr);
+            return state;
+        } else {
+            // ── Legacy dense single-measure format ──
+            let timeSigIdx, stepsToRead, bytesPerRow;
+            if (byte1 > 0 && byte1 <= TIME_SIGNATURES.length) {
+                timeSigIdx  = byte1 - 1;
+                stepsToRead = TIME_SIGNATURES[timeSigIdx].steps;
+                bytesPerRow = Math.ceil(stepsToRead / 4);
+            } else {
+                timeSigIdx  = 2;
+                stepsToRead = 16;
+                bytesPerRow = 4;
+            }
+            const state = { beat: bytes[0], bpm: bytes[2], timeSig: timeSigIdx, measures: [] };
+            const grid  = [];
+            for (let row = 0; row < N_INST; row++) {
+                const offset = 3 + row * bytesPerRow;
+                const rowArr = [];
+                for (let b = 0; b < bytesPerRow; b++) {
+                    const byteVal = bytes[offset + b] || 0;
+                    for (let s = 0; s < 4; s++) {
+                        const col = b * 4 + s;
+                        if (col < stepsToRead) rowArr.push((byteVal >>> (6 - s * 2)) & 0x3);
+                    }
+                }
+                grid.push(rowArr);
+            }
+            state.measures.push(grid);
+            return state;
         }
-        return state;
     } catch(e) {
         console.error('GrooveLab: decode error', e);
         return null;
@@ -792,15 +910,21 @@ function loadSharedPattern() {
         bpmSelect.value = state.bpm;
     }
 
-    currentBeat = beatArray[parseInt(beatSelect.value)].map(r => [...r]);
-    if (state.g) {
-        for (let i = 0; i < state.g.length && i < N_INST; i++) {
-            if (Array.isArray(state.g[i])) currentBeat[i] = state.g[i];
+    // Load all measures
+    initMeasures();
+    if (state.measures) {
+        for (let m = 0; m < state.measures.length && m < MAX_MEASURES; m++) {
+            for (let r = 0; r < N_INST && r < state.measures[m].length; r++) {
+                if (Array.isArray(state.measures[m][r])) measures[m][r] = state.measures[m][r];
+            }
+            for (let r = 0; r < N_INST; r++) {
+                while (measures[m][r].length < nSteps) measures[m][r].push(0);
+            }
         }
     }
-    for (let r = 0; r < N_INST; r++) {
-        while (currentBeat[r].length < nSteps) currentBeat[r].push(0);
-    }
+    currentMeasureIdx = 0;
+    measureSelect.value = 0;
+    currentBeat = measures[0];
 
     changeBpm();
     renderBeat();
