@@ -38,6 +38,7 @@
     <input type="button" id="clearButton" value="Clear" onclick="clearMeasure()" title="Clear current bar">
     <input type="button" id="saveButton" value="Save" onclick="saveGroove()" title="Save groove to device">
     <input type="button" id="midiButton" value="MIDI" onclick="exportMidi()" title="Export groove as MIDI file">
+    <label id="playAlongLabel" title="Count-in + metronome click track"><input type="checkbox" id="playAlongCheck" onchange="togglePlayAlong()"> Play Along</label>
     <br>
     <select id="beatSelect" onchange="changeBeat()">
         <option value="0">Empty</option>

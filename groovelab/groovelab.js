@@ -293,7 +293,8 @@ let currentBeat        = null; // always === measures[currentMeasureIdx]
 let measureSelect;
 
 let timerID;
-let isPlaying = false;
+let isPlaying      = false;
+let playAlongEnabled = false;
 let mode = 0;  // 0=labels, 1=volume, 2=pan
 const scheduleAheadTime = 0.1; // seconds
 const lookahead = 25;          // ms
@@ -782,6 +783,33 @@ function setupGains() {
 }
 
 // ============================================================
+// PLAY ALONG — count-in + metronome
+// ============================================================
+function togglePlayAlong() {
+    playAlongEnabled = document.getElementById('playAlongCheck').checked;
+}
+
+function makeClick(freq, gain, when) {
+    const osc = audioCtx.createOscillator();
+    const env = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    env.gain.setValueAtTime(gain, when);
+    env.gain.exponentialRampToValueAtTime(0.001, when + 0.05);
+    osc.connect(env);
+    env.connect(audioCtx.destination);
+    osc.start(when);
+    osc.stop(when + 0.06);
+}
+
+function scheduleMetronome(stepIdx, when) {
+    const ts = TIME_SIGNATURES[currentTimeSigIdx];
+    if (stepIdx % ts.subdiv !== 0) return;
+    const isOne = stepIdx === 0;
+    makeClick(isOne ? 1200 : 880, isOne ? 0.5 : 0.3, when);
+}
+
+// ============================================================
 // SEQUENCER
 // ============================================================
 function scheduler() {
@@ -793,6 +821,7 @@ function scheduler() {
 }
 
 function scheduleNote(index, when) {
+    if (playAlongEnabled) scheduleMetronome(index, when);
     const beat = measures[playbackMeasureIdx];
     for (let i = 0; i < N_INST; i++) {
         const vel = (beat[i] && beat[i][index]) || 0;
@@ -838,7 +867,21 @@ function startPlayback() {
     audioCtx.resume().then(() => {
         currentTime        = 0;
         playbackMeasureIdx = 0;
-        nextNoteTime       = audioCtx.currentTime;
+
+        if (playAlongEnabled) {
+            // Schedule one bar of count-in clicks, then delay groove start
+            const stepSec = sound_delay / 1000;
+            const ts = TIME_SIGNATURES[currentTimeSigIdx];
+            for (let s = 0; s < nSteps; s++) {
+                if (s % ts.subdiv === 0) {
+                    makeClick(s === 0 ? 1200 : 880, s === 0 ? 0.5 : 0.3,
+                              audioCtx.currentTime + s * stepSec);
+                }
+            }
+            nextNoteTime = audioCtx.currentTime + nSteps * stepSec;
+        } else {
+            nextNoteTime = audioCtx.currentTime;
+        }
         scheduler();
     });
 }
