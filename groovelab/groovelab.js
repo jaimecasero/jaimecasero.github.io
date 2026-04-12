@@ -36,8 +36,8 @@ const TIME_SIGNATURES = [
     { name: '4/4',  steps: 16, subdiv: 4 }, // default
     { name: '5/4',  steps: 20, subdiv: 4 }, // 5 beats × 4 sixteenths
     { name: '7/4',  steps: 28, subdiv: 4 }, // 7 beats × 4 sixteenths
-    { name: '6/8',  steps: 12, subdiv: 6 }, // 2 dotted-quarter beats × 6 steps
-    { name: '12/8', steps: 12 , subdiv: 3 }, // 4 dotted-quarter beats × 6 steps
+    { name: '6/8',  steps: 6,  subdiv: 3 }, // 2 dotted-quarter beats × 3 eighth notes each
+    { name: '12/8', steps: 12, subdiv: 3 }, // 4 dotted-quarter beats × 3 eighth notes each
 ];
 
 const instrumentGroups = [
@@ -405,9 +405,9 @@ function getStepSelectorLabel(ts, stepIdx) {
         const sub  = ['', 'e', '&', 'a'][stepIdx % 4];
         return String(beat) + sub;
     } else {
-        const beat = Math.floor(stepIdx / 6) + 1;
-        const sub  = ['1', '+', '2', '+', '3', '+'][stepIdx % 6];
-        return String(beat) + '.' + sub;
+        const beat = Math.floor(stepIdx / 3) + 1;
+        const sub  = ['', '&', 'a'][stepIdx % 3];
+        return String(beat) + sub;
     }
 }
 
