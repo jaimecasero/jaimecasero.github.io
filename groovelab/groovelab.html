@@ -68,6 +68,7 @@
         <option value="5">6/8</option>
         <option value="6">12/8</option>
     </select>
+    <input type="button" id="tapButton" value="Tap" onmousedown="tapTempo()" title="Tap to set tempo">
     <select id="bpmSelect" title="Tempo" onchange="changeBpm()">
         <option value="60">Largo (60)</option>
         <option value="75">Slow (75)</option>
@@ -84,7 +85,7 @@
     <br>
     <select id="instSelect" title="Instrument"></select>
     <select id="stepSelect" title="Step"></select>
-    <input type="button" id="hitButton" value="Hit" onmousedown="hitSelected()" title="Toggle note at selected instrument and step">
+    <input type="button" id="hitButton" value="Cycle" onmousedown="hitSelected()" title="Cycle velocity at selected instrument and step">
     <input type="button" id="undoButton" value="Undo" onclick="undo()" title="Undo last change">
 
 </form>

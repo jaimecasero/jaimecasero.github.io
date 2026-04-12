@@ -687,6 +687,44 @@ function changeBpm() {
     sound_delay = (60000 / parseInt(bpmSelect.value)) / 4;
 }
 
+(function initTapTempo() {
+    let taps = [];
+    let tapTimer = null;
+    const TAP_TIMEOUT = 2000; // ms of silence resets tap sequence
+    const TAP_ID = 'tapBpm';  // id of the dynamic option injected into bpmSelect
+
+    window.tapTempo = function tapTempo() {
+        const now = performance.now();
+
+        // Reset if too long since last tap
+        if (taps.length && now - taps[taps.length - 1] > TAP_TIMEOUT) taps = [];
+
+        taps.push(now);
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { taps = []; }, TAP_TIMEOUT);
+
+        if (taps.length < 2) return; // need at least 2 taps for an interval
+
+        // Average interval over last 8 taps
+        const recent = taps.slice(-8);
+        const avgInterval = (recent[recent.length - 1] - recent[0]) / (recent.length - 1);
+        const bpm = Math.round(60000 / avgInterval);
+        const clamped = Math.min(300, Math.max(20, bpm));
+
+        // Reuse or create a dedicated tap option
+        let opt = bpmSelect.querySelector('#' + TAP_ID);
+        if (!opt) {
+            opt = document.createElement('option');
+            opt.id = TAP_ID;
+            bpmSelect.appendChild(opt);
+        }
+        opt.value = clamped;
+        opt.text  = 'Tap (' + clamped + ' BPM)';
+        bpmSelect.value = clamped;
+        changeBpm();
+    };
+})();
+
 function changeVolume(value, gIdx) {
     groupVolumeArray[gIdx] = value;
     const gain = value / 100;
