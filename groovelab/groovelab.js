@@ -282,6 +282,8 @@ const beatBpmArray = [120,  120,      96,        90,         140,       160,    
 // STATE
 // ============================================================
 const MAX_MEASURES = 4;
+const STORAGE_KEY = 'groovelab_custom';
+let customGrooves  = []; // [{name, timeSig, bpm, measures:[...]}] persisted to localStorage
 let measures           = [];   // measures[0..3], each = [N_INST][nSteps]
 let measuresVisited    = [];   // measuresVisited[m] = true once user has opened bar m
 let currentMeasureIdx  = 0;
@@ -371,6 +373,7 @@ function getActiveMeasures() {
         initTable();
         initAudio();
         initHitControls();
+        loadCustomGrooves();
 
         if (!loadSharedPattern()) {
             changeBeat();
@@ -565,7 +568,33 @@ function changeNote(btn) {
 // CONTROLS
 // ============================================================
 function changeBeat() {
-    const idx    = parseInt(beatSelect.value);
+    const val = beatSelect.value;
+
+    if (val.startsWith('c')) {
+        // Custom saved groove
+        const groove = customGrooves[parseInt(val.slice(1))];
+        if (!groove) return;
+        currentTimeSigIdx = groove.timeSig;
+        timeSigSelect.value = groove.timeSig;
+        nSteps = TIME_SIGNATURES[currentTimeSigIdx].steps;
+        initMeasures();
+        for (let m = 0; m < groove.measures.length && m < MAX_MEASURES; m++) {
+            for (let r = 0; r < N_INST && r < groove.measures[m].length; r++) {
+                measures[m][r] = [...groove.measures[m][r]];
+                while (measures[m][r].length < nSteps) measures[m][r].push(0);
+            }
+            measuresVisited[m] = true;
+        }
+        bpmSelect.value = groove.bpm;
+        currentMeasureIdx = 0;
+        measureSelect.value = 0;
+        currentBeat = measures[0];
+        changeBpm();
+        renderBeat();
+        return;
+    }
+
+    const idx    = parseInt(val);
     const preset = beatArray[idx].map(row => [...row]);
     for (let r = 0; r < N_INST; r++) {
         while (preset[r].length < nSteps) preset[r].push(0);
@@ -604,6 +633,38 @@ function clearMeasure() {
     measures[currentMeasureIdx] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
     currentBeat = measures[currentMeasureIdx];
     renderBeat();
+}
+
+function addCustomOption(name, idx) {
+    const opt = document.createElement('option');
+    opt.value = 'c' + idx;
+    opt.text = '\u2605 ' + name;
+    beatSelect.appendChild(opt);
+}
+
+function loadCustomGrooves() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) customGrooves = JSON.parse(saved);
+    } catch(e) { customGrooves = []; }
+    customGrooves.forEach((g, i) => addCustomOption(g.name, i));
+}
+
+function saveGroove() {
+    const name = prompt('Name this groove:');
+    if (!name || !name.trim()) return;
+    const groove = {
+        name: name.trim(),
+        timeSig: currentTimeSigIdx,
+        bpm: parseInt(bpmSelect.value),
+        measures: measures.map(m => m.map(row => [...row]))
+    };
+    customGrooves.push(groove);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(customGrooves)); }
+    catch(e) { alert('Could not save: storage full.'); customGrooves.pop(); return; }
+    const idx = customGrooves.length - 1;
+    addCustomOption(groove.name, idx);
+    beatSelect.value = 'c' + idx;
 }
 
 function changeBpm() {
