@@ -284,6 +284,7 @@ const beatBpmArray = [120,  120,      96,        90,         140,       160,    
 const MAX_MEASURES = 4;
 const STORAGE_KEY = 'groovelab_custom';
 let customGrooves  = []; // [{name, timeSig, bpm, measures:[...]}] persisted to localStorage
+let undoStack      = []; // snapshots of measures[] for undo, max 20
 let measures           = [];   // measures[0..3], each = [N_INST][nSteps]
 let measuresVisited    = [];   // measuresVisited[m] = true once user has opened bar m
 let currentMeasureIdx  = 0;
@@ -333,6 +334,7 @@ function changeMeasure() {
     if (!measuresVisited[newIdx]) {
         const prevIdx = newIdx - 1;
         if (prevIdx >= 0) {
+            pushUndo();
             measures[newIdx] = measures[prevIdx].map(row => [...row]);
         }
         measuresVisited[newIdx] = true;
@@ -555,7 +557,20 @@ function renderBeat() {
     }
 }
 
+function pushUndo() {
+    undoStack.push(measures.map(m => m.map(row => [...row])));
+    if (undoStack.length > 20) undoStack.shift();
+}
+
+function undo() {
+    if (!undoStack.length) return;
+    measures = undoStack.pop();
+    currentBeat = measures[currentMeasureIdx];
+    renderBeat();
+}
+
 function changeNote(btn) {
+    pushUndo();
     const row     = btn.parentElement.parentElement.rowIndex;
     const beatCol = parseInt(btn.dataset.beatCol);
     const cur     = (currentBeat[row] && currentBeat[row][beatCol]) || 0;
@@ -630,6 +645,7 @@ function changeTimeSig() {
 }
 
 function clearMeasure() {
+    pushUndo();
     measures[currentMeasureIdx] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
     currentBeat = measures[currentMeasureIdx];
     renderBeat();
