@@ -932,6 +932,90 @@ function decodePattern(encoded) {
     }
 }
 
+function exportMidi() {
+    const TICKS = 480; // ticks per quarter note
+    const ts = TIME_SIGNATURES[currentTimeSigIdx];
+    const ticksPerStep = (ts.subdiv === 3) ? 240 : 120; // 8th note for 12/8, 16th for rest
+    const bpm = parseInt(bpmSelect.value);
+    const usecPerBeat = Math.round(60000000 / bpm);
+
+    // MIDI note numbers matching INSTRUMENTS order
+    const MIDI_NOTES = [52, 55, 56, 49, 46, 42, 51, 53, 50, 48, 38, 37, 45, 36, 44];
+    const velMap = [0, 40, 80, 110]; // off / ghost / normal / accent
+
+    // Collect note-on events from all active measures
+    const activeMeasures = getActiveMeasures();
+    const onEvents = [];
+    let measureStartTick = 0;
+    activeMeasures.forEach(m => {
+        for (let step = 0; step < nSteps; step++) {
+            const tick = measureStartTick + step * ticksPerStep;
+            for (let r = 0; r < N_INST; r++) {
+                const v = measures[m][r][step];
+                if (v > 0) onEvents.push({tick, note: MIDI_NOTES[r], vel: velMap[v]});
+            }
+        }
+        measureStartTick += nSteps * ticksPerStep;
+    });
+
+    // Build interleaved note-on / note-off list sorted by tick
+    const allEvents = [];
+    onEvents.forEach(e => {
+        allEvents.push({tick: e.tick,                    cmd: 0x99, note: e.note, vel: e.vel});
+        allEvents.push({tick: e.tick + ticksPerStep - 1, cmd: 0x89, note: e.note, vel: 0});
+    });
+    allEvents.sort((a, b) => a.tick - b.tick || (a.cmd === 0x89 ? -1 : 1));
+
+    // Variable-length quantity encoder
+    const track = [];
+    function vlq(v) {
+        if (v < 0x80)   { track.push(v); return; }
+        if (v < 0x4000) { track.push(0x80 | (v >> 7), v & 0x7F); return; }
+        track.push(0x80 | (v >> 14), 0x80 | ((v >> 7) & 0x7F), v & 0x7F);
+    }
+
+    // Tempo meta event
+    vlq(0); track.push(0xFF, 0x51, 0x03,
+        (usecPerBeat >> 16) & 0xFF, (usecPerBeat >> 8) & 0xFF, usecPerBeat & 0xFF);
+
+    // Time signature meta event
+    const [numStr, denStr] = ts.name.split('/');
+    vlq(0); track.push(0xFF, 0x58, 0x04,
+        parseInt(numStr), Math.log2(parseInt(denStr)), 24, 8);
+
+    // Note events
+    let cursor = 0;
+    allEvents.forEach(e => {
+        vlq(e.tick - cursor);
+        cursor = e.tick;
+        track.push(e.cmd, e.note, e.vel);
+    });
+
+    // End of track
+    vlq(0); track.push(0xFF, 0x2F, 0x00);
+
+    // Assemble MIDI file bytes
+    const buf = new ArrayBuffer(14 + 8 + track.length);
+    const dv  = new DataView(buf);
+    let p = 0;
+    const str = s => { for (let i = 0; i < s.length; i++) dv.setUint8(p++, s.charCodeAt(i)); };
+    const u32 = v => { dv.setUint32(p, v); p += 4; };
+    const u16 = v => { dv.setUint16(p, v); p += 2; };
+
+    str('MThd'); u32(6); u16(0); u16(1); u16(TICKS);
+    str('MTrk'); u32(track.length);
+    track.forEach(b => dv.setUint8(p++, b));
+
+    // Trigger download
+    const name = beatSelect.options[beatSelect.selectedIndex].text
+        .replace(/★\s*/g, '').replace(/[^a-z0-9_\- ]/gi, '').trim() || 'groove';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([buf], {type: 'audio/midi'}));
+    a.download = name + '.mid';
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
 function sharePattern() {
     const encoded = encodePattern();
     const url = window.location.origin + window.location.pathname + '?g=' + encoded;
