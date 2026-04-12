@@ -6,7 +6,7 @@
 // Key mapping: MIDI note = key_number - 50  (e.g. D6=86 → drum 36 = kick)
 // ============================================================
 const INSTRUMENTS = [
-    { name: "Chinese", abbr: "CH",  key: "F#7" }, // MIDI 52 – Chinese Cymbal
+    { name: "Chinese", abbr: "CH",  key: "Gb7" }, // MIDI 52 – Chinese Cymbal
     { name: "Splash",  abbr: "SP",  key: "A7"  }, // MIDI 55 – Splash Cymbal
     { name: "Cowbell", abbr: "CB",  key: "Bb7" }, // MIDI 56 – Cowbell
     { name: "Crash",   abbr: "CR",  key: "Eb7" }, // MIDI 49 – Crash Cymbal 1
