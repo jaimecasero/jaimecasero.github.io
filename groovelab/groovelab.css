@@ -192,6 +192,25 @@ select {
     cursor: pointer;
 }
 
+#playAlongLabel {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    cursor: pointer;
+    color: #3d3b5e;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: color 0.15s;
+}
+
+#playAlongLabel:has(:checked) {
+    color: #a78bfa;
+}
+
+#playAlongLabel input[type="checkbox"] {
+    display: none;
+}
+
 .shared-banner {
     position: fixed;
     top: 0;
