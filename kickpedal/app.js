@@ -113,59 +113,58 @@ function render(){
 
 }
 
-async function initMidi(){
+let midiAccess;
 
-    if(!navigator.requestMIDIAccess)
-        return;
+async function initMidi() {
 
-    const midi =
-        await navigator.requestMIDIAccess();
+    midiAccess = await navigator.requestMIDIAccess();
 
-    const select =
-        document.getElementById("midiOutputs");
+    const select = document.getElementById("midiOutputs");
 
-    for(const output of midi.outputs.values()){
+    select.innerHTML = "";
 
-        const option=document.createElement("option");
+    for (const output of midiAccess.outputs.values()) {
 
-        option.value=output.id;
-        option.textContent=output.name;
+        console.log(output.id, output.name);
+
+        const option = document.createElement("option");
+        option.value = output.id;
+        option.textContent = output.name;
 
         select.appendChild(option);
-
     }
 
-    if(select.options.length){
-
-        app.midiOutput=
-            midi.outputs.get(select.options[0].value);
-
-    }
-
-    select.onchange=()=>{
-
-        app.midiOutput=
-            midi.outputs.get(select.value);
-
+    select.onchange = () => {
+        app.midiOutput = midiAccess.outputs.get(select.value);
+        console.log("Selected", app.midiOutput.name);
     };
 
+    if (select.options.length) {
+        select.selectedIndex = 0;
+        select.onchange();
+    }
 }
 
-function sendMidi(){
+function sendMidi() {
 
-    if(!app.midiOutput)
+    if (!app.midiOutput) {
+        alert("No MIDI output");
         return;
+    }
 
-    const note=
-        Number(document.getElementById("note").value);
+    const note = Number(document.getElementById("note").value);
 
-    app.midiOutput.send([0x90,note,127]);
+    console.log(
+        "Sending to",
+        app.midiOutput.name
+    );
 
-    setTimeout(()=>{
+    // Channel 10
+    app.midiOutput.send([0x99, note, 127]);
 
-        app.midiOutput.send([0x80,note,0]);
-
-    },30);
+    setTimeout(() => {
+        app.midiOutput.send([0x89, note, 0]);
+    }, 50);
 
 }
 
