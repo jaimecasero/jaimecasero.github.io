@@ -55,9 +55,9 @@ const app = {
     writeChar: null,
     imu: { ax:0, ay:0, az:0, wx:0, wy:0, wz:0, roll:0, pitch:0, yaw:0 },
     kick: {
-        threshold:      1.5,   // g — magnitude deviation from rest; data shows tap peaks 2–4g magnitude
-        resetThreshold: 0.4,   // g — magnitude must drop below this to re-arm
-        minCooldownMs:  50,    // ms — minimum hold in COOLDOWN
+        threshold:      0.8,   // g — data shows tap peaks 0.84–2.5g; 0.8 catches all without false triggers
+        resetThreshold: 0.4,   // g — inter-tap minimums are 0.1–0.3g; 0.4 sits safely above that
+        minCooldownMs:  80,    // ms — ringing lasts up to 210ms on hard hits
         minVel: 40,
         maxVel: 127,
         restBaseline:   null,  // {ax, ay, az} resting means, set by calibrate()
@@ -65,7 +65,7 @@ const app = {
         peak:       0,
         trackStart: 0,
         fireTime:   0,
-        PEAK_WINDOW_MS: 40
+        PEAK_WINDOW_MS: 60    // ms — tap ringing spans 30–90ms at 33Hz; 60ms reliably catches peak
     }
 };
 
@@ -267,7 +267,7 @@ function detectKick() {
             k.state    = COOLDOWN;
             k.fireTime = now;
             const vel = Math.min(k.maxVel,
-                Math.round(k.minVel + (k.maxVel - k.minVel) * (k.peak - k.threshold) / 6));
+                Math.round(k.minVel + (k.maxVel - k.minVel) * (k.peak - k.threshold) / 2));
             fireKick(vel);
         }
 
