@@ -13,7 +13,16 @@
 <div class="row">
     <button id="connectBtn">Connect Sensor</button>
     <span id="status">Disconnected</span>
-    <span id="battery" class="battery"></span>
+    <span id="battery" class="battery" title="Battery">
+        <svg id="batteryIcon" viewBox="0 0 28 14" width="36" height="18">
+            <rect x="0.5" y="0.5" width="24" height="13" rx="2" ry="2"
+                  fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="24.5" y="4" width="3" height="6" rx="1"
+                  fill="currentColor"/>
+            <rect id="batteryFill" x="2" y="2" width="0" height="10" rx="1"/>
+        </svg>
+        <span id="batteryPct"></span>
+    </span>
 </div>
 
 <!-- Kick indicator -->
@@ -22,19 +31,37 @@
     <span id="kickVel"></span>
 </div>
 
-<!-- MIDI -->
+<!-- Output -->
 <section>
-    <h2>MIDI</h2>
+    <h2>Output</h2>
     <div class="field">
-        <label>Output</label>
-        <select id="midiOutputs"></select>
-        <span id="midiStatus"></span>
+        <label>Mode</label>
+        <div class="toggle-group">
+            <button id="modeAudio" class="toggle active">Audio</button>
+            <button id="modeMidi"  class="toggle">MIDI</button>
+        </div>
     </div>
-    <div class="field">
-        <label>Note</label>
-        <input id="note" type="number" min="0" max="127" value="36">
-        <button id="testBtn">Test</button>
+
+    <div id="audioPanel">
+        <div class="field">
+            <label>Volume</label>
+            <input id="audioVol" type="range" min="0" max="1" step="0.05" value="0.8">
+        </div>
     </div>
+
+    <div id="midiPanel" hidden>
+        <div class="field">
+            <label>Device</label>
+            <select id="midiOutputs"></select>
+            <span id="midiStatus"></span>
+        </div>
+        <div class="field">
+            <label>Note</label>
+            <input id="note" type="number" min="0" max="127" value="36">
+        </div>
+    </div>
+
+    <button id="testBtn">Test</button>
 </section>
 
 <!-- Detection settings -->
@@ -53,8 +80,12 @@
         <input id="threshold" class="kick-setting" type="number" min="0.5" max="10" step="0.1" value="2.5">
     </div>
     <div class="field">
-        <label>Cooldown <small>(ms)</small></label>
-        <input id="cooldown" class="kick-setting" type="number" min="50" max="1000" step="10" value="300">
+        <label>Reset <small>(g)</small></label>
+        <input id="resetThreshold" class="kick-setting" type="number" min="0.1" max="5" step="0.1" value="0.5">
+    </div>
+    <div class="field">
+        <label>Min hold <small>(ms)</small></label>
+        <input id="minCooldown" class="kick-setting" type="number" min="20" max="500" step="10" value="80">
     </div>
     <div class="field">
         <label>Min vel</label>

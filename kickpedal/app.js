@@ -1,23 +1,69 @@
 const SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9a34fb";
 
+let audioCtx = null;
+
+function getAudioCtx() {
+    if (!audioCtx) audioCtx = new AudioContext();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+}
+
+function playKickSynth(velocity) {
+    const ctx = getAudioCtx();
+    const vol = Number(document.getElementById("audioVol").value) * (velocity / 127);
+    const now = ctx.currentTime;
+
+    // Sine sweep: 150 Hz → 40 Hz over 80 ms (body of the kick)
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
+    oscGain.gain.setValueAtTime(vol, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.25);
+
+    // Noise transient: click/snap at the attack
+    const bufSize = ctx.sampleRate * 0.04;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(vol * 0.4, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    noise.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(now);
+}
+
 // Commands per datasheet section 5.1
-const CMD_RATE_100HZ  = [0xFF, 0xAA, 0x03, 0x09, 0x00];
+const CMD_RATE_200HZ  = [0xFF, 0xAA, 0x03, 0x0A, 0x00];
 const CMD_SAVE        = [0xFF, 0xAA, 0x00, 0x00, 0x00];
 const CMD_BATT        = [0xFF, 0xAA, 0x27, 0x64, 0x00];
+
+// Detector states
+const IDLE     = 0;
+const TRACKING = 1;
+const COOLDOWN = 2;
 
 const app = {
     midiOutput: null,
     writeChar: null,
     imu: { ax:0, ay:0, az:0, wx:0, wy:0, wz:0, roll:0, pitch:0, yaw:0 },
     kick: {
-        threshold: 2.5,
-        cooldownMs: 300,
+        threshold:      2.5,   // g — triggers tracking
+        resetThreshold: 0.5,   // g — signal must drop below this to re-arm after a kick
+        minCooldownMs:  80,    // ms — minimum hold in COOLDOWN to suppress same-strike bounce
         minVel: 40,
         maxVel: 127,
-        lastTime: 0,
-        tracking: false,
-        peak: 0,
+        state:      IDLE,
+        peak:       0,
         trackStart: 0,
+        fireTime:   0,
         PEAK_WINDOW_MS: 40
     }
 };
@@ -55,7 +101,7 @@ async function connectBluetooth() {
         notify.addEventListener("characteristicvaluechanged", onPacket);
 
         // Set 100 Hz and save so detection has enough resolution
-        await sendCmd(CMD_RATE_100HZ);
+        await sendCmd(CMD_RATE_200HZ);
         await sendCmd(CMD_SAVE);
 
         // Request battery level right after connect
@@ -115,7 +161,7 @@ function onPacket(event) {
             // Battery voltage register
             const raw = (b[5] << 8) | b[4];
             const pct = batteryPct(raw);
-            document.getElementById("battery").innerText = pct + "%";
+            updateBatteryUI(pct);
         }
     }
 }
@@ -133,26 +179,42 @@ function detectKick() {
     const now = performance.now();
     const dyn = tapAxis();
 
-    if (!k.tracking) {
-        if (dyn > k.threshold && (now - k.lastTime) > k.cooldownMs) {
-            k.tracking = true;
-            k.peak = dyn;
+    if (k.state === IDLE) {
+        if (dyn > k.threshold) {
+            k.state     = TRACKING;
+            k.peak      = dyn;
             k.trackStart = now;
         }
-    } else {
+
+    } else if (k.state === TRACKING) {
         if (dyn > k.peak) k.peak = dyn;
         if (now - k.trackStart > k.PEAK_WINDOW_MS) {
-            k.tracking = false;
-            k.lastTime = now;
+            k.state    = COOLDOWN;
+            k.fireTime = now;
             const vel = Math.min(k.maxVel,
                 Math.round(k.minVel + (k.maxVel - k.minVel) * (k.peak - k.threshold) / 6));
             fireKick(vel);
         }
+
+    } else { // COOLDOWN
+        // Re-arm only once the signal has settled AND min hold has elapsed —
+        // prevents the same strike's tail from re-triggering immediately.
+        if ((now - k.fireTime) > k.minCooldownMs && dyn < k.resetThreshold) {
+            k.state = IDLE;
+        }
     }
 }
 
+function outputMode() {
+    return document.getElementById("modeMidi").classList.contains("active") ? "midi" : "audio";
+}
+
 function fireKick(velocity) {
-    sendMidiNote(velocity);
+    if (outputMode() === "midi") {
+        sendMidiNote(velocity);
+    } else {
+        playKickSynth(velocity);
+    }
     flashKick(velocity);
 }
 
@@ -168,6 +230,18 @@ function flashKick(velocity) {
     el.classList.add("active");
     document.getElementById("kickVel").innerText = "vel " + velocity;
     setTimeout(() => el.classList.remove("active"), 200);
+}
+
+function updateBatteryUI(pct) {
+    const fill  = document.getElementById("batteryFill");
+    const label = document.getElementById("batteryPct");
+    const icon  = document.getElementById("batteryIcon");
+    const w = Math.round(20 * pct / 100);
+    fill.setAttribute("width", w);
+    label.innerText = pct + "%";
+    const color = pct > 30 ? "#4c4" : pct > 15 ? "#fa0" : "#e33";
+    fill.setAttribute("fill", color);
+    icon.style.color = "#888";
 }
 
 function setStatus(msg) {
@@ -221,15 +295,29 @@ async function initMidi() {
 
 function syncKickSettings() {
     const k = app.kick;
-    k.threshold  = Number(document.getElementById("threshold").value);
-    k.cooldownMs = Number(document.getElementById("cooldown").value);
-    k.minVel     = Number(document.getElementById("minVel").value);
-    k.maxVel     = Number(document.getElementById("maxVel").value);
+    k.threshold       = Number(document.getElementById("threshold").value);
+    k.resetThreshold  = Number(document.getElementById("resetThreshold").value);
+    k.minCooldownMs   = Number(document.getElementById("minCooldown").value);
+    k.minVel          = Number(document.getElementById("minVel").value);
+    k.maxVel          = Number(document.getElementById("maxVel").value);
 }
 
 document.getElementById("connectBtn").onclick = connectBluetooth;
 document.getElementById("testBtn").onclick    = () => fireKick(100);
 document.querySelectorAll(".kick-setting").forEach(el => el.addEventListener("input", syncKickSettings));
+
+document.getElementById("modeAudio").onclick = () => {
+    document.getElementById("modeAudio").classList.add("active");
+    document.getElementById("modeMidi").classList.remove("active");
+    document.getElementById("audioPanel").hidden = false;
+    document.getElementById("midiPanel").hidden  = true;
+};
+document.getElementById("modeMidi").onclick = () => {
+    document.getElementById("modeMidi").classList.add("active");
+    document.getElementById("modeAudio").classList.remove("active");
+    document.getElementById("midiPanel").hidden  = false;
+    document.getElementById("audioPanel").hidden = true;
+};
 
 initMidi();
 render();
