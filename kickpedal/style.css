@@ -1,21 +1,111 @@
-body{
-    font-family: sans-serif;
-    max-width:700px;
-    margin:auto;
-    padding:20px;
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #111;
+    color: #eee;
 }
 
-button{
-    padding:10px;
+h1 { margin-top: 0; font-size: 1.4rem; }
+h2 { font-size: 1rem; margin: 0 0 8px; color: #aaa; }
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-select,input{
-    padding:5px;
+section {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
 }
 
-pre{
-    background:#eee;
-    padding:10px;
-    height:250px;
-    overflow:auto;
+.field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+label {
+    width: 110px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+label small { color: #888; }
+
+input, select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #eee;
+    font-size: 1rem;
+}
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background: #2a6;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+button:active { background: #194; }
+button:disabled { background: #555; cursor: default; }
+
+#status { font-size: 0.85rem; color: #aaa; }
+
+.battery { font-size: 0.85rem; color: #7cf; margin-left: auto; }
+
+/* Kick indicator */
+#kickIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 72px;
+    border-radius: 10px;
+    background: #222;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 12px;
+    transition: background 0.1s, color 0.1s;
+}
+
+#kickIndicator.active {
+    background: #c40;
+    color: #fff;
+}
+
+#kickVel { font-size: 1rem; font-weight: normal; }
+
+/* IMU table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 5px 4px;
+    border-bottom: 1px solid #2a2a2a;
+    font-size: 0.85rem;
+}
+
+.value {
+    text-align: right;
+    font-family: monospace;
+    color: #7cf;
 }

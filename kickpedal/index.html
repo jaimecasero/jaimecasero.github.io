@@ -2,109 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FootKick Lab</title>
-
-    <style>
-
-        body{
-            font-family:Arial,Helvetica,sans-serif;
-            max-width:900px;
-            margin:auto;
-            padding:20px;
-        }
-
-        h1{
-            margin-top:0;
-        }
-
-        button{
-            padding:10px 20px;
-            margin:4px;
-        }
-
-        label{
-            display:inline-block;
-            width:120px;
-        }
-
-        input,select{
-            padding:6px;
-            margin:4px;
-        }
-
-        table{
-            border-collapse:collapse;
-            width:100%;
-            margin-top:20px;
-        }
-
-        td{
-            border:1px solid #ddd;
-            padding:8px;
-        }
-
-        .value{
-            text-align:right;
-            font-family:monospace;
-        }
-
-        .status{
-            color:#008000;
-            font-weight:bold;
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>FootKick Lab</h1>
 
-<button id="connectBtn">Connect WitMotion</button>
+<div class="row">
+    <button id="connectBtn">Connect Sensor</button>
+    <span id="status">Disconnected</span>
+    <span id="battery" class="battery"></span>
+</div>
 
-<span id="status">Disconnected</span>
+<!-- Kick indicator -->
+<div id="kickIndicator">
+    <span>KICK</span>
+    <span id="kickVel"></span>
+</div>
 
-<hr>
+<!-- MIDI -->
+<section>
+    <h2>MIDI</h2>
+    <div class="field">
+        <label>Output</label>
+        <select id="midiOutputs"></select>
+        <span id="midiStatus"></span>
+    </div>
+    <div class="field">
+        <label>Note</label>
+        <input id="note" type="number" min="0" max="127" value="36">
+        <button id="testBtn">Test</button>
+    </div>
+</section>
 
-<h2>MIDI</h2>
+<!-- Detection settings -->
+<section>
+    <h2>Detection</h2>
+    <div class="field">
+        <label>Tap axis</label>
+        <select id="tapAxis" class="kick-setting">
+            <option value="x">X</option>
+            <option value="y" selected>Y</option>
+            <option value="z">Z</option>
+        </select>
+    </div>
+    <div class="field">
+        <label>Threshold <small>(g)</small></label>
+        <input id="threshold" class="kick-setting" type="number" min="0.5" max="10" step="0.1" value="2.5">
+    </div>
+    <div class="field">
+        <label>Cooldown <small>(ms)</small></label>
+        <input id="cooldown" class="kick-setting" type="number" min="50" max="1000" step="10" value="300">
+    </div>
+    <div class="field">
+        <label>Min vel</label>
+        <input id="minVel" class="kick-setting" type="number" min="1" max="127" value="40">
+    </div>
+    <div class="field">
+        <label>Max vel</label>
+        <input id="maxVel" class="kick-setting" type="number" min="1" max="127" value="127">
+    </div>
+</section>
 
-<label>Output</label>
-
-<select id="midiOutputs"></select>
-
-<br>
-
-<label>Note</label>
-
-<input id="note" type="number" value="36">
-
-<button id="testBtn">Test</button>
-
-<hr>
-
-<h2>IMU</h2>
-
-<table>
-
-    <tbody>
-
-    <tr><td>Accel X</td><td id="ax" class="value"></td></tr>
-    <tr><td>Accel Y</td><td id="ay" class="value"></td></tr>
-    <tr><td>Accel Z</td><td id="az" class="value"></td></tr>
-
-    <tr><td>Gyro X</td><td id="wx" class="value"></td></tr>
-    <tr><td>Gyro Y</td><td id="wy" class="value"></td></tr>
-    <tr><td>Gyro Z</td><td id="wz" class="value"></td></tr>
-
-    <tr><td>Roll</td><td id="roll" class="value"></td></tr>
-    <tr><td>Pitch</td><td id="pitch" class="value"></td></tr>
-    <tr><td>Yaw</td><td id="yaw" class="value"></td></tr>
-
-    </tbody>
-
-</table>
+<!-- IMU readout -->
+<section>
+    <h2>IMU</h2>
+    <table>
+        <tbody>
+            <tr><td>Accel X</td><td id="ax" class="value"></td></tr>
+            <tr><td>Accel Y</td><td id="ay" class="value"></td></tr>
+            <tr><td>Accel Z</td><td id="az" class="value"></td></tr>
+            <tr><td>Gyro X</td>  <td id="wx" class="value"></td></tr>
+            <tr><td>Gyro Y</td>  <td id="wy" class="value"></td></tr>
+            <tr><td>Gyro Z</td>  <td id="wz" class="value"></td></tr>
+            <tr><td>Tap axis g</td><td id="dyn" class="value"></td></tr>
+        </tbody>
+    </table>
+</section>
 
 <script src="app.js"></script>
-
 </body>
 </html>
