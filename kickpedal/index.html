@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FootKick Lab</title>
+
+    <style>
+
+        body{
+            font-family:Arial,Helvetica,sans-serif;
+            max-width:900px;
+            margin:auto;
+            padding:20px;
+        }
+
+        h1{
+            margin-top:0;
+        }
+
+        button{
+            padding:10px 20px;
+            margin:4px;
+        }
+
+        label{
+            display:inline-block;
+            width:120px;
+        }
+
+        input,select{
+            padding:6px;
+            margin:4px;
+        }
+
+        table{
+            border-collapse:collapse;
+            width:100%;
+            margin-top:20px;
+        }
+
+        td{
+            border:1px solid #ddd;
+            padding:8px;
+        }
+
+        .value{
+            text-align:right;
+            font-family:monospace;
+        }
+
+        .status{
+            color:#008000;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h1>FootKick Lab</h1>
+
+<button id="connectBtn">Connect WitMotion</button>
+
+<span id="status">Disconnected</span>
+
+<hr>
+
+<h2>MIDI</h2>
+
+<label>Output</label>
+
+<select id="midiOutputs"></select>
+
+<br>
+
+<label>Note</label>
+
+<input id="note" type="number" value="36">
+
+<button id="testBtn">Test</button>
+
+<hr>
+
+<h2>IMU</h2>
+
+<table>
+
+    <tbody>
+
+    <tr><td>Accel X</td><td id="ax" class="value"></td></tr>
+    <tr><td>Accel Y</td><td id="ay" class="value"></td></tr>
+    <tr><td>Accel Z</td><td id="az" class="value"></td></tr>
+
+    <tr><td>Gyro X</td><td id="wx" class="value"></td></tr>
+    <tr><td>Gyro Y</td><td id="wy" class="value"></td></tr>
+    <tr><td>Gyro Z</td><td id="wz" class="value"></td></tr>
+
+    <tr><td>Roll</td><td id="roll" class="value"></td></tr>
+    <tr><td>Pitch</td><td id="pitch" class="value"></td></tr>
+    <tr><td>Yaw</td><td id="yaw" class="value"></td></tr>
+
+    </tbody>
+
+</table>
+
+<script src="app.js"></script>
+
+</body>
+</html>

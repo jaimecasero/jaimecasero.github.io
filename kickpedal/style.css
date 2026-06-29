@@ -1,0 +1,21 @@
+body{
+    font-family: sans-serif;
+    max-width:700px;
+    margin:auto;
+    padding:20px;
+}
+
+button{
+    padding:10px;
+}
+
+select,input{
+    padding:5px;
+}
+
+pre{
+    background:#eee;
+    padding:10px;
+    height:250px;
+    overflow:auto;
+}
