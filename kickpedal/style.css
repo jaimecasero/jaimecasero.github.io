@@ -78,6 +78,8 @@ button:disabled { background: #555; cursor: default; }
 
 .battery svg { display: block; }
 
+.dim { font-size: 0.8rem; color: #666; }
+
 /* Mode toggle */
 .toggle-group { display: flex; gap: 0; }
 .toggle {

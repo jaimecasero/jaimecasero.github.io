@@ -41,7 +41,7 @@ function playKickSynth(velocity) {
 }
 
 // Commands per datasheet section 5.1
-const CMD_RATE_200HZ  = [0xFF, 0xAA, 0x03, 0x0A, 0x00];
+const CMD_RATE_100HZ  = [0xFF, 0xAA, 0x03, 0x09, 0x00];
 const CMD_SAVE        = [0xFF, 0xAA, 0x00, 0x00, 0x00];
 const CMD_BATT        = [0xFF, 0xAA, 0x27, 0x64, 0x00];
 
@@ -55,11 +55,12 @@ const app = {
     writeChar: null,
     imu: { ax:0, ay:0, az:0, wx:0, wy:0, wz:0, roll:0, pitch:0, yaw:0 },
     kick: {
-        threshold:      2.5,   // g — triggers tracking
-        resetThreshold: 0.5,   // g — signal must drop below this to re-arm after a kick
-        minCooldownMs:  80,    // ms — minimum hold in COOLDOWN to suppress same-strike bounce
+        threshold:      1.5,   // g — magnitude deviation from rest; data shows tap peaks 2–4g magnitude
+        resetThreshold: 0.4,   // g — magnitude must drop below this to re-arm
+        minCooldownMs:  50,    // ms — minimum hold in COOLDOWN
         minVel: 40,
         maxVel: 127,
+        restBaseline:   null,  // {ax, ay, az} resting means, set by calibrate()
         state:      IDLE,
         peak:       0,
         trackStart: 0,
@@ -101,7 +102,7 @@ async function connectBluetooth() {
         notify.addEventListener("characteristicvaluechanged", onPacket);
 
         // Set 100 Hz and save so detection has enough resolution
-        await sendCmd(CMD_RATE_200HZ);
+        await sendCmd(CMD_RATE_100HZ);
         await sendCmd(CMD_SAVE);
 
         // Request battery level right after connect
@@ -150,6 +151,7 @@ function onPacket(event) {
         app.imu.roll  = s16(b[14], b[15]) * 180 / 32768;
         app.imu.pitch = s16(b[16], b[17]) * 180 / 32768;
         app.imu.yaw   = s16(b[18], b[19]) * 180 / 32768;
+        logSample();
         detectKick();
         return;
     }
@@ -166,12 +168,85 @@ function onPacket(event) {
     }
 }
 
+function rawAxisValue() {
+    const axis = document.getElementById("tapAxis").value;
+    const i = app.imu;
+    if (axis === "x") return i.ax;
+    if (axis === "z") return i.az;
+    if (axis === "mag") return 0; // not used directly
+    return i.ay;
+}
+
 function tapAxis() {
     const axis = document.getElementById("tapAxis").value;
     const i = app.imu;
-    if (axis === "x") return Math.abs(i.ax);
-    if (axis === "z") return Math.abs(i.az);
-    return Math.abs(i.ay);
+    const b = app.kick.restBaseline;
+
+    if (axis === "mag") {
+        if (!b) {
+            const m = Math.sqrt(i.ax*i.ax + i.ay*i.ay + i.az*i.az);
+            return Math.abs(m - 1.0); // rough gravity removal
+        }
+        const dx = i.ax - b.ax, dy = i.ay - b.ay, dz = i.az - b.az;
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+
+    const raw = axis === "x" ? i.ax : axis === "z" ? i.az : i.ay;
+    return b === null ? Math.abs(raw) : Math.abs(raw - (axis === "x" ? b.ax : axis === "z" ? b.az : b.ay));
+}
+
+async function calibrate() {
+    const btn = document.getElementById("calibrateBtn");
+    btn.disabled = true;
+    btn.innerText = "Calibrating…";
+
+    const SAMPLES = 50;
+    const INTERVAL_MS = 10;
+    const readings = { ax:[], ay:[], az:[] };
+
+    await new Promise(resolve => {
+        const id = setInterval(() => {
+            readings.ax.push(app.imu.ax);
+            readings.ay.push(app.imu.ay);
+            readings.az.push(app.imu.az);
+            if (readings.ax.length >= SAMPLES) { clearInterval(id); resolve(); }
+        }, INTERVAL_MS);
+    });
+
+    const mean = arr => arr.reduce((s, v) => s + v, 0) / arr.length;
+    app.kick.restBaseline = {
+        ax: mean(readings.ax),
+        ay: mean(readings.ay),
+        az: mean(readings.az)
+    };
+
+    btn.innerText = "Calibrate";
+    btn.disabled = false;
+    const b = app.kick.restBaseline;
+    document.getElementById("calibrateVal").innerText =
+        `ax:${b.ax.toFixed(3)} ay:${b.ay.toFixed(3)} az:${b.az.toFixed(3)}`;
+
+    startLogging();
+}
+
+let loggingStartTime = null;
+const LOG_DURATION_MS = 10000;
+
+function startLogging() {
+    loggingStartTime = performance.now();
+    console.clear();
+    console.log("t_ms,ax,ay,az,wx,wy,wz");
+    setTimeout(() => {
+        loggingStartTime = null;
+        console.log("# recording complete");
+    }, LOG_DURATION_MS);
+}
+
+function logSample() {
+    if (loggingStartTime === null) return;
+    const t = (performance.now() - loggingStartTime).toFixed(1);
+    const i = app.imu;
+    console.log(`${t},${i.ax.toFixed(4)},${i.ay.toFixed(4)},${i.az.toFixed(4)},${i.wx.toFixed(1)},${i.wy.toFixed(1)},${i.wz.toFixed(1)}`);
 }
 
 function detectKick() {
@@ -302,8 +377,9 @@ function syncKickSettings() {
     k.maxVel          = Number(document.getElementById("maxVel").value);
 }
 
-document.getElementById("connectBtn").onclick = connectBluetooth;
-document.getElementById("testBtn").onclick    = () => fireKick(100);
+document.getElementById("connectBtn").onclick  = connectBluetooth;
+document.getElementById("testBtn").onclick     = () => fireKick(100);
+document.getElementById("calibrateBtn").onclick = calibrate;
 document.querySelectorAll(".kick-setting").forEach(el => el.addEventListener("input", syncKickSettings));
 
 document.getElementById("modeAudio").onclick = () => {
