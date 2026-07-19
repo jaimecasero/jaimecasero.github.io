@@ -744,7 +744,7 @@ async function connectMIDI() {
     }
 
     try {
-        const midiAccess = await navigator.requestMIDIAccess();
+        const midiAccess = await navigator.requestMIDIAccess({sysex: true});
         console.log("MIDI Access Granted");
 
         // List all available MIDI inputs
