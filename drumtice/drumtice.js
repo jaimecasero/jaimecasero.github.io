@@ -763,9 +763,9 @@ async function connectMIDI() {
 }
 
 function handleMIDIMessage(event) {
-    const [status, key, velocity] = event.data; // MIDI message bytes
-    // Example: Detect Note On (Key Pressed)
-    if (status === 144 && velocity > 0) {
+    const [status, key, velocity] = event.data;
+    const messageType = status & 0xF0;
+    if (messageType === 0x90 && velocity > 0) {
         document.dispatchEvent(new CustomEvent(USER_NOTE_ON_HIT_EVENT, {
             detail: {
                 midiNote: key,
@@ -773,9 +773,7 @@ function handleMIDIMessage(event) {
             }
         }));
     }
-
-    // Example: Detect Note Off (Key Released)
-    if (status === 128 || (status === 144 && velocity === 0)) {
+    if (messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
         playMidiNoteOff(currentNote);
     }
 }
