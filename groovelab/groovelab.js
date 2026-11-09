@@ -537,6 +537,7 @@ function initTable() {
                 btn.dataset.beatCol  = beatCol;
                 btn.dataset.offColor = beatGrp % 2 === 1 ? '#252040' : '#1a1730';
                 btn.addEventListener('click', e => changeNote(e.target));
+                if (document.getElementById('lockCheck') && document.getElementById('lockCheck').checked) btn.disabled = true;
                 td.appendChild(btn);
             }
         }
@@ -787,6 +788,12 @@ function setupGains() {
 // ============================================================
 function togglePlayAlong() {
     playAlongEnabled = document.getElementById('playAlongCheck').checked;
+}
+
+function toggleGridLock() {
+    const locked = document.getElementById('lockCheck').checked;
+    document.querySelectorAll('.noteButton').forEach(btn => { btn.disabled = locked; });
+    document.getElementById('hitButton').disabled = locked;
 }
 
 function makeClick(freq, gain, when) {

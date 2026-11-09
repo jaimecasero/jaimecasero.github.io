@@ -211,6 +211,30 @@ select {
     display: none;
 }
 
+#lockLabel {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    cursor: pointer;
+    color: #3d3b5e;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: color 0.15s;
+}
+
+#lockLabel:has(:checked) {
+    color: #f59e0b;
+}
+
+#lockLabel input[type="checkbox"] {
+    display: none;
+}
+
+.noteButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
 .shared-banner {
     position: fixed;
     top: 0;
