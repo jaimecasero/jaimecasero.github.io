@@ -8,4 +8,7 @@ All based on basic html/css/javascript. Designed for mobile phones as simgle pag
 ./earforge develops your music ear by playing different games with intervals/chords/melodies
 ./fifths cicle of fifths app allowing to select keys modes, and showing diatonic chords
 ./staff midi to staff converter with on screen/midi/voice input to play the loaded song
-./kickpedal a simple web app that pairs with wit motion sensor. the idea is to put the sensor in users foot, and allow to tap with the foot. the application will recognize the movement and send a configurable midi note to an output device.    
+./kickpedal a simple web app that pairs with wit motion sensor. the idea is to put the sensor in users foot, and allow to tap with the foot. the application will recognize the movement and send a configurable midi note to an output device.
+
+All apps should be minimal and include a less libs as possible. Impl should be based on w3c standards and avoid libs.
+All apps imple a service worker with cache name that must be updated everytime a feature/bug is implemented.

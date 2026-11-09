@@ -401,89 +401,183 @@ function drawNoteIndex(fret, string) {
     const NOTE_CENTER_Y= currentFretHeight - FRET_OFFSET;
     let radius = IN_KEY_RADIUS - 3 ;
 
+    const isPentatonic = modeIndex === 12 || modeIndex === 13;
+
     if (visualizationSelect.value === "Chair") {
-        if ((modeIndex < 3 && (noteDegree === 6)) ||
-            (modeIndex > 2 && (noteDegree === 1))) {
-            //if root note draw chair left
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 6;
-            let targetY = NOTE_CENTER_Y + FRET_SEPARATION * 4;
-            if (modeIndex===2 || modeIndex === 5) {
-                //mixolydian/phrigian adds one fret
-                targetY = targetY + FRET_SEPARATION;
+        if (isPentatonic) {
+            if (noteDegree === 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 4);
+                ctx.stroke();
             }
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            ctx.lineTo(NOTE_CENTER_X, targetY);
-            ctx.stroke();
-        }
-        if ((modeIndex < 3 && (noteDegree === 0)) ||
-            (modeIndex > 2 && (noteDegree === 2))) {
-            //if root note chair bottom
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 6;
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            let targetY = NOTE_CENTER_Y;
-            if (tuningSelect.value === "0" && string === 3) {
-                targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+            if (noteDegree === 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                let targetY = NOTE_CENTER_Y;
+                if (tuningSelect.value === "0" && string === 3) {
+                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+                }
+                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
+                ctx.stroke();
             }
-            if (modeIndex===0 || modeIndex === 3) {
-                //lydian/dorian adds one fret
-                targetY = targetY + FRET_SEPARATION;
+            if (noteDegree === 3 || noteDegree === 4) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
+                ctx.stroke();
             }
-            ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
-            ctx.stroke();
-        }
-        if ((modeIndex < 3 && (noteDegree === 4 || noteDegree === 3)) ||
-            (modeIndex > 2 && (noteDegree === 5 || noteDegree === 6))) {
-            //if forth/fifth degree draw chair right
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 6;
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
-            ctx.stroke()
+        } else {
+            if ((modeIndex < 3 && (noteDegree === 6)) ||
+                (modeIndex > 2 && (noteDegree === 1))) {
+                //if root note draw chair left
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                let targetY = NOTE_CENTER_Y + FRET_SEPARATION * 4;
+                if (modeIndex===2 || modeIndex === 5) {
+                    //mixolydian/phrigian adds one fret
+                    targetY = targetY + FRET_SEPARATION;
+                }
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, targetY);
+                ctx.stroke();
+            }
+            if ((modeIndex < 3 && (noteDegree === 0)) ||
+                (modeIndex > 2 && (noteDegree === 2))) {
+                //if root note chair bottom
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                let targetY = NOTE_CENTER_Y;
+                if (tuningSelect.value === "0" && string === 3) {
+                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+                }
+                if (modeIndex===0 || modeIndex === 3) {
+                    //lydian/dorian adds one fret
+                    targetY = targetY + FRET_SEPARATION;
+                }
+                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
+                ctx.stroke();
+            }
+            if ((modeIndex < 3 && (noteDegree === 4 || noteDegree === 3)) ||
+                (modeIndex > 2 && (noteDegree === 5 || noteDegree === 6))) {
+                //if forth/fifth degree draw chair right
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
+                ctx.stroke()
+            }
         }
     }
 
     //stack/rectangle lines
     if (visualizationSelect.value === "Stack") {
-        if ( (modeIndex<3 && (noteDegree === 0 || noteDegree === 1)) ||
-            (modeIndex>2 && ( noteDegree === 2 || noteDegree === 3))) {
-            //if root note draw bottom/top stack
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 6;
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2 );
-            ctx.stroke()
-        }
-        if ((modeIndex<3 && (noteDegree === 5 || noteDegree === 2)) ||
-            (modeIndex>2 && (noteDegree === 0 || noteDegree === 4))) {
-            //top/bottom rectangle
-            ctx.beginPath();
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 6;
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
-            ctx.stroke()
-        }
-
-        if ( (modeIndex<3 && (noteDegree ===1 || noteDegree === 4 || noteDegree === 2 || noteDegree === 5 )) ||
-            ( modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 ))) {
-            //stack line
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 6;
-            ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-            let targetY = NOTE_CENTER_Y;
-            if (tuningSelect.value === "0" && string === 3) {
-                targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+        if (isPentatonic) {
+            const isMajorPentatonic = modeIndex === 12;
+            // blue vertical: 2-semitone gaps (C→D, D→E, G→A)
+            //   major: deg 0(C),1(D),3(G)   minor: deg 1(C),2(D),4(G)
+            const blueVertDeg = isMajorPentatonic
+                ? (noteDegree === 0 || noteDegree === 1 || noteDegree === 3)
+                : (noteDegree === 1 || noteDegree === 2 || noteDegree === 4);
+            if (blueVertDeg) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
+                ctx.stroke();
             }
-            ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
-            ctx.stroke()
+            // red vertical: 3-semitone gaps (E→G, A→C)
+            //   major: deg 2(E),4(A)   minor: deg 0(A),3(E)
+            const redVertDeg = isMajorPentatonic
+                ? (noteDegree === 2 || noteDegree === 4)
+                : (noteDegree === 0 || noteDegree === 3);
+            if (redVertDeg) {
+                ctx.beginPath();
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
+                ctx.stroke();
+            }
+            // red horizontal: closes the EGAC rectangle (major only — in minor the rectangle is blue)
+            //   major: E(top) and G(bottom) = deg 2,3
+            if (isMajorPentatonic && (noteDegree === 2 || noteDegree === 3)) {
+                ctx.beginPath();
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                let targetY = NOTE_CENTER_Y;
+                if (tuningSelect.value === "0" && string === 3) {
+                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+                }
+                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
+                ctx.stroke();
+            }
+            // blue horizontal: outer stack connectors
+            //   major: D(1) and A(4) — outer DEGACD posts
+            //   minor: F(2) and G(3) — closes the inner blue rectangle (F→Bb top, G→C bottom)
+            const blueHorizDeg = isMajorPentatonic
+                ? (noteDegree === 1 || noteDegree === 4)
+                : (noteDegree === 2 || noteDegree === 3);
+            if (blueHorizDeg) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                let targetY = NOTE_CENTER_Y;
+                if (tuningSelect.value === "0" && string === 3) {
+                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+                }
+                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
+                ctx.stroke();
+            }
+        } else {
+            if ( (modeIndex<3 && (noteDegree === 0 || noteDegree === 1)) ||
+                (modeIndex>2 && ( noteDegree === 2 || noteDegree === 3))) {
+                //if root note draw bottom/top stack
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2 );
+                ctx.stroke()
+            }
+            if ((modeIndex<3 && (noteDegree === 5 || noteDegree === 2)) ||
+                (modeIndex>2 && (noteDegree === 0 || noteDegree === 4))) {
+                //top/bottom rectangle
+                ctx.beginPath();
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
+                ctx.stroke()
+            }
 
+            if ( (modeIndex<3 && (noteDegree ===1 || noteDegree === 4 || noteDegree === 2 || noteDegree === 5 )) ||
+                ( modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 ))) {
+                //stack line
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 6;
+                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
+                let targetY = NOTE_CENTER_Y;
+                if (tuningSelect.value === "0" && string === 3) {
+                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
+                }
+                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
+                ctx.stroke()
+            }
         }
         ctx.strokeStyle = "black";
         ctx.lineWidth = 2;
