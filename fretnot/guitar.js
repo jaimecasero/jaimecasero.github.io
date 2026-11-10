@@ -484,11 +484,12 @@ function drawNoteIndex(fret, string) {
     if (visualizationSelect.value === "Stack") {
         if (isPentatonic) {
             const isMajorPentatonic = modeIndex === 12;
-            // blue vertical: 2-semitone gaps (C→D, D→E, G→A)
-            //   major: deg 0(C),1(D),3(G)   minor: deg 1(C),2(D),4(G)
+            // blue vertical: 2-semitone gaps
+            //   major: deg 0(C),1(D) only — G→A vertical is replaced by blue horizontal connectors
+            //   minor: deg 1(Eb),2(F),4(Bb)
             const blueVertDeg = isMajorPentatonic
-                ? (noteDegree === 0 || noteDegree === 1 || noteDegree === 3)
-                : (noteDegree === 1 || noteDegree === 2 || noteDegree === 4);
+                ? (noteDegree === 0 || noteDegree === 1)
+                : (noteDegree === 1 || noteDegree === 2);
             if (blueVertDeg) {
                 ctx.beginPath();
                 ctx.strokeStyle = "blue";
@@ -498,7 +499,7 @@ function drawNoteIndex(fret, string) {
                 ctx.stroke();
             }
             // red vertical: 3-semitone gaps (E→G, A→C)
-            //   major: deg 2(E),4(A)   minor: deg 0(A),3(E)
+            //   major: deg 2(E),4(A)   minor: deg 0(C),3(G)
             const redVertDeg = isMajorPentatonic
                 ? (noteDegree === 2 || noteDegree === 4)
                 : (noteDegree === 0 || noteDegree === 3);
@@ -510,27 +511,11 @@ function drawNoteIndex(fret, string) {
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
                 ctx.stroke();
             }
-            // red horizontal: closes the EGAC rectangle (major only — in minor the rectangle is blue)
-            //   major: E(top) and G(bottom) = deg 2,3
-            if (isMajorPentatonic && (noteDegree === 2 || noteDegree === 3)) {
-                ctx.beginPath();
-                ctx.strokeStyle = "red";
-                ctx.lineWidth = 6;
-                ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
-                let targetY = NOTE_CENTER_Y;
-                if (tuningSelect.value === "0" && string === 3) {
-                    targetY = NOTE_CENTER_Y + FRET_SEPARATION;
-                }
-                ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
-                ctx.stroke();
-            }
             // blue horizontal: outer stack connectors
-            //   major: D(1) and A(4) — outer DEGACD posts
-            //   minor: F(2) and G(3) — closes the inner blue rectangle (F→Bb top, G→C bottom)
-            const blueHorizDeg = isMajorPentatonic
-                ? (noteDegree === 1 || noteDegree === 4)
-                : (noteDegree === 2 || noteDegree === 3);
-            if (blueHorizDeg) {
+            //   major: deg 1(D), 2(E), 3(G), 4(A) → D→G, E→A, G→C, A→D
+            //   minor: deg 0(C), 2(F), 3(G), 4(Bb) → C→F, F→Bb, G→C, Bb→Eb
+            if ((isMajorPentatonic && (noteDegree === 1 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)) ||
+                (!isMajorPentatonic && (noteDegree === 0 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4))) {
                 ctx.beginPath();
                 ctx.strokeStyle = "blue";
                 ctx.lineWidth = 6;
