@@ -537,7 +537,8 @@ function initTable() {
                 btn.dataset.beatCol  = beatCol;
                 btn.dataset.offColor = beatGrp % 2 === 1 ? '#252040' : '#1a1730';
                 btn.addEventListener('click', e => changeNote(e.target));
-                if (document.getElementById('lockCheck') && document.getElementById('lockCheck').checked) btn.disabled = true;
+                const lBtn = document.getElementById('lockButton');
+                if (lBtn && lBtn.getAttribute('aria-pressed') === 'true') btn.disabled = true;
                 td.appendChild(btn);
             }
         }
@@ -689,43 +690,13 @@ function changeBpm() {
     sound_delay = (60000 / parseInt(bpmSelect.value)) / 4;
 }
 
-(function initTapTempo() {
-    let taps = [];
-    let tapTimer = null;
-    const TAP_TIMEOUT = 2000; // ms of silence resets tap sequence
-    const TAP_ID = 'tapBpm';  // id of the dynamic option injected into bpmSelect
 
-    window.tapTempo = function tapTempo() {
-        const now = performance.now();
-
-        // Reset if too long since last tap
-        if (taps.length && now - taps[taps.length - 1] > TAP_TIMEOUT) taps = [];
-
-        taps.push(now);
-        clearTimeout(tapTimer);
-        tapTimer = setTimeout(() => { taps = []; }, TAP_TIMEOUT);
-
-        if (taps.length < 2) return; // need at least 2 taps for an interval
-
-        // Average interval over last 8 taps
-        const recent = taps.slice(-8);
-        const avgInterval = (recent[recent.length - 1] - recent[0]) / (recent.length - 1);
-        const bpm = Math.round(60000 / avgInterval);
-        const clamped = Math.min(300, Math.max(20, bpm));
-
-        // Reuse or create a dedicated tap option
-        let opt = bpmSelect.querySelector('#' + TAP_ID);
-        if (!opt) {
-            opt = document.createElement('option');
-            opt.id = TAP_ID;
-            bpmSelect.appendChild(opt);
-        }
-        opt.value = clamped;
-        opt.text  = 'Tap (' + clamped + ' BPM)';
-        bpmSelect.value = clamped;
-        changeBpm();
-    };
-})();
+function changePanning(value, gIdx) {
+    groupPanArray[gIdx] = parseFloat(value);
+    instrumentGroups[gIdx].rows.forEach(row => {
+        if (pannerNodes[row]) pannerNodes[row].pan.value = parseFloat(value);
+    });
+}
 
 function changeVolume(value, gIdx) {
     groupVolumeArray[gIdx] = value;
@@ -735,12 +706,6 @@ function changeVolume(value, gIdx) {
     });
 }
 
-function changePanning(value, gIdx) {
-    groupPanArray[gIdx] = parseFloat(value);
-    instrumentGroups[gIdx].rows.forEach(row => {
-        if (pannerNodes[row]) pannerNodes[row].pan.value = parseFloat(value);
-    });
-}
 
 // ============================================================
 // AUDIO
@@ -787,12 +752,16 @@ function setupGains() {
 // PLAY ALONG — count-in + metronome
 // ============================================================
 function togglePlayAlong() {
-    playAlongEnabled = document.getElementById('playAlongCheck').checked;
+    const btn = document.getElementById('metronomeButton');
+    playAlongEnabled = !playAlongEnabled;
+    btn.setAttribute('aria-pressed', String(playAlongEnabled));
 }
 
 function toggleGridLock() {
-    const locked = document.getElementById('lockCheck').checked;
-    document.querySelectorAll('.noteButton').forEach(btn => { btn.disabled = locked; });
+    const btn = document.getElementById('lockButton');
+    const locked = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(locked));
+    document.querySelectorAll('.noteButton').forEach(b => { b.disabled = locked; });
     document.getElementById('hitButton').disabled = locked;
 }
 
@@ -862,10 +831,14 @@ function nextNote() {
 function playPause() {
     if (isPlaying) {
         stop();
-        playButton.value = 'Play';
+        playButton.querySelector('.play-icon').style.display = '';
+        playButton.querySelector('.pause-icon').style.display = 'none';
+        playButton.setAttribute('aria-label', 'Play');
     } else {
         startPlayback();
-        playButton.value = 'Pause';
+        playButton.querySelector('.play-icon').style.display = 'none';
+        playButton.querySelector('.pause-icon').style.display = '';
+        playButton.setAttribute('aria-label', 'Pause');
     }
     isPlaying = !isPlaying;
 }
@@ -1126,7 +1099,7 @@ function sharePattern() {
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url)
-            .then(() => showShareFeedback('Link copied!'))
+            .then(() => showShareFeedback())
             .catch(() => fallbackCopy(url));
     } else {
         fallbackCopy(url);
@@ -1139,17 +1112,15 @@ function fallbackCopy(text) {
     ta.style.cssText = 'position:fixed;opacity:0';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); showShareFeedback('Link copied!'); }
+    try { document.execCommand('copy'); showShareFeedback(); }
     catch(e) { console.log('Share URL:', text); }
     document.body.removeChild(ta);
 }
 
-function showShareFeedback(msg) {
-    const btn  = document.getElementById('shareButton');
-    const orig = btn.value;
-    btn.value  = msg;
+function showShareFeedback() {
+    const btn = document.getElementById('shareButton');
     btn.classList.add('share-success');
-    setTimeout(() => { btn.value = orig; btn.classList.remove('share-success'); }, 2000);
+    setTimeout(() => btn.classList.remove('share-success'), 2000);
 }
 
 function loadSharedPattern() {
