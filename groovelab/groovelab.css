@@ -216,6 +216,40 @@ select {
     opacity: 0.6;
 }
 
+.grid-loupe {
+    position: fixed;
+    display: none;
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+    background: #7c3aed;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-family: monospace;
+    pointer-events: none;
+    z-index: 200;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.grid-loupe::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #7c3aed;
+}
+
+.noteButton.loupe-target {
+    outline: 2px solid #a78bfa;
+    outline-offset: -2px;
+    position: relative;
+    z-index: 1;
+}
+
 .shared-banner {
     position: fixed;
     top: 0;

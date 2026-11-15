@@ -374,6 +374,7 @@ function getActiveMeasures() {
         initMeasures();
         initHeader();
         initTable();
+        initTouchDrag();
         initAudio();
         initHitControls();
         loadCustomGrooves();
@@ -580,6 +581,65 @@ function changeNote(btn) {
     currentBeat[row][beatCol] = (cur + 1) % 4;
     const newVel = currentBeat[row][beatCol];
     btn.style.background = newVel === 0 ? (btn.dataset.offColor || velocityColors[0]) : velocityColors[newVel];
+}
+
+// ============================================================
+// TOUCH DRAG — loupe selection on grid
+// ============================================================
+function initTouchDrag() {
+    let pendingBtn = null;
+
+    const loupe = document.createElement('div');
+    loupe.className = 'grid-loupe';
+    document.body.appendChild(loupe);
+
+    function getBtn(x, y) {
+        const el = document.elementFromPoint(x, y);
+        return (el && el.classList.contains('noteButton')) ? el : null;
+    }
+
+    function update(x, y) {
+        const btn = getBtn(x, y);
+        if (pendingBtn) pendingBtn.classList.remove('loupe-target');
+        pendingBtn = (btn && !btn.disabled) ? btn : null;
+        if (pendingBtn) {
+            pendingBtn.classList.add('loupe-target');
+            const tbody = pendingBtn.closest('tbody');
+            const instIdx = Array.from(tbody.rows).indexOf(pendingBtn.closest('tr'));
+            const col = parseInt(pendingBtn.dataset.beatCol) + 1;
+            loupe.textContent = INSTRUMENTS[instIdx].abbr + ' · ' + col;
+            loupe.style.left = x + 'px';
+            loupe.style.top  = (y - 10) + 'px';
+            loupe.style.display = 'block';
+        } else {
+            loupe.style.display = 'none';
+        }
+    }
+
+    instrumentTable.addEventListener('touchstart', e => {
+        update(e.touches[0].clientX, e.touches[0].clientY);
+        e.preventDefault();
+    }, { passive: false });
+
+    instrumentTable.addEventListener('touchmove', e => {
+        update(e.touches[0].clientX, e.touches[0].clientY);
+        e.preventDefault();
+    }, { passive: false });
+
+    instrumentTable.addEventListener('touchend', e => {
+        if (pendingBtn) {
+            changeNote(pendingBtn);
+            pendingBtn.classList.remove('loupe-target');
+            pendingBtn = null;
+        }
+        loupe.style.display = 'none';
+        e.preventDefault();
+    }, { passive: false });
+
+    instrumentTable.addEventListener('touchcancel', () => {
+        if (pendingBtn) { pendingBtn.classList.remove('loupe-target'); pendingBtn = null; }
+        loupe.style.display = 'none';
+    });
 }
 
 // ============================================================
