@@ -376,7 +376,6 @@ function getActiveMeasures() {
         initTable();
         initTouchDrag();
         initAudio();
-        initHitControls();
         loadCustomGrooves();
 
         if (!loadSharedPattern()) {
@@ -411,44 +410,6 @@ function getStepSelectorLabel(ts, stepIdx) {
         const sub  = ['', '&', 'a'][stepIdx % 3];
         return String(beat) + sub;
     }
-}
-
-// ============================================================
-// HIT CONTROLS — alternate input for small-screen precision
-// ============================================================
-function initHitControls() {
-    const instSel = document.getElementById('instSelect');
-    INSTRUMENTS.forEach((inst, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = inst.abbr + ' – ' + inst.name;
-        instSel.appendChild(opt);
-    });
-    updateStepSelect();
-}
-
-function updateStepSelect() {
-    const ts = TIME_SIGNATURES[currentTimeSigIdx];
-    const stepSel = document.getElementById('stepSelect');
-    while (stepSel.firstChild) stepSel.removeChild(stepSel.firstChild);
-    for (let i = 0; i < ts.steps; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = getStepSelectorLabel(ts, i);
-        stepSel.appendChild(opt);
-    }
-}
-
-function hitSelected() {
-    const instIdx = parseInt(document.getElementById('instSelect').value);
-    const stepIdx = parseInt(document.getElementById('stepSelect').value);
-
-    const tbody = instrumentTable.getElementsByTagName('tbody')[0];
-    const tr    = tbody.getElementsByTagName('tr')[instIdx];
-    if (!tr) return;
-    const btn = tr.getElementsByTagName('td')[stepIdx + 1].getElementsByTagName('input')[0];
-    if (!btn) return;
-    changeNote(btn);
 }
 
 // ============================================================
@@ -704,7 +665,6 @@ function changeTimeSig() {
     initHeader();
     initTable();
     renderBeat();
-    updateStepSelect();
 }
 
 function clearMeasure() {
@@ -822,7 +782,6 @@ function toggleGridLock() {
     const locked = btn.getAttribute('aria-pressed') !== 'true';
     btn.setAttribute('aria-pressed', String(locked));
     document.querySelectorAll('.noteButton').forEach(b => { b.disabled = locked; });
-    document.getElementById('hitButton').disabled = locked;
 }
 
 function makeClick(freq, gain, when) {
@@ -1199,7 +1158,6 @@ function loadSharedPattern() {
         nSteps = TIME_SIGNATURES[currentTimeSigIdx].steps;
         initHeader();
         initTable();
-        updateStepSelect();
     }
 
     let bpmFound = false;

@@ -188,15 +188,6 @@ table.instrument_table td:nth-child(1) {
     background: #059669;
 }
 
-#hitButton {
-    background: #4c1d95;
-    color: white;
-    border: none;
-}
-
-#hitButton:active {
-    background: #06b6d4;
-}
 
 select {
     background: #1e1b2e;
