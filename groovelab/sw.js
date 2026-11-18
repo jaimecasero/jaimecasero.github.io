@@ -1,6 +1,6 @@
-const CACHE_NAME = 'groovelab-v1.23.0';
+const CACHE_NAME = 'groovelab-v1.24.0';
 const ASSETS_TO_CACHE = [
-    './groovelab.html',
+    './index.html',
     './groovelab.js',
     './groovelab.css',
     './groovelab_manifest.json',
