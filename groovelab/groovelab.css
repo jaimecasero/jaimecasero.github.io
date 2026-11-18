@@ -230,8 +230,7 @@ td.has-flam .flam-dot {
 .grid-loupe {
     position: fixed;
     display: none;
-    transform: translate(-50%, -100%);
-    margin-top: -10px;
+    transform: translate(-50%, 0);
     background: #7c3aed;
     color: white;
     padding: 4px 10px;
@@ -244,14 +243,14 @@ td.has-flam .flam-dot {
     box-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
-.grid-loupe::after {
+.grid-loupe::before {
     content: '';
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #7c3aed;
+    border-bottom-color: #7c3aed;
 }
 
 .noteButton.loupe-target {

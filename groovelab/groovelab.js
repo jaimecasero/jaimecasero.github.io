@@ -595,7 +595,7 @@ function initTouchDrag() {
             const ts = TIME_SIGNATURES[currentTimeSigIdx];
             loupe.textContent = INSTRUMENTS[instIdx].abbr + ' · ' + getStepSelectorLabel(ts, beatCol);
             loupe.style.left = x + 'px';
-            loupe.style.top  = (y - 10) + 'px';
+            loupe.style.top  = (y + 60) + 'px';
             loupe.style.display = 'block';
         } else {
             loupe.style.display = 'none';
