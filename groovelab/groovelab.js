@@ -591,8 +591,9 @@ function initTouchDrag() {
             pendingBtn.classList.add('loupe-target');
             const tbody = pendingBtn.closest('tbody');
             const instIdx = Array.from(tbody.rows).indexOf(pendingBtn.closest('tr'));
-            const col = parseInt(pendingBtn.dataset.beatCol) + 1;
-            loupe.textContent = INSTRUMENTS[instIdx].abbr + ' · ' + col;
+            const beatCol = parseInt(pendingBtn.dataset.beatCol);
+            const ts = TIME_SIGNATURES[currentTimeSigIdx];
+            loupe.textContent = INSTRUMENTS[instIdx].abbr + ' · ' + getStepSelectorLabel(ts, beatCol);
             loupe.style.left = x + 'px';
             loupe.style.top  = (y - 10) + 'px';
             loupe.style.display = 'block';
