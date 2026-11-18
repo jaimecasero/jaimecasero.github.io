@@ -286,6 +286,8 @@ const STORAGE_KEY = 'groovelab_custom';
 let customGrooves  = []; // [{name, timeSig, bpm, measures:[...]}] persisted to localStorage
 let undoStack      = []; // snapshots of measures[] for undo, max 20
 let measures           = [];   // measures[0..3], each = [N_INST][nSteps]
+let flamMeasures       = [];   // flamMeasures[0..3], each = [N_INST][nSteps] booleans
+let lastEditedCell     = null; // {row, step} of last tapped noteButton
 let measuresVisited    = [];   // measuresVisited[m] = true once user has opened bar m
 let currentMeasureIdx  = 0;
 let playbackMeasureIdx = 0;
@@ -323,6 +325,9 @@ function initMeasures() {
     measures = Array.from({length: MAX_MEASURES}, () =>
         Array.from({length: N_INST}, () => Array(nSteps).fill(0))
     );
+    flamMeasures = Array.from({length: MAX_MEASURES}, () =>
+        Array.from({length: N_INST}, () => Array(nSteps).fill(false))
+    );
     measuresVisited = Array(MAX_MEASURES).fill(false);
     measuresVisited[0] = true;
     currentMeasureIdx = 0;
@@ -337,11 +342,14 @@ function changeMeasure() {
         if (prevIdx >= 0) {
             pushUndo();
             measures[newIdx] = measures[prevIdx].map(row => [...row]);
+            flamMeasures[newIdx] = flamMeasures[prevIdx].map(row => [...row]);
         }
         measuresVisited[newIdx] = true;
     }
     currentMeasureIdx = newIdx;
     currentBeat = measures[currentMeasureIdx];
+    lastEditedCell = null;
+    updateFlamButton();
     renderBeat();
 }
 
@@ -502,6 +510,10 @@ function initTable() {
                 const lBtn = document.getElementById('lockButton');
                 if (lBtn && lBtn.getAttribute('aria-pressed') === 'true') btn.disabled = true;
                 td.appendChild(btn);
+                const flamDot = document.createElement('span');
+                flamDot.className = 'flam-dot';
+                flamDot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="3" cy="11" r="2.2" fill="white"/><line x1="5.2" y1="11" x2="5.2" y2="4" stroke="white" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" fill="white"/></svg>';
+                td.appendChild(flamDot);
             }
         }
     }
@@ -513,23 +525,31 @@ function renderBeat() {
     for (let i = 0; i < rows.length; i++) {
         const tds = rows[i].getElementsByTagName('td');
         for (let j = 1; j <= nSteps; j++) {
-            const btn = tds[j] && tds[j].getElementsByTagName('input')[0];
+            const td  = tds[j];
+            const btn = td && td.getElementsByTagName('input')[0];
             if (btn) {
                 const vel = (currentBeat[i] && currentBeat[i][j - 1]) || 0;
                 btn.style.background = vel === 0 ? (btn.dataset.offColor || velocityColors[0]) : velocityColors[vel];
+                const hasFlam = flamMeasures[currentMeasureIdx][i][j - 1] && vel > 0;
+                td.classList.toggle('has-flam', hasFlam);
             }
         }
     }
 }
 
 function pushUndo() {
-    undoStack.push(measures.map(m => m.map(row => [...row])));
+    undoStack.push({
+        measures: measures.map(m => m.map(row => [...row])),
+        flam: flamMeasures.map(m => m.map(row => [...row]))
+    });
     if (undoStack.length > 20) undoStack.shift();
 }
 
 function undo() {
     if (!undoStack.length) return;
-    measures = undoStack.pop();
+    const snap = undoStack.pop();
+    measures = snap.measures;
+    flamMeasures = snap.flam;
     currentBeat = measures[currentMeasureIdx];
     renderBeat();
 }
@@ -542,6 +562,10 @@ function changeNote(btn) {
     currentBeat[row][beatCol] = (cur + 1) % 4;
     const newVel = currentBeat[row][beatCol];
     btn.style.background = newVel === 0 ? (btn.dataset.offColor || velocityColors[0]) : velocityColors[newVel];
+    if (newVel === 0) flamMeasures[currentMeasureIdx][row][beatCol] = false;
+    lastEditedCell = { row, step: beatCol };
+    updateFlamButton();
+    renderFlamCell(btn.parentElement, row, beatCol);
 }
 
 // ============================================================
@@ -643,11 +667,16 @@ function changeBeat() {
     for (let m = 1; m < MAX_MEASURES; m++) {
         measures[m] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
     }
+    flamMeasures = Array.from({length: MAX_MEASURES}, () =>
+        Array.from({length: N_INST}, () => Array(nSteps).fill(false))
+    );
     measuresVisited = Array(MAX_MEASURES).fill(false);
     measuresVisited[0] = true;
     currentMeasureIdx = 0;
     measureSelect.value = 0;
     currentBeat = measures[0];
+    lastEditedCell = null;
+    updateFlamButton();
     bpmSelect.value = beatBpmArray[idx];
     changeBpm();
     renderBeat();
@@ -670,8 +699,39 @@ function changeTimeSig() {
 function clearMeasure() {
     pushUndo();
     measures[currentMeasureIdx] = Array.from({length: N_INST}, () => Array(nSteps).fill(0));
+    flamMeasures[currentMeasureIdx] = Array.from({length: N_INST}, () => Array(nSteps).fill(false));
     currentBeat = measures[currentMeasureIdx];
+    lastEditedCell = null;
+    updateFlamButton();
     renderBeat();
+}
+
+function toggleFlam() {
+    if (!lastEditedCell) return;
+    const { row, step } = lastEditedCell;
+    if (!currentBeat[row][step]) return; // no note to flam
+    flamMeasures[currentMeasureIdx][row][step] = !flamMeasures[currentMeasureIdx][row][step];
+    updateFlamButton();
+    const tbody = instrumentTable.getElementsByTagName('tbody')[0];
+    const td = tbody.getElementsByTagName('tr')[row].getElementsByTagName('td')[step + 1];
+    renderFlamCell(td, row, step);
+}
+
+function updateFlamButton() {
+    const btn = document.getElementById('flamButton');
+    if (!btn) return;
+    if (lastEditedCell && currentBeat[lastEditedCell.row][lastEditedCell.step] > 0) {
+        btn.disabled = false;
+        btn.setAttribute('aria-pressed', String(flamMeasures[currentMeasureIdx][lastEditedCell.row][lastEditedCell.step]));
+    } else {
+        btn.disabled = true;
+        btn.setAttribute('aria-pressed', 'false');
+    }
+}
+
+function renderFlamCell(td, row, step) {
+    const hasFlam = flamMeasures[currentMeasureIdx][row][step] && currentBeat[row][step] > 0;
+    td.classList.toggle('has-flam', hasFlam);
 }
 
 function addCustomOption(name, idx) {
@@ -815,19 +875,30 @@ function scheduler() {
     timerID = setTimeout(scheduler, lookahead);
 }
 
+const FLAM_OFFSET = 0.03; // grace note 30ms before main hit
+
+function playDrumHit(instIdx, gainVal, when) {
+    const source  = audioCtx.createBufferSource();
+    source.buffer = audioBuffers[instIdx];
+    const velGain = audioCtx.createGain();
+    velGain.gain.value = gainVal;
+    source.connect(velGain);
+    velGain.connect(pannerNodes[instIdx]);
+    source.start(when);
+}
+
 function scheduleNote(index, when) {
     if (playAlongEnabled) scheduleMetronome(index, when);
     const beat = measures[playbackMeasureIdx];
+    const flam = flamMeasures[playbackMeasureIdx];
     for (let i = 0; i < N_INST; i++) {
         const vel = (beat[i] && beat[i][index]) || 0;
         if (vel > 0 && audioBuffers[i] && pannerNodes[i]) {
-            const source  = audioCtx.createBufferSource();
-            source.buffer = audioBuffers[i];
-            const velGain = audioCtx.createGain();
-            velGain.gain.value = velocityMultiplier[vel];
-            source.connect(velGain);
-            velGain.connect(pannerNodes[i]);
-            source.start(when);
+            if (flam[i] && flam[i][index]) {
+                const graceWhen = Math.max(audioCtx.currentTime + 0.001, when - FLAM_OFFSET);
+                playDrumHit(i, velocityMultiplier[vel] * 0.4, graceWhen);
+            }
+            playDrumHit(i, velocityMultiplier[vel], when);
         }
     }
     const mIdx = playbackMeasureIdx;
