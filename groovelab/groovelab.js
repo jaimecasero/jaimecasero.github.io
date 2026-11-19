@@ -294,10 +294,17 @@ let playbackMeasureIdx = 0;
 let currentBeat        = null; // always === measures[currentMeasureIdx]
 let measureSelect;
 
+const MUTE_GROUPS = [
+    { name: "Cym", rows: [0,1,2,3,4,5,6,7,14] }, // all cymbals + hihat
+    { name: "Snr", rows: [10,11] },               // snare + side stick
+    { name: "Tom", rows: [8,9,12] },              // hi/mid/floor toms
+    { name: "Kck", rows: [13] },                  // kick
+];
+const mutedRows = new Set();
+
 let timerID;
 let isPlaying      = false;
 let playAlongEnabled = false;
-let mode = 0;  // 0=labels, 1=volume, 2=pan
 const scheduleAheadTime = 0.1; // seconds
 const lookahead = 25;          // ms
 let nextNoteTime;
@@ -434,16 +441,7 @@ function initHeader() {
     for (let i = 0; i <= nSteps; i++) {
         const th = document.createElement('th');
         if (i === 0) {
-            const btn = document.createElement('input');
-            btn.type = 'button';
-            btn.className = 'modeButton';
-            btn.value = 'V/P';
-            btn.addEventListener('click', () => {
-                mode = (mode + 1) % 3;
-                initTable();
-                renderBeat();
-            });
-            th.appendChild(btn);
+            // empty first header cell
         } else {
             const beatIdx = i - 1;
             if (beatIdx % ts.subdiv === 0) th.classList.add('downbeat');
@@ -463,39 +461,13 @@ function initTable() {
         const tr = document.createElement('tr');
         tbody.appendChild(tr);
 
-        const gIdx = getGroupForRow(row);
-        const group = instrumentGroups[gIdx];
-        const isFirstRow = (group.rows[0] === row);
-
         for (let col = 0; col <= nSteps; col++) {
             const td = document.createElement('td');
             tr.appendChild(td);
 
             if (col === 0) {
-                if (mode === 0) {
-                    td.textContent = INSTRUMENTS[row].abbr;
-                    td.title = INSTRUMENTS[row].name;
-                } else if (isFirstRow) {
-                    const slider = document.createElement('input');
-                    slider.type  = 'range';
-                    slider.step  = mode === 1 ? '10' : '0.5';
-                    slider.className = mode === 1 ? 'volumeSlider' : 'panSlider';
-                    if (mode === 1) {
-                        slider.min = '0'; slider.max = '100';
-                        slider.value = groupVolumeArray[gIdx];
-                        const g = gIdx;
-                        slider.addEventListener('change', e => changeVolume(e.target.value, g));
-                    } else {
-                        slider.min = '-1'; slider.max = '1';
-                        slider.value = groupPanArray[gIdx];
-                        const g = gIdx;
-                        slider.addEventListener('change', e => changePanning(e.target.value, g));
-                    }
-                    td.appendChild(slider);
-                } else {
-                    td.textContent = group.name;
-                    td.className = 'groupLabel';
-                }
+                td.textContent = INSTRUMENTS[row].abbr;
+                td.title = INSTRUMENTS[row].name;
             } else {
                 const beatCol  = col - 1;
                 const beatGrp  = Math.floor(beatCol / ts.subdiv);
@@ -771,20 +743,13 @@ function changeBpm() {
     sound_delay = (60000 / parseInt(bpmSelect.value)) / 4;
 }
 
-
-function changePanning(value, gIdx) {
-    groupPanArray[gIdx] = parseFloat(value);
-    instrumentGroups[gIdx].rows.forEach(row => {
-        if (pannerNodes[row]) pannerNodes[row].pan.value = parseFloat(value);
-    });
-}
-
-function changeVolume(value, gIdx) {
-    groupVolumeArray[gIdx] = value;
-    const gain = value / 100;
-    instrumentGroups[gIdx].rows.forEach(row => {
-        if (gainNodes[row]) gainNodes[row].gain.value = gain;
-    });
+function toggleMuteGroup(groupName) {
+    const grp = MUTE_GROUPS.find(g => g.name === groupName);
+    if (!grp) return;
+    const allMuted = grp.rows.every(r => mutedRows.has(r));
+    grp.rows.forEach(r => allMuted ? mutedRows.delete(r) : mutedRows.add(r));
+    const btn = document.getElementById('mute-' + groupName);
+    if (btn) btn.setAttribute('aria-pressed', String(!allMuted));
 }
 
 
@@ -893,6 +858,7 @@ function scheduleNote(index, when) {
     const beat = measures[playbackMeasureIdx];
     const flam = flamMeasures[playbackMeasureIdx];
     for (let i = 0; i < N_INST; i++) {
+        if (mutedRows.has(i)) continue;
         const vel = (beat[i] && beat[i][index]) || 0;
         if (vel > 0 && audioBuffers[i] && pannerNodes[i]) {
             if (flam[i] && flam[i][index]) {
