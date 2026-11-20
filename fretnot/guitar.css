@@ -1,26 +1,67 @@
+body {
+    touch-action: manipulation;
+    background-color: #1a0a04;
+    color: #e8d4a0;
+    font-family: Georgia, 'Times New Roman', serif;
+    margin: 0;
+    padding: 4px;
+}
+
+#fretCanvas {
+    display: block;
+    border: 3px solid #8b6414;
+    box-shadow: 0 0 20px rgba(200, 160, 74, 0.25);
+    border-radius: 3px;
+}
+
+select, input[readonly] {
+    background-color: #2d1508;
+    color: #e8d4a0;
+    border: 1px solid #c8a04a;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #f0c060;
+    box-shadow: 0 0 4px rgba(200, 160, 74, 0.5);
+}
+
+option {
+    background-color: #2d1508;
+    color: #e8d4a0;
+}
+
+option:disabled {
+    color: #6a5020;
+}
+
+label {
+    color: #c8a04a;
+    font-weight: bold;
+    font-size: 13px;
+}
+
 #fretTable {
     border-collapse: collapse;
 }
-body {
-    touch-action: manipulation;
-}
+
 td, th {
-    border: 1px solid black; /* Define color y grosor de los bordes */
-    padding: 8px; /* Espaciado interno */
-
-
+    border: 1px solid #c8a04a;
+    padding: 8px;
 }
 
-
-#fretTable tr:first-child td{
-    border-bottom: 4px solid black;
+#fretTable tr:first-child td {
+    border-bottom: 4px solid #c8a04a;
 }
+
 #fretTable tr td:last-child {
     border: none;
 }
 
-
-#rootChordSelect, #keySelect,#chordSelect {
+#rootChordSelect, #keySelect, #chordSelect {
     width: 30px;
 }
 
@@ -30,14 +71,6 @@ td, th {
 
 #calculatedChordInput, #calculatedKeyInput {
     width: 120px;
+    color: #c8b060;
+    background-color: #1e0e06;
 }
-
-#feedbackLink {
-    font-size: 12px;
-    margin-left: 8px;
-}
-
-
-
-
-
