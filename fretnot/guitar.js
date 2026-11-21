@@ -15,6 +15,8 @@ const STRING_OCTAVE = [2,2,3,3,3,4];
 const NOTE_FIFTHS_COLOR = ['#FF3333', '#33FF8D', '#FF8A33', '#3358FF', '#FFFC33', '#FF33C1', '#33FF33', '#FF6133', '#33FCFF', '#FFB233', '#A833FF', '#93FF33'];
 
 const STD_TUNING = ['E', 'A', 'D', 'G', 'B', 'E'];
+const BASS_TUNING = ['E', 'A', 'D', 'G'];
+const BASS_OPEN_MIDI = [28, 33, 38, 43];
 const FOURTHS_TUNING = ['E', 'A', 'D', 'G', 'C', 'F'];
 const DROPD_TUNING = ['D', 'A', 'D', 'G', 'C', 'F'];
 const DAD_TUNING = ['D', 'A', 'D', 'G', 'A', 'D'];
@@ -103,6 +105,8 @@ var fretCanvas;
 var calculatedKeyInput;
 var calculatedChordInput;
 var tuningSelect;
+var instrumentSelect;
+var instrumentStatus;
 
 
 (function (window, document, undefined) {
@@ -112,7 +116,6 @@ var tuningSelect;
         // the code to be called when the dom has loaded
         // #document has its nodes
         console.log("init");
-        initOscillators();
         //cache DOM elements for better performance
         keySelect = document.getElementById('keySelect');
         modeSelect = document.getElementById('modeSelect');
@@ -123,6 +126,9 @@ var tuningSelect;
         calculatedKeyInput = document.getElementById('calculatedKeyInput');
         calculatedChordInput = document.getElementById('calculatedChordInput');
         tuningSelect = document.getElementById('tuningSelect');
+        instrumentSelect = document.getElementById('instrumentSelect');
+        instrumentStatus = document.getElementById('instrumentStatus');
+        initOscillators();
 
         document.getElementById('settingsButton').addEventListener('click', function () {
             document.getElementById('settingsDialog').showModal();
@@ -171,6 +177,7 @@ function canvasDown(e) {
 function canvasDownXY(x, y, force) {
 
     let stringIndex = Math.floor(x / STRING_SEPARATION);
+    if (stringIndex < 0 || stringIndex >= retrieveTuning().length) return;
     let fretIndex = -1;
     for (let i = 0; i < FRET_SEPARATION_ARRAY.length; i++) {
         if (y < FRET_SEPARATION_ARRAY[i]) {
@@ -182,6 +189,10 @@ function canvasDownXY(x, y, force) {
         fretIndex = 14;
     }
     console.log("string:" + stringIndex + "fret:" + fretIndex);
+    if (instrumentSelect.value === 'bass') {
+        playOscillatorNote(BASS_OPEN_MIDI[stringIndex] + Math.max(0, fretIndex - 1), force);
+        return;
+    }
     let openStringIndex = calculateFretNoteIndex(stringIndex, 0);
     let openStringCDelta = 12 - calculateFretNoteIndex(stringIndex, 0);
     console.log("openStringCDelta:" + openStringCDelta);
@@ -264,7 +275,15 @@ function calculateChordByIndex(rootNote, chordType) {
 }
 
 function retrieveTuning() {
-    return TUNING_ARRAY[parseInt(tuningSelect.value, 10)];
+    return instrumentSelect.value === 'bass'
+        ? BASS_TUNING
+        : TUNING_ARRAY[parseInt(tuningSelect.value, 10)];
+}
+
+function changeInstrument() {
+    tuningSelect.disabled = instrumentSelect.value === 'bass';
+    selectMidiInstrument();
+    renderFretboard();
 }
 
 function calculateFretNoteIndex(stringIndex, fretIndex) {
@@ -308,14 +327,15 @@ function resizeFretboard() {
         FRET_SEPARATION_ARRAY.push(calculateFretHeight(i));
     }
 
-    STRING_SEPARATION = fretCanvas.width / STD_TUNING.length;
-    STRING_SEPARATION_HALF = STRING_SEPARATION / 2;
     if (needsRender) renderFretboard();
 }
 
 ////////////////////////////// rendering //////////////////////////
 
 function renderFretboard() {
+    const stringCount = retrieveTuning().length;
+    STRING_SEPARATION = fretCanvas.width / stringCount;
+    STRING_SEPARATION_HALF = STRING_SEPARATION / 2;
     calculateKey();
     calculateChord();
 
@@ -350,7 +370,7 @@ function renderFretboard() {
     //draw strings - thicker for lower strings like a real guitar
     const STRING_WIDTHS = [5, 4, 3, 2.5, 2, 1.5]; // E A D G B e
     const STRING_COLORS = ['#8a8a8a', '#9a9a9a', '#aaaaaa', '#9aaabb', '#b0bcc8', '#c8d0d8'];
-    for (let i=0; i < STD_TUNING.length ; i++) {
+    for (let i=0; i < stringCount ; i++) {
         ctx.beginPath();
         ctx.strokeStyle = STRING_COLORS[i];
         ctx.lineWidth = STRING_WIDTHS[i];
@@ -386,25 +406,25 @@ function renderFretboard() {
             if ((i - 1)  % 2 === 0) {
                 ctx.beginPath();
                 ctx.fillStyle = '#e6e6e6';
-                ctx.arc(STRING_SEPARATION , markerHeight, 5, 0, 2 * Math.PI);
+                ctx.arc(fretCanvas.width / 6, markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.fillStyle = '#e6e6e6';
-                ctx.arc(STRING_SEPARATION * 5, markerHeight, 5, 0, 2 * Math.PI);
+                ctx.arc(fretCanvas.width * 5 / 6, markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
             } else {
                 ctx.beginPath();
                 ctx.fillStyle = '#e6e6e6';
-                ctx.arc(STRING_SEPARATION * 3, markerHeight, 5, 0, 2 * Math.PI);
+                ctx.arc(fretCanvas.width / 2, markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
             }
         }
 
         //draw the notes on top of frets//strings
-        for (let j=0; j < STD_TUNING.length ; j++) {
+        for (let j=0; j < stringCount ; j++) {
             drawNoteIndex(i+1, j);
         }
     }
@@ -438,7 +458,7 @@ function drawNoteIndex(fret, string) {
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 4);
                 ctx.stroke();
             }
-            if (noteDegree === 0) {
+            if (noteDegree === 0 && (instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1)) {
                 ctx.beginPath();
                 ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
@@ -474,8 +494,9 @@ function drawNoteIndex(fret, string) {
                 ctx.lineTo(NOTE_CENTER_X, targetY);
                 ctx.stroke();
             }
-            if ((modeIndex < 3 && (noteDegree === 0)) ||
-                (modeIndex > 2 && (noteDegree === 2))) {
+            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+                ((modeIndex < 3 && (noteDegree === 0)) ||
+                (modeIndex > 2 && (noteDegree === 2)))) {
                 //if root note chair bottom
                 ctx.beginPath();
                 ctx.strokeStyle = '#b0b4ba';
@@ -539,8 +560,9 @@ function drawNoteIndex(fret, string) {
             // blue horizontal: outer stack connectors
             //   major: deg 1(D), 2(E), 3(G), 4(A) → D→G, E→A, G→C, A→D
             //   minor: deg 0(C), 2(F), 3(G), 4(Bb) → C→F, F→Bb, G→C, Bb→Eb
-            if ((isMajorPentatonic && (noteDegree === 1 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)) ||
-                (!isMajorPentatonic && (noteDegree === 0 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4))) {
+            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+                ((isMajorPentatonic && (noteDegree === 1 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)) ||
+                (!isMajorPentatonic && (noteDegree === 0 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)))) {
                 ctx.beginPath();
                 ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
@@ -574,8 +596,9 @@ function drawNoteIndex(fret, string) {
                 ctx.stroke()
             }
 
-            if ( (modeIndex<3 && (noteDegree ===1 || noteDegree === 4 || noteDegree === 2 || noteDegree === 5 )) ||
-                ( modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 ))) {
+            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+                ((modeIndex<3 && (noteDegree ===1 || noteDegree === 4 || noteDegree === 2 || noteDegree === 5 )) ||
+                (modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 )))) {
                 //stack line
                 ctx.beginPath();
                 ctx.strokeStyle = '#b0b4ba';
@@ -659,20 +682,45 @@ function drawNoteIndex(fret, string) {
 
 // create web audio api context
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
-
+const MIDI_INSTRUMENTS = {
+    guitar: { name: 'acoustic_guitar_nylon', program: 24 },
+    bass: { name: 'slap_bass_1', program: 36 }
+};
+const loadedMidiInstruments = new Set();
+let loadingMidiInstrument = false;
+let activeMidiInstrument = null;
 
 function initOscillators() {
+    selectMidiInstrument();
+}
 
+function selectMidiInstrument() {
+    const selected = instrumentSelect.value;
+    const instrument = MIDI_INSTRUMENTS[selected];
+    if (loadingMidiInstrument) return;
+    if (loadedMidiInstruments.has(selected)) {
+        MIDI.programChange(0, instrument.program);
+        activeMidiInstrument = selected;
+        instrumentStatus.textContent = '';
+        return;
+    }
+    activeMidiInstrument = null;
+    loadingMidiInstrument = true;
+    instrumentStatus.textContent = 'Loading ' + selected + ' sound...';
     MIDI.loadPlugin({
         soundfontUrl: "https://gleitz.github.io/midi-js-soundfonts/FatBoy/",
-        instruments: "acoustic_guitar_nylon",
+        instruments: instrument.name,
         onprogress: (state, progress) => console.log(state, progress),
         onsuccess: () => {
-            console.log("MIDI.js loaded");
-            MIDI.programChange(0, 24);
+            loadedMidiInstruments.add(selected);
+            loadingMidiInstrument = false;
+            selectMidiInstrument();
         },
         onerror: (e) => {
-            window.alert("Failed to load midi:" + e.message);
+            loadingMidiInstrument = false;
+            instrumentStatus.textContent = 'Failed to load ' + selected + ' sound.';
+            window.alert("Failed to load " + selected + " MIDI sound: " + e.message);
+            if (instrumentSelect.value !== selected) selectMidiInstrument();
         }
     });
 
@@ -692,6 +740,7 @@ function forceToMidiVelocity(force) {
 }
 
 function playOscillatorNote(adjustedMidiNote, force) {
+    if (activeMidiInstrument !== instrumentSelect.value) return;
     let velocity = forceToMidiVelocity(force);
     console.log("play:" + adjustedMidiNote + "," + velocity);
     MIDI.noteOn(0, adjustedMidiNote, velocity,0);

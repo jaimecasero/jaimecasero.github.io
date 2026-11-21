@@ -1,7 +1,7 @@
 {
   "name": "Fretboard Explorer",
   "short_name": "FretNot",
-  "description": "Learn guitar fretboard from music theory",
+  "description": "Learn guitar and bass fretboards from music theory",
   "start_url": "./guitar.html",
   "display": "standalone",
   "background_color": "#000000",

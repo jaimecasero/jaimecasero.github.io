@@ -45,6 +45,14 @@
     </div>
     <div class="settings-fields">
         <div class="settings-row">
+            <label for="instrumentSelect">Instrument:</label>
+            <select id="instrumentSelect" onchange="changeInstrument();">
+                <option value="guitar">Guitar</option>
+                <option value="bass">Bass</option>
+            </select>
+            <span id="instrumentStatus" role="status" aria-live="polite"></span>
+        </div>
+        <div class="settings-row">
             <label for="visualizationSelect">Visual:</label>
             <select id="visualizationSelect" onchange="renderFretboard();">
                 <option value="Natural">Natural/Artificial</option>
