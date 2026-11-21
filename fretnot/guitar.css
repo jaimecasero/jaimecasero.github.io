@@ -1,45 +1,45 @@
 body {
     touch-action: manipulation;
-    background-color: #1a0a04;
-    color: #e8d4a0;
-    font-family: Georgia, 'Times New Roman', serif;
+    background-color: #121212;
+    color: #e6e6e6;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     margin: 0;
     padding: 4px;
 }
 
 #fretCanvas {
     display: block;
-    border: 3px solid #8b6414;
-    box-shadow: 0 0 20px rgba(200, 160, 74, 0.25);
+    border: 3px solid #555555;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
     border-radius: 3px;
 }
 
 select, input[readonly] {
-    background-color: #2d1508;
-    color: #e8d4a0;
-    border: 1px solid #c8a04a;
+    background-color: #1e1e1e;
+    color: #e6e6e6;
+    border: 1px solid #b0b4ba;
     border-radius: 3px;
     padding: 2px 4px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 }
 
 select:focus, input:focus {
     outline: none;
-    border-color: #f0c060;
-    box-shadow: 0 0 4px rgba(200, 160, 74, 0.5);
+    border-color: #8ab4f8;
+    box-shadow: 0 0 4px rgba(138, 180, 248, 0.5);
 }
 
 option {
-    background-color: #2d1508;
-    color: #e8d4a0;
+    background-color: #1e1e1e;
+    color: #e6e6e6;
 }
 
 option:disabled {
-    color: #6a5020;
+    color: #777777;
 }
 
 label {
-    color: #c8a04a;
+    color: #b0b4ba;
     font-weight: bold;
     font-size: 13px;
 }
@@ -49,12 +49,12 @@ label {
 }
 
 td, th {
-    border: 1px solid #c8a04a;
+    border: 1px solid #b0b4ba;
     padding: 8px;
 }
 
 #fretTable tr:first-child td {
-    border-bottom: 4px solid #c8a04a;
+    border-bottom: 4px solid #b0b4ba;
 }
 
 #fretTable tr td:last-child {
@@ -71,6 +71,6 @@ td, th {
 
 #calculatedChordInput, #calculatedKeyInput {
     width: 120px;
-    color: #c8b060;
-    background-color: #1e0e06;
+    color: #e6e6e6;
+    background-color: #1e1e1e;
 }

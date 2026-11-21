@@ -27,7 +27,7 @@ const OPENC_TUNING = ['C', 'G', 'C', 'G', 'C', 'E'];
 
 const TUNING_ARRAY= [STD_TUNING,FOURTHS_TUNING, DROPD_TUNING, DAD_TUNING, OPEND_TUNING, OPENE_TUNING, OPENG_TUNING, OPENA_TUNING, OPENC6_TUNING, OPENC_TUNING];
 
-const CHORD_COLOR=["#8B0000", "#1a4a1a", "#1b2f6b", "#c06820", "#7a1a5a", "#4a1070", "#5a2008", "#5a2008", "#c8a04a", "#1e0e06"];
+const CHORD_COLOR=["#8B0000", "#1a4a1a", "#1b2f6b", "#a04f10", "#7a1a5a", "#4a1070", "#5a2008", "#5a2008", "#6b6f76", "#121212"];
 const IN_KEY_RADIUS=14;
 const IN_KEY_STYLE="bold 10px Arial";
 
@@ -326,12 +326,12 @@ function renderFretboard() {
     const ctx = fretCanvas.getContext("2d");
     // Clear the entire canvas
     ctx.clearRect(0, 0, fretCanvas.width, fretCanvas.height);
-    ctx.fillStyle = '#1e0e06';
+    ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, fretCanvas.width, fretCanvas.height);
 
     //draw strings - thicker for lower strings like a real guitar
     const STRING_WIDTHS = [5, 4, 3, 2.5, 2, 1.5]; // E A D G B e
-    const STRING_COLORS = ['#8b5e14', '#9a6e20', '#a07830', '#9aaabb', '#b0bcc8', '#c8d0d8'];
+    const STRING_COLORS = ['#8a8a8a', '#9a9a9a', '#aaaaaa', '#9aaabb', '#b0bcc8', '#c8d0d8'];
     for (let i=0; i < STD_TUNING.length ; i++) {
         ctx.beginPath();
         ctx.strokeStyle = STRING_COLORS[i];
@@ -348,9 +348,9 @@ function renderFretboard() {
         if (i === 1 ) {
             //draw nut line thicker
             ctx.lineWidth = 5;
-            ctx.strokeStyle = '#d4c890';
+            ctx.strokeStyle = '#cfcfcf';
         } else {
-            ctx.strokeStyle = '#5a7080';
+            ctx.strokeStyle = '#7a8590';
         }
         ctx.beginPath();
         const FRET_Y = FRET_SEPARATION_ARRAY[i];
@@ -364,21 +364,21 @@ function renderFretboard() {
         //draw fret markers if appropriate
         if (FRET_MARKERS.indexOf(i - 1 ) > -1) {
             let markerHeight = FRET_Y - ( FRET_OFFSET ) / 2;
-            ctx.strokeStyle = '#8b7840';
+            ctx.strokeStyle = '#777777';
             if ((i - 1)  % 2 === 0) {
                 ctx.beginPath();
-                ctx.fillStyle = '#e8dfc5';
+                ctx.fillStyle = '#e6e6e6';
                 ctx.arc(STRING_SEPARATION , markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.fillStyle = '#e8dfc5';
+                ctx.fillStyle = '#e6e6e6';
                 ctx.arc(STRING_SEPARATION * 5, markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
             } else {
                 ctx.beginPath();
-                ctx.fillStyle = '#e8dfc5';
+                ctx.fillStyle = '#e6e6e6';
                 ctx.arc(STRING_SEPARATION * 3, markerHeight, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
@@ -414,7 +414,7 @@ function drawNoteIndex(fret, string) {
         if (isPentatonic) {
             if (noteDegree === 1) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 4);
@@ -422,7 +422,7 @@ function drawNoteIndex(fret, string) {
             }
             if (noteDegree === 0) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
@@ -434,7 +434,7 @@ function drawNoteIndex(fret, string) {
             }
             if (noteDegree === 3 || noteDegree === 4) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
@@ -445,7 +445,7 @@ function drawNoteIndex(fret, string) {
                 (modeIndex > 2 && (noteDegree === 1))) {
                 //if root note draw chair left
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 let targetY = NOTE_CENTER_Y + FRET_SEPARATION * 4;
                 if (modeIndex===2 || modeIndex === 5) {
@@ -460,7 +460,7 @@ function drawNoteIndex(fret, string) {
                 (modeIndex > 2 && (noteDegree === 2))) {
                 //if root note chair bottom
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
@@ -478,7 +478,7 @@ function drawNoteIndex(fret, string) {
                 (modeIndex > 2 && (noteDegree === 5 || noteDegree === 6))) {
                 //if forth/fifth degree draw chair right
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
@@ -499,7 +499,7 @@ function drawNoteIndex(fret, string) {
                 : (noteDegree === 1 || noteDegree === 2);
             if (blueVertDeg) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2);
@@ -512,7 +512,7 @@ function drawNoteIndex(fret, string) {
                 : (noteDegree === 0 || noteDegree === 3);
             if (redVertDeg) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c86020';
+                ctx.strokeStyle = '#ff9a3c';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
@@ -524,7 +524,7 @@ function drawNoteIndex(fret, string) {
             if ((isMajorPentatonic && (noteDegree === 1 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)) ||
                 (!isMajorPentatonic && (noteDegree === 0 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4))) {
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
@@ -539,7 +539,7 @@ function drawNoteIndex(fret, string) {
                 (modeIndex>2 && ( noteDegree === 2 || noteDegree === 3))) {
                 //if root note draw bottom/top stack
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 2 );
@@ -549,7 +549,7 @@ function drawNoteIndex(fret, string) {
                 (modeIndex>2 && (noteDegree === 0 || noteDegree === 4))) {
                 //top/bottom rectangle
                 ctx.beginPath();
-                ctx.strokeStyle = '#c86020';
+                ctx.strokeStyle = '#ff9a3c';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 3 - FRET_OFFSET);
@@ -560,7 +560,7 @@ function drawNoteIndex(fret, string) {
                 ( modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 ))) {
                 //stack line
                 ctx.beginPath();
-                ctx.strokeStyle = '#c8a04a';
+                ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
@@ -571,10 +571,10 @@ function drawNoteIndex(fret, string) {
                 ctx.stroke()
             }
         }
-        ctx.strokeStyle = '#c8a04a';
+        ctx.strokeStyle = '#b0b4ba';
         ctx.lineWidth = 2;
     }
-    ctx.strokeStyle = '#c8a04a';
+    ctx.strokeStyle = '#b0b4ba';
     ctx.lineWidth = 2;
 
 
@@ -582,16 +582,16 @@ function drawNoteIndex(fret, string) {
         radius = IN_KEY_RADIUS - 3;
 
         ctx.beginPath();
-        ctx.fillStyle = '#c8a04a';
+        ctx.fillStyle = '#b0b4ba';
         if (keyIndex > -1) {
             radius = IN_KEY_RADIUS;
         }
         switch (visualizationSelect.value) {
             case "Natural":
                 if (note.length > 1 && (note.endsWith("b") || note.endsWith("#"))) {
-                    ctx.fillStyle = '#7a4c10';
+                    ctx.fillStyle = '#555555';
                 } else {
-                    ctx.fillStyle = '#c8a04a';
+                    ctx.fillStyle = '#b0b4ba';
                 }
                 break;
             case "Fifths":
@@ -604,7 +604,7 @@ function drawNoteIndex(fret, string) {
 
         ctx.beginPath();
         const isAccidental = note.length > 1 && (note.endsWith("b") || note.endsWith("#"));
-        let innerFill = isAccidental ? '#1e0e06' : '#f0e4c8';
+        let innerFill = isAccidental ? '#121212' : '#f5f5f5';
         if (chordIndex > -1) innerFill = CHORD_COLOR[chordIndex];
         ctx.fillStyle = innerFill;
         ctx.arc(NOTE_CENTER_X, NOTE_CENTER_Y, radius - 4, 0, 2 * Math.PI);
@@ -613,9 +613,9 @@ function drawNoteIndex(fret, string) {
 
 
         // text inside circle
-        ctx.fillStyle = (isAccidental && visualizationSelect.value === "Natural") ? '#c8b060' : '#1a0d06';
+        ctx.fillStyle = (isAccidental && visualizationSelect.value === "Natural") ? '#ffffff' : '#000000';
         if (chordIndex > -1) {
-            ctx.fillStyle = "#f0e4c8";
+            ctx.fillStyle = "#f5f5f5";
         }
 
         ctx.font = "10px Arial";
