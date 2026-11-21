@@ -871,6 +871,19 @@
     function midiToNoteName(midi) {
       return NOTES[midi % 12] + (Math.floor(midi / 12) - 1);
     }
+    function modeMidiToNoteName(midi, rootMidi, mode) {
+      const interval = ((midi - rootMidi) % 12 + 12) % 12;
+      const degree = mode.iv.indexOf(interval);
+      if (degree < 0) throw new Error('Note is not in the mode');
+      const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+      const naturalPitches = [0, 2, 4, 5, 7, 9, 11];
+      const rootLetter = letters.indexOf(NOTES[rootMidi % 12][0]);
+      const letterIndex = (rootLetter + degree) % 7;
+      const accidental = ((midi % 12 - naturalPitches[letterIndex] + 18) % 12) - 6;
+      const sign = accidental < 0 ? 'b' : '#';
+      return letters[letterIndex] + sign.repeat(Math.abs(accidental)) +
+        (Math.floor((midi - accidental) / 12) - 1);
+    }
     function isSameNote(m1, m2) { return m1 % 12 === m2 % 12; }
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1158,7 +1171,8 @@
         const cs = new Set(mode.char.map(ci => mode.iv[ci]));
         notesHtml = question.melody.map(m => {
           const s = ((m - question.rootMidi) % 12 + 12) % 12;
-          return cs.has(s) ? `<span class="note-char">${midiToNoteName(m)}</span>` : `<span>${midiToNoteName(m)}</span>`;
+          const note = modeMidiToNoteName(m, question.rootMidi, mode);
+          return cs.has(s) ? `<span class="note-char">${note}</span>` : `<span>${note}</span>`;
         }).join(' ');
       }
 
