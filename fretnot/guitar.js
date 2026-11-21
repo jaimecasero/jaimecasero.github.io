@@ -124,13 +124,11 @@ var tuningSelect;
         calculatedChordInput = document.getElementById('calculatedChordInput');
         tuningSelect = document.getElementById('tuningSelect');
 
-        for (let i=0; i <= FRET_NUM; i++) {
-            let sep = calculateFretHeight(i);
-            FRET_SEPARATION_ARRAY.push(sep);
-        }
-        STRING_SEPARATION = fretCanvas.width / STD_TUNING.length;
-        STRING_SEPARATION_HALF = STRING_SEPARATION/2;
-        renderFretboard();
+        document.getElementById('settingsButton').addEventListener('click', function () {
+            document.getElementById('settingsDialog').showModal();
+        });
+        window.addEventListener('resize', resizeFretboard);
+        resizeFretboard();
 
         //register multitouch listener
         fretCanvas.addEventListener('touchstart', function (event) {
@@ -293,6 +291,26 @@ function isFretOnChord(stringIndex, fretIndex) {
 function calculateFretHeight(fretIndex) {
     let wholeFret = (fretCanvas.height * 2) - 150; //150 gives some space to reach 12 fret in canvas
     return wholeFret - (wholeFret / (2 ** (fretIndex /12)));
+}
+
+function resizeFretboard() {
+    const width = Math.max(1, Math.round(fretCanvas.clientWidth));
+    const height = Math.max(1, Math.round(fretCanvas.clientHeight));
+    const needsRender = width !== fretCanvas.width
+        || height !== fretCanvas.height
+        || FRET_SEPARATION_ARRAY.length === 0;
+
+    if (width !== fretCanvas.width) fretCanvas.width = width;
+    if (height !== fretCanvas.height) fretCanvas.height = height;
+
+    FRET_SEPARATION_ARRAY = [];
+    for (let i = 0; i <= FRET_NUM; i++) {
+        FRET_SEPARATION_ARRAY.push(calculateFretHeight(i));
+    }
+
+    STRING_SEPARATION = fretCanvas.width / STD_TUNING.length;
+    STRING_SEPARATION_HALF = STRING_SEPARATION / 2;
+    if (needsRender) renderFretboard();
 }
 
 ////////////////////////////// rendering //////////////////////////

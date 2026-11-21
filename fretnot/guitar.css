@@ -4,14 +4,16 @@ body {
     color: #e6e6e6;
     font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     margin: 0;
-    padding: 4px;
+    padding: 0;
+    overflow: hidden;
 }
 
 #fretCanvas {
     display: block;
-    border: 3px solid #555555;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
-    border-radius: 3px;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.08);
 }
 
 select, input[readonly] {
@@ -38,39 +40,116 @@ option:disabled {
     color: #777777;
 }
 
-label {
+#settingsButton {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+    color: #e6e6e6;
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid #b0b4ba;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+#settingsButton svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+#settingsButton:focus-visible, .close-settings:focus-visible {
+    outline: 2px solid #8ab4f8;
+    outline-offset: 2px;
+}
+
+#settingsDialog {
+    box-sizing: border-box;
+    width: min(440px, calc(100vw - 24px));
+    max-height: 90vh;
+    max-height: 90dvh;
+    padding: 20px;
+    color: #e6e6e6;
+    background: #171717;
+    border: 1px solid #656565;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+    overflow-y: auto;
+}
+
+#settingsDialog::backdrop {
+    background: rgba(0, 0, 0, 0.68);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.settings-header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.settings-header form {
+    margin: 0;
+}
+
+.close-settings {
+    padding: 6px 10px;
+    color: #e6e6e6;
+    background: #292929;
+    border: 1px solid #777;
+    border-radius: 4px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.settings-fields {
+    display: grid;
+    gap: 16px;
+}
+
+.settings-row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-row label {
     color: #b0b4ba;
     font-weight: bold;
     font-size: 13px;
 }
 
-#fretTable {
-    border-collapse: collapse;
+.settings-row select,
+.settings-row input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 8px;
+    font-size: 14px;
 }
 
-td, th {
-    border: 1px solid #b0b4ba;
-    padding: 8px;
+.settings-control-group {
+    display: grid;
+    grid-template-columns: minmax(0, 0.4fr) minmax(0, 1fr);
+    gap: 8px;
 }
 
-#fretTable tr:first-child td {
-    border-bottom: 4px solid #b0b4ba;
-}
-
-#fretTable tr td:last-child {
-    border: none;
-}
-
-#rootChordSelect, #keySelect, #chordSelect {
-    width: 30px;
-}
-
-#visualizationSelect, #modeSelect {
-    width: 40px;
-}
-
-#calculatedChordInput, #calculatedKeyInput {
-    width: 120px;
+.settings-row input[readonly] {
+    grid-column: 2;
     color: #e6e6e6;
-    background-color: #1e1e1e;
 }
