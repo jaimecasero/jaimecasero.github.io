@@ -533,7 +533,7 @@
             <div class="menu-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
             </div>
-            <div><div>Keys & Modes</div><div class="menu-label">Recognize scales & modes</div></div>
+            <div><div>Keys & Modes</div><div class="menu-label">Recognize modes through chord arpeggios</div></div>
         </button>
         <button class="menu-btn" onclick="showScreen('chordSetup')">
             <div class="menu-icon">
@@ -674,7 +674,7 @@
     <div class="game-center">
         <div id="mgKeyLabel" style="color:var(--text-dim);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;"></div>
         <button class="play-btn" onclick="replayQuestion()"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--bg)"><polygon points="5,3 19,12 5,21"/></svg></button>
-        <span style="color:var(--text-dim);font-size:12px;">Tap to replay melody</span>
+        <span style="color:var(--text-dim);font-size:12px;">Tap to replay same-octave chord arpeggios</span>
         <div id="mgFeedback"></div>
     </div>
     <div class="answer-grid"><div id="mgAnswers" class="flex-col" style="gap:10px;"></div></div>
@@ -1000,38 +1000,16 @@
     }
 
     function genMelody(rootMidi, mode) {
-      const modeIv = mode.iv, charIndices = mode.char;
-      const scale = modeIv.map(i => rootMidi + i);
-      const scale2 = [...scale, ...scale.map(n => n + 12)];
-      const scaleLen = scale.length;
+      const scale = mode.iv.map(interval => rootMidi + interval);
+      const progression = [0, randInt(1, 6), randInt(1, 6), 0];
       const notes = [];
-      const deg = d => {
-        const oct = Math.floor(d / scaleLen);
-        const idx = ((d % scaleLen) + scaleLen) % scaleLen;
-        return scale[idx] + oct * 12;
-      };
-      for (let i = 0; i < 5; i++) notes.push(deg(i));
-      if (charIndices.length > 0) {
-        for (let i = 0; i < 8; i++) {
-          if (i % 2 === 0) {
-            const ci = charIndices[i % charIndices.length];
-            notes.push(deg(ci + (Math.random() > 0.5 ? scaleLen : 0)));
-          } else {
-            const ci = charIndices[(i - 1) % charIndices.length];
-            const nb = Math.random() > 0.5 ? ci + 1 : ci - 1;
-            notes.push(deg(nb >= 0 ? nb : 0));
-          }
-        }
-      } else {
-        for (let i = 0; i < 8; i++) notes.push(deg(i < 4 ? i + 3 : 10 - i));
-      }
-      let pos = 4;
-      for (let i = 0; i < 7; i++) { pos = Math.max(0, Math.min(13, pos + randInt(-3, 3))); notes.push(scale2[pos]); }
-      notes.push(deg(4));
-      if (charIndices.length > 0) notes.push(deg(charIndices[0]));
-      notes.push(deg(1));
+      progression.forEach(degree => {
+        const chord = [degree, degree + 2, degree + 4]
+          .map(index => scale[index % scale.length])
+          .sort((a, b) => a - b);
+        notes.push(chord[0], chord[1], chord[2], chord[1]);
+      });
       notes.push(rootMidi);
-      notes[0] = rootMidi;
       return notes;
     }
 

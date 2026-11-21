@@ -74,6 +74,25 @@ test('every selectable key and mode spells generated notes with the right pitche
   }
 });
 
+test('mode melodies arpeggiate diatonic triads within one octave', () => {
+  for (let root = 60; root < 72; root++) {
+    for (let mode = 0; mode < 7; mode++) {
+      const notes = Array.from(run(`genMelody(${root}, MODES[${mode}])`));
+      const scale = Array.from(run(`MODES[${mode}].iv.map(iv => ${root} + iv)`));
+      assert.equal(notes.length, 17);
+      assert.ok(notes.every(note => note >= root && note < root + 12));
+      for (let chord = 0; chord < 4; chord++) {
+        const arpeggio = notes.slice(chord * 4, chord * 4 + 4);
+        assert.ok(arpeggio.every(note => scale.includes(note)));
+        assert.ok(arpeggio[0] < arpeggio[1] && arpeggio[1] < arpeggio[2]);
+        assert.equal(arpeggio[3], arpeggio[1]);
+      }
+      assert.equal(notes[0], root);
+      assert.equal(notes[16], root);
+    }
+  }
+});
+
 test('mode answer reveal uses spelled notes and preserves characteristic highlights', () => {
   run(`question = { type: 'mode', modeIdx: 1, rootMidi: 60, melody: [60, 62, 63, 69, 70] };
     answered = false; handleAnswer(1);`);
