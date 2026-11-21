@@ -1,4 +1,4 @@
-Simple web application allowing to explore guitar and bass fretboards.
+Simple web application allowing to explore guitar, bass and ukulele fretboards.
 
 * Visualize notes from different keys/modes in different tuning
 * Visualize diatonic chords in the select key/mode
@@ -6,6 +6,7 @@ Simple web application allowing to explore guitar and bass fretboards.
 * Designed to be used in mobiles using thumb finger
 * pressing canvas plays corresponding note
 * Bass uses four strings in standard E1 A1 D2 G2 tuning and the slap bass soundfont
+* Ukulele uses standard G4 C4 E4 A4 tuning and the steel guitar soundfont
 
 html code at ./guitar.html
 css code at ./guitar.css

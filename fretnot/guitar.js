@@ -17,6 +17,8 @@ const NOTE_FIFTHS_COLOR = ['#FF3333', '#33FF8D', '#FF8A33', '#3358FF', '#FFFC33'
 const STD_TUNING = ['E', 'A', 'D', 'G', 'B', 'E'];
 const BASS_TUNING = ['E', 'A', 'D', 'G'];
 const BASS_OPEN_MIDI = [28, 33, 38, 43];
+const UKULELE_TUNING = ['G', 'C', 'E', 'A'];
+const UKULELE_OPEN_MIDI = [67, 60, 64, 69];
 const FOURTHS_TUNING = ['E', 'A', 'D', 'G', 'C', 'F'];
 const DROPD_TUNING = ['D', 'A', 'D', 'G', 'C', 'F'];
 const DAD_TUNING = ['D', 'A', 'D', 'G', 'A', 'D'];
@@ -107,6 +109,7 @@ var calculatedChordInput;
 var tuningSelect;
 var instrumentSelect;
 var instrumentStatus;
+var fixedTuningStatus;
 
 
 (function (window, document, undefined) {
@@ -128,6 +131,7 @@ var instrumentStatus;
         tuningSelect = document.getElementById('tuningSelect');
         instrumentSelect = document.getElementById('instrumentSelect');
         instrumentStatus = document.getElementById('instrumentStatus');
+        fixedTuningStatus = document.getElementById('fixedTuningStatus');
         initOscillators();
 
         document.getElementById('settingsButton').addEventListener('click', function () {
@@ -189,8 +193,9 @@ function canvasDownXY(x, y, force) {
         fretIndex = 14;
     }
     console.log("string:" + stringIndex + "fret:" + fretIndex);
-    if (instrumentSelect.value === 'bass') {
-        playOscillatorNote(BASS_OPEN_MIDI[stringIndex] + Math.max(0, fretIndex - 1), force);
+    if (instrumentSelect.value !== 'guitar') {
+        const openMidi = instrumentSelect.value === 'bass' ? BASS_OPEN_MIDI : UKULELE_OPEN_MIDI;
+        playOscillatorNote(openMidi[stringIndex] + Math.max(0, fretIndex - 1), force);
         return;
     }
     let openStringIndex = calculateFretNoteIndex(stringIndex, 0);
@@ -275,15 +280,27 @@ function calculateChordByIndex(rootNote, chordType) {
 }
 
 function retrieveTuning() {
-    return instrumentSelect.value === 'bass'
-        ? BASS_TUNING
-        : TUNING_ARRAY[parseInt(tuningSelect.value, 10)];
+    if (instrumentSelect.value === 'bass') return BASS_TUNING;
+    if (instrumentSelect.value === 'ukulele') return UKULELE_TUNING;
+    return TUNING_ARRAY[parseInt(tuningSelect.value, 10)];
 }
 
 function changeInstrument() {
-    tuningSelect.disabled = instrumentSelect.value === 'bass';
+    tuningSelect.disabled = instrumentSelect.value !== 'guitar';
+    tuningSelect.hidden = tuningSelect.disabled;
+    fixedTuningStatus.textContent = instrumentSelect.value === 'bass' ? 'Standard: E1 A1 D2 G2'
+        : instrumentSelect.value === 'ukulele' ? 'Standard: G4 C4 E4 A4' : '';
     selectMidiInstrument();
     renderFretboard();
+}
+
+function hasPatternNextString(string) {
+    return instrumentSelect.value === 'guitar' || string < retrieveTuning().length - 1;
+}
+
+function hasPatternThirdInterval(string) {
+    return (instrumentSelect.value === 'guitar' && tuningSelect.value === '0' && string === 3)
+        || (instrumentSelect.value === 'ukulele' && string === 1);
 }
 
 function calculateFretNoteIndex(stringIndex, fretIndex) {
@@ -458,13 +475,13 @@ function drawNoteIndex(fret, string) {
                 ctx.lineTo(NOTE_CENTER_X, NOTE_CENTER_Y + FRET_SEPARATION * 4);
                 ctx.stroke();
             }
-            if (noteDegree === 0 && (instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1)) {
+            if (noteDegree === 0 && hasPatternNextString(string)) {
                 ctx.beginPath();
                 ctx.strokeStyle = '#b0b4ba';
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
-                if (tuningSelect.value === "0" && string === 3) {
+                if (hasPatternThirdInterval(string)) {
                     targetY = NOTE_CENTER_Y + FRET_SEPARATION;
                 }
                 ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
@@ -494,7 +511,7 @@ function drawNoteIndex(fret, string) {
                 ctx.lineTo(NOTE_CENTER_X, targetY);
                 ctx.stroke();
             }
-            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+            if (hasPatternNextString(string) &&
                 ((modeIndex < 3 && (noteDegree === 0)) ||
                 (modeIndex > 2 && (noteDegree === 2)))) {
                 //if root note chair bottom
@@ -503,7 +520,7 @@ function drawNoteIndex(fret, string) {
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
-                if (tuningSelect.value === "0" && string === 3) {
+                if (hasPatternThirdInterval(string)) {
                     targetY = NOTE_CENTER_Y + FRET_SEPARATION;
                 }
                 if (modeIndex===0 || modeIndex === 3) {
@@ -560,7 +577,7 @@ function drawNoteIndex(fret, string) {
             // blue horizontal: outer stack connectors
             //   major: deg 1(D), 2(E), 3(G), 4(A) → D→G, E→A, G→C, A→D
             //   minor: deg 0(C), 2(F), 3(G), 4(Bb) → C→F, F→Bb, G→C, Bb→Eb
-            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+            if (hasPatternNextString(string) &&
                 ((isMajorPentatonic && (noteDegree === 1 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)) ||
                 (!isMajorPentatonic && (noteDegree === 0 || noteDegree === 2 || noteDegree === 3 || noteDegree === 4)))) {
                 ctx.beginPath();
@@ -568,7 +585,7 @@ function drawNoteIndex(fret, string) {
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
-                if (tuningSelect.value === "0" && string === 3) {
+                if (hasPatternThirdInterval(string)) {
                     targetY = NOTE_CENTER_Y + FRET_SEPARATION;
                 }
                 ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
@@ -596,7 +613,7 @@ function drawNoteIndex(fret, string) {
                 ctx.stroke()
             }
 
-            if ((instrumentSelect.value !== 'bass' || string < BASS_TUNING.length - 1) &&
+            if (hasPatternNextString(string) &&
                 ((modeIndex<3 && (noteDegree ===1 || noteDegree === 4 || noteDegree === 2 || noteDegree === 5 )) ||
                 (modeIndex>2 && (noteDegree === 6 || noteDegree === 3 || noteDegree === 0 || noteDegree === 4 )))) {
                 //stack line
@@ -605,7 +622,7 @@ function drawNoteIndex(fret, string) {
                 ctx.lineWidth = 6;
                 ctx.moveTo(NOTE_CENTER_X, NOTE_CENTER_Y);
                 let targetY = NOTE_CENTER_Y;
-                if (tuningSelect.value === "0" && string === 3) {
+                if (hasPatternThirdInterval(string)) {
                     targetY = NOTE_CENTER_Y + FRET_SEPARATION;
                 }
                 ctx.lineTo(NOTE_CENTER_X + STRING_SEPARATION, targetY);
@@ -684,7 +701,8 @@ function drawNoteIndex(fret, string) {
 const audioCtx = new (window.AudioContext || window.webkitAudioContext);
 const MIDI_INSTRUMENTS = {
     guitar: { name: 'acoustic_guitar_nylon', program: 24 },
-    bass: { name: 'slap_bass_1', program: 36 }
+    bass: { name: 'slap_bass_1', program: 36 },
+    ukulele: { name: 'acoustic_guitar_steel', program: 25 }
 };
 const loadedMidiInstruments = new Set();
 let loadingMidiInstrument = false;

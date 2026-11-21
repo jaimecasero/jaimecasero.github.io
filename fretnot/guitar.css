@@ -154,12 +154,12 @@ option:disabled {
     color: #e6e6e6;
 }
 
-#instrumentStatus {
+#instrumentStatus, #fixedTuningStatus {
     grid-column: 2;
     color: #b0b4ba;
     font-size: 13px;
 }
 
-#instrumentStatus:empty {
+#instrumentStatus:empty, #fixedTuningStatus:empty {
     display: none;
 }
