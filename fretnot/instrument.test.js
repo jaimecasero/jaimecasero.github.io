@@ -25,6 +25,7 @@ function createApp() {
         tuningSelect: { value: '0', disabled: false },
         instrumentSelect: { value: 'guitar' },
         instrumentStatus: {},
+        fixedTuningStatus: {},
         calculatedKeyInput: {},
         calculatedChordInput: {},
         settingsButton: { addEventListener() {} },
@@ -76,6 +77,7 @@ test('switches between guitar and standard bass fretboards and pitches', () => {
     context.changeInstrument();
     assert.equal(stringCount(app), 4);
     assert.equal(elements.tuningSelect.disabled, true);
+    assert.equal(elements.tuningSelect.hidden, true);
     assert.equal(loads[1].instruments, 'slap_bass_1');
     context.canvasDownXY(50, 10, 1);
     assert.deepEqual(notes, []);
@@ -91,6 +93,7 @@ test('switches between guitar and standard bass fretboards and pitches', () => {
     context.changeInstrument();
     assert.equal(stringCount(app), 6);
     assert.equal(elements.tuningSelect.disabled, false);
+    assert.equal(elements.tuningSelect.hidden, false);
     assert.equal(elements.tuningSelect.value, '3');
     assert.deepEqual(programs, [24, 36, 24]);
     assert.equal(loads.length, 2);
@@ -122,4 +125,62 @@ test('reports soundfont failures and can retry after switching instruments', () 
     elements.instrumentSelect.value = 'bass';
     context.changeInstrument();
     assert.equal(loads[2].instruments, 'slap_bass_1');
+});
+
+test('ukulele renders and plays re-entrant standard tuning with steel guitar sound', () => {
+    const app = createApp();
+    const { context, elements, loads, programs, notes, strokes } = app;
+    loads[0].onsuccess();
+    elements.tuningSelect.value = '3';
+    elements.instrumentSelect.value = 'ukulele';
+    strokes.length = 0;
+    context.changeInstrument();
+    assert.equal(stringCount(app), 4);
+    assert.deepEqual(Array.from(context.retrieveTuning()), ['G', 'C', 'E', 'A']);
+    assert.equal(elements.tuningSelect.disabled, true);
+    assert.equal(elements.fixedTuningStatus.textContent, 'Standard: G4 C4 E4 A4');
+    assert.equal(loads[1].instruments, 'acoustic_guitar_steel');
+    loads[1].onsuccess();
+    assert.deepEqual(programs, [24, 25]);
+    for (const x of [50, 150, 250, 350]) context.canvasDownXY(x, 10, 1);
+    context.canvasDownXY(50, 100, 1);
+    const twelfthFret = (context.calculateFretHeight(12) + context.calculateFretHeight(13)) / 2;
+    context.canvasDownXY(150, twelfthFret, 1);
+    assert.deepEqual(notes, [67, 60, 64, 69, 68, 72]);
+
+    elements.instrumentSelect.value = 'bass';
+    context.changeInstrument();
+    assert.equal(elements.fixedTuningStatus.textContent, 'Standard: E1 A1 D2 G2');
+    loads[2].onsuccess();
+    elements.instrumentSelect.value = 'ukulele';
+    context.changeInstrument();
+    assert.equal(programs.at(-1), 25);
+    assert.equal(loads.length, 3);
+    elements.instrumentSelect.value = 'guitar';
+    context.changeInstrument();
+    assert.equal(elements.tuningSelect.value, '3');
+    assert.equal(elements.tuningSelect.disabled, false);
+    assert.equal(elements.fixedTuningStatus.textContent, '');
+    assert.equal(programs.at(-1), 24);
+});
+
+test('ukulele patterns account for C–E and stop at the last string', () => {
+    const { context, elements, loads, strokes } = createApp();
+    loads[0].onsuccess();
+    elements.instrumentSelect.value = 'ukulele';
+    context.changeInstrument();
+    elements.visualizationSelect.value = 'Chair';
+    context.renderFretboard();
+
+    strokes.length = 0;
+    context.drawNoteIndex(1, 1);
+    const connector = strokes.find(points =>
+        points.length === 2 && points[1][0] > points[0][0]);
+    assert.ok(connector);
+    assert.ok(connector[1][1] > connector[0][1]);
+
+    strokes.length = 0;
+    context.drawNoteIndex(4, 3);
+    assert.equal(strokes.some(points =>
+        points.length === 2 && points[1][0] > points[0][0]), false);
 });
