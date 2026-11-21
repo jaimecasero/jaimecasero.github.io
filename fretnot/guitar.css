@@ -42,8 +42,8 @@ option:disabled {
 
 #settingsButton {
     position: fixed;
-    top: max(12px, env(safe-area-inset-top));
-    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
     z-index: 1;
     display: grid;
     place-items: center;
