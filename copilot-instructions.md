@@ -13,4 +13,5 @@ All based on basic html/css/javascript. Designed for mobile phones as simgle pag
 ./fretnot a virtual guitar allowing to explore scales and chords.
 
 All apps should be minimal and include a less libs as possible. Impl should be based on w3c standards and avoid libs.
-All apps imple a service worker with cache name that must be updated everytime a feature/bug is implemented.
+All apps imple a service worker with cache name that must be updated everytime a feature/bug is implemented following semantic versioninig.
+For commit message use Conventional Commit convention
