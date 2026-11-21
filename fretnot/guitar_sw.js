@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fretnot-v1.17.3';
+const CACHE_NAME = 'fretnot-v1.17.4';
 const ASSETS_TO_CACHE = [
     './guitar.html',
     './guitar.js',
